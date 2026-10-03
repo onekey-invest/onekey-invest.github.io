@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% import "_m.html" as m %}
+{% block main %}
+
+{% if notes %}
+{% set n = notes[0] %}
+<div class="stock">
+  <div>
+    <div class="meta"><span class="tag on">최근 노트</span> {{ n.date|ymd }}</div>
+    <h1 class="rt-title"><a href="{{ url(n.path) }}">{{ n.headline }}</a></h1>
+  </div>
+  {{ m.indicators(n) }}
+</div>
+
+<div class="two even">
+  <div>
+    {{ m.h('내 코멘트', n.date|ymd, first=true) }}
+    <div class="prose tight">{{ n.comment_html }}</div>
+    <div class="note"><a href="{{ url(n.path) }}">노트 전체 보기</a></div>
+  </div>
+  <div>
+    {{ m.h('이번 주 주요 일정', '', first=true) }}
+    <ul class="dash">
+      {% for w in n.week or [] %}<li>{{ w }}</li>{% else %}<li>등록된 일정 없음</li>{% endfor %}
+    </ul>
+  </div>
+</div>
+
+{{ m.h('노트 목록', notes|length ~ '건') }}
+{{ m.filter('notes-table', '날짜, 내용, 태그 검색', none) }}
+<div class="scroll">
+<table class="grid" id="notes-table">
+  <thead><tr><th class="c" style="width:120px">날짜</th><th class="l">오늘의 한 줄</th><th class="l">관련 종목·산업</th><th class="l">태그</th></tr></thead>
+  <tbody>
+  {% for x in notes %}
+    <tr>
+      <td class="c">{{ x.date|ymd }}</td>
+      <td class="l"><a href="{{ url(x.path) }}"><b>{{ x.headline }}</b></a></td>
+      <td class="l">{{ m.note_links(x) }}</td>
+      <td class="l">{% for t in x.tags or [] %}<span class="tag">{{ t }}</span> {% endfor %}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% else %}
+{{ m.h('마켓노트', '', first=true) }}
+<p class="intro">아직 노트가 없습니다. <code>content/notes/</code>에 날짜별 파일을 넣으면 이 자리에 나옵니다.</p>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% import "_m.html" as m %}
+{% block main %}
+
+<div class="two even">
+  <div>
+    <p class="lead">{{ site.headline }}</p>
+    <p class="intro">{{ site.intro }}</p>
+    <table class="kv">
+      <tr><th>작성</th><td>{{ site.author }}</td></tr>
+      <tr><th>커버 종목 / 리포트</th><td>{{ summary.n }}종목 / {{ n_reports }}건</td></tr>
+      <tr><th>투자의견 분포</th><td>{% for k, v in summary.ratings.items() %}{{ k }} {{ v }}{% if not loop.last %} · {% endif %}{% endfor %}</td></tr>
+      <tr><th>벤치마크 상회</th><td>{{ summary.n_beat }} / {{ summary.n }} 종목</td></tr>
+      <tr><th>최근 게시</th><td>{% if reports %}{{ reports[0].date|ymd }}{% else %}–{% endif %}</td></tr>
+    </table>
+  </div>
+  <div>
+    {{ m.h('커버리지 성적', (asof|ymd) ~ ' 종가 기준', first=true) }}
+    <div class="bars">
+      {% for c in companies %}
+      <div class="row">
+        <a href="{{ url(c.path) }}">{{ c.name }}</a>
+        <div class="t">
+          <i class="{{ c.ret|sign or 'up' }}" style="left:{{ '%.1f'|format(c.bar.left) }}%;width:{{ '%.1f'|format(c.bar.width) }}%"></i>
+          <u style="left:{{ '%.1f'|format(c.bar.bench) }}%" title="{{ c.benchmark }} {{ c.bench_ret|pct }}"></u>
+        </div>
+        <span class="v {{ c.ret|sign }}">{{ c.ret|pct }}</span>
+      </div>
+      {% endfor %}
+      <div class="key"><span>막대: 의견 이후 수익률</span><span><u></u>같은 기간 벤치마크</span></div>
+    </div>
+    <div class="note"><a href="{{ url('research/') }}">성적표 전체 보기</a></div>
+  </div>
+</div>
+
+{% if featured %}
+{{ m.h('대표 리포트', '') }}
+{{ m.featured_cards(featured) }}
+{% endif %}
+
+{{ m.h('최근 리포트', '') }}
+{{ m.report_table(reports) }}
+<div class="note"><a href="{{ url('research/reports/') }}">리포트 전체 보기</a></div>
+
+{{ m.h('가상운용 전략', (asof|ymd) ~ ' 종가 기준') }}
+{{ m.strategy_table(strategies) }}
+<div class="note"><a href="{{ url('portfolios/') }}">가상운용 전체 보기</a></div>
+
+{{ m.h('최근 마켓노트', '') }}
+<div class="scroll">
+<table class="grid">
+  <thead><tr><th class="c" style="width:120px">날짜</th><th class="l">오늘의 한 줄</th><th class="l">관련 종목·산업</th></tr></thead>
+  <tbody>
+  {% for n in notes %}
+    <tr><td class="c">{{ n.date|ymd }}</td><td class="l"><a href="{{ url(n.path) }}"><b>{{ n.headline }}</b></a></td><td class="l">{{ m.note_links(n) }}</td></tr>
+  {% else %}
+    <tr><td class="c" colspan="3">아직 노트가 없습니다.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+<div class="note"><a href="{{ url('notes/') }}">마켓노트 전체 보기</a></div>
+
+{% endblock %}

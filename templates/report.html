@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% import "_m.html" as m %}
+{% block main %}
+
+<div class="stock">
+  <div>
+    <div class="meta">{{ m.kind(r.kind) }} <a href="{{ url(r.subject_path) }}">{{ r.subject }}</a><i>|</i>{{ r.date|ymd }}<i>|</i>작성 {{ site.author }}</div>
+    <h1 class="rt-title">{{ r.title }}</h1>
+  </div>
+  {% if r.rating %}
+  <div class="strip">
+    <div><span>투자의견</span><b>{{ m.rating(r.rating) }}</b></div>
+    <div><span>목표주가</span><b>{{ r.target|num }}</b></div>
+    <div><span>발행일 종가</span><b>{{ r.close|num }}</b></div>
+    <div><span>이후 수익률</span><b class="{{ r.after|sign }}">{{ r.after|pct }}</b></div>
+  </div>
+  {% endif %}
+</div>
+
+<div class="rep">
+  <div class="prose">
+    {% if r.summary %}<p class="lead-box">{{ r.summary }}</p>{% endif %}
+    {{ r.body }}
+  </div>
+  <aside>
+    {{ m.h('리포트 정보', '', first=true) }}
+    <table class="kv">
+      <tr><th>대상</th><td><a href="{{ url(r.subject_path) }}">{{ r.subject }}</a></td></tr>
+      <tr><th>발행일</th><td>{{ r.date|ymd }}</td></tr>
+      <tr><th>구분</th><td>{{ r.kind }}</td></tr>
+      {% if r.rating %}
+      <tr><th>발행일 종가</th><td>{{ r.close|num }}원</td></tr>
+      <tr><th>이후 수익률</th><td>{{ m.ret(r.after) }} <small>({{ asof|ymd }})</small></td></tr>
+      {% endif %}
+      <tr><th>원문</th><td>{% if r.pdf %}<a class="pdf" href="{{ url('static/reports/' ~ r.pdf) }}">PDF 내려받기</a>{% else %}PDF 없음{% endif %}</td></tr>
+    </table>
+    {% if newer or older %}
+    {{ m.h('같은 대상의 리포트', '') }}
+    <ul class="dash">
+      {% if newer %}<li>다음: <a href="{{ url(newer.path) }}">{{ newer.title }}</a> <small>{{ newer.date|ymd }}</small></li>{% endif %}
+      {% if older %}<li>이전: <a href="{{ url(older.path) }}">{{ older.title }}</a> <small>{{ older.date|ymd }}</small></li>{% endif %}
+    </ul>
+    {% endif %}
+  </aside>
+</div>
+
+{% endblock %}

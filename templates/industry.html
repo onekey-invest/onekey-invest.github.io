@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% import "_m.html" as m %}
+{% block main %}
+
+<div class="stock">
+  <div>
+    <h1>{{ i.name }}</h1>
+    <div class="meta">산업<i>|</i>최근 업데이트 {{ i.updated|ymd }}</div>
+  </div>
+  <div class="strip">
+    <div><span>산업 의견</span><b>{{ i.view }}</b></div>
+    <div><span>사이클 위치</span><b>{{ i.cycle }}</b></div>
+    <div><span>커버 기업</span><b>{{ i.members|length }}</b></div>
+    <div><span>평균 수익률</span><b class="{{ i.avg_ret|sign }}">{{ i.avg_ret|pct }}</b></div>
+  </div>
+</div>
+
+<div class="two even">
+  <div>
+    {{ m.h('핵심 논점', (i.updated|ymd) ~ ' 기준', first=true) }}
+    <ul class="dash">
+      {% for p in i.points %}<li>{{ p }}</li>{% endfor %}
+    </ul>
+  </div>
+  <div>
+    {{ m.h('핵심 지표 추이', '첫 값 대비 변화율', first=true) }}
+    {% if i.indicators %}
+    {{ m.chart(i.indicator_chart, i.indicator_data, ranges=false, small=true) }}
+    {% else %}
+    <p class="intro">등록된 지표가 없습니다.</p>
+    {% endif %}
+  </div>
+</div>
+
+{{ m.h('소속 기업', (asof|ymd) ~ ' 종가 기준') }}
+{{ m.company_table(i.members) }}
+
+{{ m.h('산업 리포트', '') }}
+<div class="scroll">
+<table class="grid">
+  <thead><tr><th class="c" style="width:120px">발행일</th><th class="l">제목</th><th class="l">요약</th></tr></thead>
+  <tbody>
+  {% for r in i.reports %}
+    <tr><td class="c">{{ r.date|ymd }}</td><td class="l"><a href="{{ url(r.path) }}">{{ r.title }}</a></td><td class="l">{{ r.summary }}</td></tr>
+  {% else %}
+    <tr><td class="c" colspan="3">아직 산업 리포트가 없습니다.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+
+<details class="fold"><summary>밸류체인 및 경쟁 구도</summary><div class="prose">{% if i.value_chain %}{{ i.value_chain }}{% else %}<p>아직 작성하지 않았습니다.</p>{% endif %}</div></details>
+<details class="fold"><summary>관련 마켓노트 ({{ i.notes|length }})</summary><div class="prose">{{ m.note_list(i.notes) }}</div></details>
+
+{% endblock %}

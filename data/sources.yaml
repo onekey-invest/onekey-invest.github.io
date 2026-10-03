@@ -1,0 +1,18 @@
+# 실제 종가를 받아 올 대상. tools/update_prices.py가 읽는다.
+# 이름이 곧 data/prices/이름.csv의 파일 이름이다.
+#   기업: companies.yaml의 id와 같은 이름을 쓴다.
+#   벤치마크: site.yaml의 benchmarks에 적은 파일 이름을 쓴다.
+#
+# source: krx   → 국내 종목. code에 종목코드 6자리 (수정주가)
+# source: yahoo → 지수와 해외 종목. symbol에 야후 기호
+# start: 이 날짜부터 받는다. 커버리지 개시일보다 앞이어야 한다. 비우면 3년 전 1월 1일.
+#
+# 지금은 예시 시세로 화면을 채우고 있어서 전부 꺼 둔 상태다.
+# 실제 종목으로 바꿀 때 아래 예시의 #을 지우고 고쳐 쓴다.
+# 예시 시세가 남아 있는 동안 KOSPI·KOSDAQ만 켜면 예시 종목과 거래일이 어긋나 빌드가 멈춘다.
+
+# KOSPI:   {source: yahoo, symbol: "^KS11", start: 2025-01-01}
+# KOSDAQ:  {source: yahoo, symbol: "^KQ11", start: 2025-01-01}
+# SP500:   {source: yahoo, symbol: "^GSPC", start: 2025-01-01}
+# samsung: {source: krx, code: "005930", start: 2025-01-01}
+# apple:   {source: yahoo, symbol: "AAPL", start: 2025-01-01}

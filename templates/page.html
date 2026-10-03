@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% import "_m.html" as m %}
+{% block main %}
+
+{{ m.h(title, '', first=true) }}
+<div class="prose wide">
+{{ body }}
+</div>
+
+{% if nav == 'about' %}
+{{ m.h('링크', '') }}
+<table class="kv half">
+  {% for l in site.links or [] %}<tr><th>{{ l.label }}</th><td><a class="lnk" href="{{ l.url }}" rel="noopener">{{ l.url }}</a></td></tr>
+  {% else %}<tr><th>외부 링크</th><td>data/site.yaml의 links에 입력</td></tr>{% endfor %}
+</table>
+{% if featured %}
+{{ m.h('대표 리포트', '') }}
+{{ m.featured_cards(featured) }}
+{% endif %}
+{% endif %}
+
+{% endblock %}

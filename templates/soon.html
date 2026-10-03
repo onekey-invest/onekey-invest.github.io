@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% import "_m.html" as m %}
+{% block main %}
+
+{{ m.h(title, '', first=true) }}
+{% if items %}
+<p class="intro">준비 중인 메뉴입니다. 열리면 아래 내용이 들어갑니다.</p>
+<ul class="dash">
+  {% for it in items %}<li>{{ it }}</li>{% endfor %}
+</ul>
+{% else %}
+<p class="intro">주소가 바뀌었거나 없는 페이지입니다. <a href="{{ url() }}">홈으로 가기</a></p>
+{% endif %}
+
+{% endblock %}
