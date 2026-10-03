@@ -38,7 +38,7 @@
 </div>
 
 {% for title, body in n.sections %}
-<details class="fold"><summary>{{ title }}</summary><div class="prose">{{ body }}</div></details>
+<details class="fold"{% if loop.first %} open{% endif %}><summary>{{ title }}</summary><div class="prose">{{ body }}</div></details>
 {% endfor %}
 
 {% if newer or older %}

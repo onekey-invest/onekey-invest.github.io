@@ -13,8 +13,8 @@
 <link rel="stylesheet" href="{{ url('static/style.css') }}">
 </head>
 <body>
-{% if site.demo %}
-<div class="demo">예시 데이터로 채운 화면입니다. 회사명·숫자·투자의견은 모두 실제가 아닙니다.</div>
+{% if site.demo and nav != 'notes' %}
+<div class="demo">리서치·가상운용 화면은 예시 데이터입니다. 회사명·숫자·투자의견은 실제가 아닙니다. 마켓노트는 실제 내용입니다.</div>
 {% endif %}
 
 <header class="top"><div class="w">
