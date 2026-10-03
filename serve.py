@@ -32,6 +32,7 @@ def rebuild():
         del sys.modules[name]
     sys.path.insert(0, str(ROOT))
     os.environ["SITE_DRAFTS"] = "1"   # 공개 전 노트도 미리보기에서는 보여 준다
+    os.environ["SITE_BASE_URL"] = ""  # 미리보기 주소에는 저장소 이름이 붙지 않는다
     import build
     build.main()
 

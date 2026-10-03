@@ -520,7 +520,8 @@ def main():
         i["notes"] = [n for n in notes if i["id"] in (n.get("industries") or [])]
     featured = [r for r in all_reports if r.get("featured")]
 
-    base = (site.get("base_url") or "").rstrip("/")
+    # 내 컴퓨터 미리보기(serve.py)는 SITE_BASE_URL을 빈 값으로 넘겨 주소 앞머리를 뗀다
+    base = os.environ.get("SITE_BASE_URL", site.get("base_url") or "").rstrip("/")
     env = Environment(
         loader=FileSystemLoader(ROOT / "templates"),
         autoescape=select_autoescape(["html"]),
