@@ -81,8 +81,6 @@ class NoteTest(unittest.TestCase):
         self.assertEqual(f["date"], date(2026, 10, 5))
         self.assertEqual(f["headline"], "금리 하락과 반도체 강세")
         self.assertEqual(f["indicators"][1], {"name": "미 10년물", "value": "4.12%", "change": "-3bp"})
-        self.assertEqual(len(f["points"]), 3)
-        self.assertEqual(f["points"][0], "고용 둔화로 금리 하락")
         self.assertEqual(f["watch"], [])
         self.assertEqual(f["week"], ["21:30 미국 실업수당 청구"])
         self.assertEqual(f["review"], "수출 잠정치 → 전년 대비 증가")
@@ -90,9 +88,10 @@ class NoteTest(unittest.TestCase):
         self.assertEqual(f["tags"], ["반도체", "금리"])
 
     def test_comment_is_left_for_the_author(self):
-        self.assertTrue(self.front["draft"])
+        self.assertNotIn("draft", self.front)          # 기본은 바로 공개
         self.assertEqual(self.front["comment"], "")
-        self.assertEqual(self.front["comment_suggestion"], "장비주 수주 가정 점검")
+        _, held = B.to_note(SAMPLE, draft=True)
+        self.assertTrue(yaml.safe_load(held.split("---", 2)[1])["draft"])
 
     def test_body_sections(self):
         heads = [x for x in self.body.splitlines() if x.startswith("## ")]

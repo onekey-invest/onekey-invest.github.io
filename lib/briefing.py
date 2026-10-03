@@ -1,7 +1,7 @@
 """아침 브리핑 글([0]~[7] 구획)을 마켓노트 원고로 바꾼다.
 
 머리말은 [7. 짧은 노트]에서, 본문은 [1]~[4]에서, 최종 요약은 [5]에서 가져온다.
-내 코멘트는 채우지 않고, 만든 원고는 draft: true(공개 전)로 둔다.
+내 코멘트는 채우지 않는다. 만든 원고는 바로 공개되고, draft=True로 부르면 공개 전으로 둔다.
 """
 from __future__ import annotations
 
@@ -112,7 +112,7 @@ def _summary(text: str) -> list[str]:
     return out
 
 
-def to_note(text: str, day: date | None = None) -> tuple[date, str]:
+def to_note(text: str, day: date | None = None, draft: bool = False) -> tuple[date, str]:
     """브리핑 글 → (날짜, 마켓노트 원고)."""
     sec = split_sections(text)
     if 7 not in sec:
@@ -133,12 +133,9 @@ def to_note(text: str, day: date | None = None) -> tuple[date, str]:
     tags = [t.strip() for t in re.split(r"[,，]", short.get("태그", "")) if t.strip() not in EMPTY]
     front = {
         "date": day,
-        "draft": True,
         "headline": headline.splitlines()[0].strip(),
         "indicators": [_indicator(x) for x in short.get("지표", [])],
         "comment": "",
-        "comment_suggestion": short.get("제안", ""),
-        "points": short.get("핵심 3가지", []),
         "watch": short.get("내 종목·산업", []),
         "review": "" if review in EMPTY else review,
         "summary": _summary(sec.get(5, "")),
@@ -152,5 +149,7 @@ def to_note(text: str, day: date | None = None) -> tuple[date, str]:
                             (3, "기업·산업 Watch", False), (4, "오늘 예정 이벤트", False)):
         if sec.get(num):
             parts.append(f"## {title}\n\n{_body(sec[num], sub)}")
+    if draft:
+        front["draft"] = True      # 공개 전. 이 줄이 있으면 사이트에 나가지 않는다
     head = yaml.safe_dump(front, allow_unicode=True, sort_keys=False, width=1000)
     return day, f"---\n{head}---\n\n" + "\n\n".join(parts) + "\n"

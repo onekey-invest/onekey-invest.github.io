@@ -14,8 +14,15 @@
 
 <div class="two even">
   <div>
+    {% if n.comment %}
     {{ m.h('내 코멘트', n.date|ymd, first=true) }}
     <div class="prose tight">{{ n.comment_html }}</div>
+    {% else %}
+    {{ m.h('최종 요약', n.date|ymd, first=true) }}
+    <ul class="dash">
+      {% for x in n.summary or [] %}<li>{{ x }}</li>{% endfor %}
+    </ul>
+    {% endif %}
     <div class="note"><a href="{{ url(n.path) }}">노트 전체 보기</a></div>
   </div>
   <div>

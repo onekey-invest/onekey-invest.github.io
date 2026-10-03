@@ -1,7 +1,7 @@
 """아침 브리핑 글 파일을 마켓노트 원고(content/notes/날짜.md)로 바꾼다.
 
-실행: python tools/import_briefing.py 브리핑.txt [--date 2026-10-05] [--force]
-만든 원고는 draft: true(공개 전)다. 내 코멘트를 쓰고 draft를 false로 바꾸면 공개된다.
+실행: python tools/import_briefing.py 브리핑.txt [--date 2026-10-05] [--force] [--draft]
+만든 원고는 저장소에 올리면 바로 공개된다. --draft를 붙이면 공개 전(draft: true)으로 만든다.
 """
 from __future__ import annotations
 
@@ -21,15 +21,16 @@ def main(argv=None):
     ap.add_argument("src", help="브리핑 글 파일(.txt, .md)")
     ap.add_argument("--date", help="날짜(YYYY-MM-DD). 없으면 짧은 노트의 날짜를 쓴다")
     ap.add_argument("--force", action="store_true", help="같은 날짜 원고가 있어도 덮어쓴다")
+    ap.add_argument("--draft", action="store_true", help="공개 전 상태로 만든다")
     a = ap.parse_args(argv)
 
     text = Path(a.src).read_text(encoding="utf-8-sig")
-    day, note = to_note(text, date.fromisoformat(a.date) if a.date else None)
+    day, note = to_note(text, date.fromisoformat(a.date) if a.date else None, draft=a.draft)
     out = ROOT / "content" / "notes" / f"{day:%Y-%m-%d}.md"
     if out.exists() and not a.force:
-        sys.exit(f"{out.name}이 이미 있다. 내 코멘트를 지우지 않으려고 멈췄다. 덮어쓰려면 --force")
+        sys.exit(f"{out.name}이 이미 있다. 같은 날짜 글을 덮어쓰지 않으려고 멈췄다. 덮어쓰려면 --force")
     out.write_text(note, encoding="utf-8")
-    print(f"{out} 작성. 공개 전(draft) 상태다. 내 코멘트를 쓰고 draft를 false로 바꾼다")
+    print(f"{out} 작성" + (" (공개 전)" if a.draft else ""))
 
 
 if __name__ == "__main__":

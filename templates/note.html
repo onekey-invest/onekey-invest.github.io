@@ -12,23 +12,23 @@
 
 <div class="two even">
   <div>
-    {{ m.h('내 코멘트', '커버리지 관점', first=true) }}
-    <div class="prose tight">{% if n.comment %}{{ n.comment_html }}{% else %}<p>작성 전</p>{% endif %}</div>
-    {% if n.points %}
-    {{ m.h('핵심 3가지', '') }}
-    <ul class="dash">
-      {% for x in n.points %}<li>{{ x }}</li>{% endfor %}
-    </ul>
-    {% endif %}
-  </div>
-  <div>
-    {% if n.review %}
-    {{ m.h('어제 확인한 것', '', first=true) }}
-    <p class="prose tight">{{ n.review }}</p>
-    {% endif %}
-    {{ m.h('최종 요약', '', first=not n.review) }}
+    {{ m.h('최종 요약', '', first=true) }}
     <ul class="dash">
       {% for x in n.summary or [] %}<li>{{ x }}</li>{% endfor %}
+    </ul>
+  </div>
+  <div>
+    {% if n.comment %}
+    {{ m.h('내 코멘트', '', first=true) }}
+    <div class="prose tight">{{ n.comment_html }}</div>
+    {% endif %}
+    {% if n.review %}
+    {{ m.h('어제 확인한 것', '', first=not n.comment) }}
+    <p class="prose tight">{{ n.review }}</p>
+    {% endif %}
+    {{ m.h('오늘 일정', '', first=not (n.comment or n.review)) }}
+    <ul class="dash">
+      {% for w in n.week or [] %}<li>{{ w }}</li>{% else %}<li>등록된 일정 없음</li>{% endfor %}
     </ul>
     <table class="kv">
       <tr><th>관련 종목·산업</th><td>{{ m.note_links(n) }}</td></tr>
