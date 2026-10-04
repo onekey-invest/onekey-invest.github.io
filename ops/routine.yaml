@@ -1,7 +1,7 @@
 # 마켓노트 예약 실행 설정. 예약 실행이 시작할 때 이 파일을 읽는다.
 # mode: live  → 실행한 날(한국 시간)의 글을 써서 main에 올린다. 올리면 바로 공개된다.
 # mode: test  → test_date의 글을 다시 써서 test_branch에만 올린다. 공개되지 않는다.
-mode: test
+mode: live
 cutoff: "08:30"          # 이 시각(한국 시간)까지 도착한 뉴스레터만 쓴다
 test_date: 2026-10-02
 test_branch: routine-test-3
