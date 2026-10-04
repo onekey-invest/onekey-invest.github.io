@@ -5,3 +5,6 @@ mode: test
 cutoff: "08:30"          # 이 시각(한국 시간)까지 도착한 뉴스레터만 쓴다
 test_date: 2026-10-02
 test_branch: routine-test-3
+
+# 글을 쓰기 전에 반드시 이 파일을 읽고, 지시문의 글쓰기 규칙에 더해 따른다. 겹치면 이 파일이 우선한다.
+extra_rules: ops/extra_rules.md
