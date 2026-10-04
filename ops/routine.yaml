@@ -4,4 +4,4 @@
 mode: test
 cutoff: "08:30"          # 이 시각(한국 시간)까지 도착한 뉴스레터만 쓴다
 test_date: 2026-10-02
-test_branch: routine-test-2
+test_branch: routine-test-3
