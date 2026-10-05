@@ -18,11 +18,18 @@ sys.path.insert(0, str(ROOT))
 from lib import dates as D  # noqa: E402
 
 
-def read_cutoff() -> str:
-    """ops/routine.yaml의 cutoff. 아직 아무것도 설치하지 않은 상태에서도 읽히도록 직접 찾는다."""
+def read_config(key: str, pattern: str) -> str | None:
+    """ops/routine.yaml의 값. 아직 아무것도 설치하지 않은 상태에서도 읽히도록 직접 찾는다."""
     text = (ROOT / "ops" / "routine.yaml").read_text(encoding="utf-8")
-    m = re.search(r'^cutoff:\s*"?(\d{1,2}:\d{2})', text, re.M)
-    return m.group(1) if m else "08:30"
+    m = re.search(rf'^{key}:\s*"?({pattern})', text, re.M)
+    return m.group(1) if m else None
+
+
+def default_day() -> date:
+    """날짜를 주지 않았을 때의 대상 날짜. test 모드면 test_date, 아니면 지금의 한국 날짜다."""
+    if read_config("mode", r"\w+") == "test" and read_config("test_date", r"\d{4}-\d\d-\d\d"):
+        return date.fromisoformat(read_config("test_date", r"\d{4}-\d\d-\d\d"))
+    return datetime.now(D.KST).date()
 
 
 def main(argv=None):
@@ -33,8 +40,8 @@ def main(argv=None):
     ap.add_argument("--et", nargs="*", default=[], help='미국 동부 시각 "YYYY-MM-DD HH:MM"')
     a = ap.parse_args(argv)
 
-    day = date.fromisoformat(a.day) if a.day else datetime.now(D.KST).date()
-    cutoff = D.parse_cutoff(a.cutoff or read_cutoff())
+    day = date.fromisoformat(a.day) if a.day else default_day()
+    cutoff = D.parse_cutoff(a.cutoff or read_config("cutoff", r"\d{1,2}:\d{2}") or "08:30")
     start, end = D.window(day, cutoff)
     nxt = day + timedelta(days=1)
     gap = 13 if D.us_dst(datetime.combine(day, cutoff)) else 14
