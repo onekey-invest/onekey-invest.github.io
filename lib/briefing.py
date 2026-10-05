@@ -20,7 +20,7 @@ ISSUE_RE = re.compile(r"^\s*\d+\)\s+\S")
 BULLET_RE =re.compile(r"^\s*(?:[-•*]|\d+[.)])\s+")
 DATE_RE = re.compile(r"(20\d\d)[-.\s]+(\d{1,2})[-.\s]+(\d{1,2})")
 
-SHORT_KEYS = ("날짜", "오늘의 한 줄", "지표", "핵심 3가지", "내 종목·산업", "오늘 일정", "어제 확인한 것",
+SHORT_KEYS = ("날짜", "오늘의 한 줄", "지표 기준", "지표", "핵심 3가지", "내 종목·산업", "오늘 일정", "어제 확인한 것",
               "확인할 것", "내 코멘트", "태그")
 LIST_KEYS = ("지표", "핵심 3가지", "내 종목·산업", "오늘 일정")
 EMPTY = ("", "-", "–", "없음", "해당 없음", "(작성 필요)")
@@ -135,6 +135,7 @@ def to_note(text: str, day: date | None = None, draft: bool = False) -> tuple[da
         "date": day,
         "headline": headline.splitlines()[0].strip(),
         "indicators": [_indicator(x) for x in short.get("지표", [])],
+        "asof": short.get("지표 기준", ""),
         "comment": "",
         "watch": short.get("내 종목·산업", []),
         "review": "" if review in EMPTY else review,

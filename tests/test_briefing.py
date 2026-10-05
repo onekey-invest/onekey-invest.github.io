@@ -40,6 +40,7 @@ C. 주식시장·수급·섹터
 [7. 짧은 노트]
 날짜: 2026-10-05
 오늘의 한 줄: 금리 하락과 반도체 강세
+지표 기준: 한국 10.02(금) 종가 · 미국 10.02(금) 종가
 지표:
 - KOSPI | 3,814.80 | +0.4%
 - 미 10년물 | 4.12% | -3bp
@@ -81,6 +82,8 @@ class NoteTest(unittest.TestCase):
         self.assertEqual(f["date"], date(2026, 10, 5))
         self.assertEqual(f["headline"], "금리 하락과 반도체 강세")
         self.assertEqual(f["indicators"][1], {"name": "미 10년물", "value": "4.12%", "change": "-3bp"})
+        self.assertEqual(f["asof"], "한국 10.02(금) 종가 · 미국 10.02(금) 종가")
+        self.assertEqual(len(f["indicators"]), 2)
         self.assertEqual(f["watch"], [])
         self.assertEqual(f["week"], ["21:30 미국 실업수당 청구"])
         self.assertEqual(f["review"], "수출 잠정치 → 전년 대비 증가")

@@ -9,6 +9,7 @@
   </div>
   {{ m.indicators(n) }}
 </div>
+{% if n.asof %}<div class="note">지표 기준: {{ n.asof }}</div>{% endif %}
 
 <div class="two even">
   <div>
