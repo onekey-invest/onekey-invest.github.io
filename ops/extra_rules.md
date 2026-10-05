@@ -75,3 +75,19 @@
 - 올리기가 "뒤처져 있다(non-fast-forward)"는 이유로 거부되면, 이 경우에 한해 한 번만 다시 한다: `git pull --rebase origin main` 뒤 `git push origin HEAD:main`. 그래도 실패하면 멈추고 오류를 그대로 보고한다.
 - 권한·인증 오류 등 다른 이유로 실패하면 다시 시도하지 않는다.
 - 올린 뒤 `git log origin/main -1 --oneline`으로 내 커밋이 원격에 있는지 확인하고 그 결과를 보고에 적는다.
+
+## 7. 해외 뉴스레터 (국내 뉴스레터가 오지 않는 날에만)
+
+- 평소에는 읽지 않는다. 지시문에 적힌 국내 뉴스레터만 쓴다.
+- 아래 두 조건이 모두 맞는 날에만 해외 뉴스레터를 재료로 더한다.
+  1. 대상 날짜에 한국 증시가 쉰다(공휴일·대체공휴일 등).
+  2. 대상 날짜 00:00부터 기준 시각 사이에 도착한 국내 일간 뉴스레터가 2통 미만이다. 주간 회고판은 세지 않는다.
+- 이때 같은 Gmail에서 아래를 찾아 읽는다. 범위는 국내 뉴스레터와 같다(직전 글의 기준 시각 이후 ~ 대상 날짜 기준 시각).
+  - Reuters Trading Day (보낸 곳 `tradingday@thomsonreuters.com` 또는 `morningbid@thomsonreuters.com`): 뉴욕 마감 뒤 시장 정리. 가장 먼저 읽는다.
+  - Bloomberg Morning Briefing Asia (`noreply@news.bloomberg.com`): 아시아 아침용 정리.
+  - The Wall Street Journal 뉴스레터 (`access@interactive.wsj.com`): 미국 경제·기업 주요 기사.
+  - Nikkei Asia (`nikkeiasia-d-nl@namail.nikkei.com`), SCMP (`news@e.scmp.com`): 아시아 시장·기업 소식이 필요할 때만 보탠다.
+- 쓰는 법은 국내 뉴스레터와 같다. 영어 문장을 번역해 옮기지 않는다. 사실과 숫자만 가져와 한국어로 처음부터 다시 쓴다. 본문에 매체 이름을 적지 않는다. 숫자가 서로 다르면 같은 순서로 확인한다.
+- 미국 정치·사회 기사, 생활 기사처럼 시장과 거리가 먼 내용은 쓰지 않는다.
+- 검증 기록에 `해외 뉴스레터 사용: (이름과 도착 시각)`과 그 이유(국내 뉴스레터 ○통)를 적는다.
+- 노트 파일에 `Reuters`, `Bloomberg`, `WSJ`, `Wall Street Journal`, `Nikkei`, `SCMP`가 들어 있지 않은지도 grep으로 확인한다.
