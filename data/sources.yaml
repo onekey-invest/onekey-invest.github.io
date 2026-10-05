@@ -7,11 +7,13 @@
 # source: yahoo → 지수와 해외 종목. symbol에 야후 기호
 # start: 이 날짜부터 받는다. 커버리지 개시일보다 앞이어야 한다. 비우면 3년 전 1월 1일.
 #
-# 지금은 예시 시세로 화면을 채우고 있어서 전부 꺼 둔 상태다.
-# 실제 종목으로 바꿀 때 아래 예시의 #을 지우고 고쳐 쓴다.
-# 예시 시세가 남아 있는 동안 KOSPI·KOSDAQ만 켜면 예시 종목과 거래일이 어긋나 빌드가 멈춘다.
+# 국내 종목도 지금은 yahoo로 받는다: 리포트의 주가 자료가 야후 파이낸스이고,
+# GitHub 서버에서 pykrx가 되는지 아직 확인하지 못했다. 확인되면 krx(수정주가)로 바꿔도 된다.
 
-# KOSPI:   {source: yahoo, symbol: "^KS11", start: 2025-01-01}
+KOSPI: {source: yahoo, symbol: "^KS11", start: 2024-01-01}
+orion: {source: yahoo, symbol: "271560.KS", start: 2024-01-01}
+
+# 예시
 # KOSDAQ:  {source: yahoo, symbol: "^KQ11", start: 2025-01-01}
 # SP500:   {source: yahoo, symbol: "^GSPC", start: 2025-01-01}
 # samsung: {source: krx, code: "005930", start: 2025-01-01}

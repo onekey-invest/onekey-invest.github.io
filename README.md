@@ -155,14 +155,18 @@ python tools/update_prices.py
 
 이 설정은 실제 저장소에서 아직 돌려 보지 않았다. GitHub의 서버에서 pykrx가 종가를 받을 수 있는지도 첫 실행에서 확인해야 한다.
 
-## 지금 들어 있는 것은 예시다
+## 예시 자료는 걷어냈다 (2026-10-06)
 
-회사 세 곳, 산업 두 곳, 리포트 일곱 건, 전략 두 개, 마켓노트 세 건, 시세·거래·지표 파일은 모두 화면 확인용 예시다. `data/site.yaml`의 `demo: true`가 켜져 있는 동안 모든 화면 위에 안내 띠가 나온다. 실제 자료로 바꾸면 다음을 한다.
+처음에는 화면 확인용 예시(회사 세 곳, 산업 두 곳, 리포트 일곱 건, 전략 두 개, 시세·거래·지표 파일)로 채워 두었다. 2026-10-06에 첫 실제 리포트(오리온)를 올리면서 다음을 했다.
 
-- 예시 종목·산업·리포트·전략·노트·시세·거래·지표 파일 삭제
-- `data/sources.yaml`에 실제 종목과 벤치마크를 적고 `python tools/update_prices.py` 실행
-- `tools/make_example_prices.py`, `tools/make_example_portfolio.py` 삭제
-- `demo: false`
+- 예시 종목·산업·리포트·전략·시세·거래·지표 파일 삭제, `tools/make_example_*.py` 삭제
+- `data/sources.yaml`에 실제 종목(orion)과 벤치마크(KOSPI)를 적음. 시세는 `tools/update_prices.py`가 받는다
+- `data/site.yaml`의 `demo: false` (예시 안내 띠를 끔)
+- 가상운용은 전략이 없는 상태다. 전략을 추가하면 화면이 채워진다
+
+리포트 본문에 넣는 그림은 `static/reports/리포트id/`에, PDF는 `static/reports/리포트id.pdf`에 둔다.
+
+첫 리포트를 그날 장이 끝나기 전에 올려도 빌드는 된다. 이때 "발행일 종가"는 직전 거래일 종가로 보이다가, 그날 종가가 들어오면 발행일 종가로 바뀐다.
 
 ## 아직 없는 것
 

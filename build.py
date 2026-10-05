@@ -298,6 +298,11 @@ def build_company(c, reports, prices, bench_map, asof):
             markers.append((r["date"], f"TP {r['target']:,.0f}"))
     window = series.between(first["date"], asof)
     bwin = bench.between(first["date"], asof)
+    if not len(window):
+        # 첫 리포트를 그날 장이 끝나기 전(또는 휴장일)에 올리면 시세가 아직 발행일에 닿지 않는다.
+        # 직전 종가 한 점에서 시작하고, 그날 종가가 들어오면 발행일부터 다시 그려진다.
+        window = series.between(series.at(asof)[0], asof)
+        bwin = bench.between(bench.at(asof)[0], asof)
     chart = company_chart(
         list(zip(window.dates, window.closes)),
         list(zip(bwin.dates, bwin.closes)),
@@ -306,12 +311,15 @@ def build_company(c, reports, prices, bench_map, asof):
     )
 
     marker_days = [(window.at(d)[0], t) for d, t in markers if window.at(d)]
+    # 목표주가 선: 날짜를 시세가 있는 구간 안으로 맞추고, 같은 날짜가 겹치면 나중 값만 둔다(차트는 날짜가 겹치면 그리지 못한다)
+    tp_by_day = {min(max(d, window.dates[0]), asof): t for d, t in targets}
+    tp_by_day[asof] = targets[-1][1]
+    tp_points = sorted(tp_by_day.items())
     b0 = bwin.closes[0] if len(bwin) else None
     chart_data = payload("price", [
         {"name": f"{c['benchmark']}(환산)", "type": "line", "color": GREY,
          "points": [(d, v / b0 * window.closes[0]) for d, v in zip(bwin.dates, bwin.closes)] if b0 else []},
-        {"name": "목표주가", "type": "step", "color": ACCENT, "dash": True,
-         "points": [(max(d, window.dates[0]), t) for d, t in targets] + [(asof, targets[-1][1])]},
+        {"name": "목표주가", "type": "step", "color": ACCENT, "dash": True, "points": tp_points},
         {"name": c["name"], "type": "area", "color": INK, "points": list(zip(window.dates, window.closes))},
     ], marker_days)
     # 개시 기준가에서 목표주가까지 가는 길에서 지금 어디쯤인지 (0~100)
@@ -553,7 +561,7 @@ def main():
 
     summary = summarize(companies)
     # 홈의 성적 막대: 가장 큰 절댓값을 막대 길이 50%로 삼는다
-    top = max([abs(v) for c in companies for v in (c["ret"], c["bench_ret"]) if v is not None] or [1])
+    top = max([abs(v) for c in companies for v in (c["ret"], c["bench_ret"]) if v is not None] or [1]) or 1   # 수익률이 모두 0이면 1로
     for c in companies:
         r, b = c["ret"] or 0, c["bench_ret"] or 0
         c["bar"] = {

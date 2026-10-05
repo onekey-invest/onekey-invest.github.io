@@ -12,7 +12,7 @@ intro: >-
   리포트를 낸 뒤의 주가를 추적해 판단이 맞았는지 틀렸는지를 그대로 공개합니다.
 
 base_url: ""                       # GitHub Pages의 프로젝트 사이트라면 "/저장소이름"
-demo: true                         # true면 모든 화면 위에 예시 데이터 안내 띠를 띄운다
+demo: false                        # true면 모든 화면 위에 예시 데이터 안내 띠를 띄운다
 
 benchmarks:                        # 벤치마크 이름 → 시세 파일(data/prices/이름.csv)
   KOSPI: KOSPI
