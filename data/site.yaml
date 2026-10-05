@@ -1,0 +1,19 @@
+# 사이트 전체 설정. 이름과 소개는 직접 채운다.
+name: "One Key"            # 머리 띠에 나오는 사이트 이름
+tagline: "기업·산업 분석과 판단 기록"
+author: "One Key"                   # 바닥글과 About에 나오는 작성자
+email: ""                          # 비워 두면 표시하지 않는다
+links:                             # 머리 띠 오른쪽에 나오는 외부 링크
+  # - {label: LinkedIn, url: "https://www.linkedin.com/in/..."}
+  # - {label: GitHub, url: "https://github.com/..."}
+headline: "직접 쓴 리포트와 그 뒤의 주가를 함께 기록합니다."   # 홈 맨 위의 큰 문장
+intro: >-
+  증권사 리서치와 자산운용 직무를 준비하며 직접 쓴 기업·산업 분석을 모아 둔 곳입니다.
+  리포트를 낸 뒤의 주가를 추적해 판단이 맞았는지 틀렸는지를 그대로 공개합니다.
+
+base_url: ""                       # GitHub Pages의 프로젝트 사이트라면 "/저장소이름"
+demo: true                         # true면 모든 화면 위에 예시 데이터 안내 띠를 띄운다
+
+benchmarks:                        # 벤치마크 이름 → 시세 파일(data/prices/이름.csv)
+  KOSPI: KOSPI
+  KOSDAQ: KOSDAQ

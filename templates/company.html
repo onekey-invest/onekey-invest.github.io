@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% import "_m.html" as m %}
+{% block main %}
+
+<div class="stock">
+  <div>
+    <h1>{{ c.name }}</h1><span class="code">{{ c.ticker }} · {{ c.market }}</span>
+    <div class="meta">
+      {% for i in c.industry_objs %}<a href="{{ url(i.path) }}">{{ i.name }}</a>{% if not loop.last %}, {% endif %}{% endfor %}
+      {% for t in c.tags %}<i>|</i>{{ t }}{% endfor %}
+      <i>|</i>커버리지 개시 {{ c.started|ymd }}<i>|</i>최근 업데이트 {{ c.updated|ymd }}
+    </div>
+    {% if c.progress is not none %}
+    <div class="track">
+      <div class="bar"><i style="width:{{ '%.1f'|format(c.progress * 100) }}%"></i><b style="left:{{ '%.1f'|format(c.progress * 100) }}%"></b></div>
+      <div class="ends"><span>개시 기준가 <b>{{ c.base|num }}</b></span><span>전일 종가 <b>{{ c.last|num }}</b></span><span>목표주가 <b>{{ c.target|num }}</b></span></div>
+    </div>
+    {% endif %}
+  </div>
+  <div class="strip">
+    <div><span>투자의견</span><b>{{ m.rating(c.rating) }}</b></div>
+    <div><span>목표주가 (12M)</span><b>{{ c.target|num }}</b></div>
+    <div><span>전일 종가</span><b>{{ c.last|num }}</b></div>
+    <div><span>의견 이후</span><b class="{{ c.ret|sign }}">{{ c.ret|pct }}</b></div>
+  </div>
+</div>
+
+<div class="two">
+  <div>
+    {{ m.h('커버리지 현황', (asof|ymd) ~ ' 종가 기준', first=true) }}
+    <table class="kv">
+      <tr><th>상승여력</th><td>{{ c.upside|pct }}</td></tr>
+      <tr><th>의견 이후 수익률</th><td>{{ m.ret(c.ret) }} <small>기준가 {{ c.base|num }}원</small></td></tr>
+      <tr><th>{{ c.benchmark }} 동기간 수익률</th><td>{{ m.ret(c.bench_ret) }}</td></tr>
+      <tr><th>초과수익</th><td>{{ m.ret(c.excess, 'pp') }}</td></tr>
+      <tr><th>수익률 1M / 3M / 6M</th><td>{{ m.ret(c.r1m) }} / {{ m.ret(c.r3m) }} / {{ m.ret(c.r6m) }}</td></tr>
+      <tr><th>의견·목표주가 변경</th><td>
+        {% if c.change %}
+          {% if c.change.prev.rating != c.change.cur.rating %}{{ c.change.prev.rating }} → {{ c.change.cur.rating }}, {% endif %}
+          {{ c.change.prev.target|num }} → {{ c.change.cur.target|num }} <small>{{ c.change.cur.date|ymd }}</small>
+        {% else %}없음{% endif %}
+      </td></tr>
+      <tr><th>리포트</th><td>{{ c.reports|length }}건 <small>최초 {{ c.n_first }}, 업데이트 {{ c.n_update }}</small></td></tr>
+      <tr><th>가상운용 편입</th><td>
+        {% for h in c.held_by %}<a href="{{ url(h.path) }}">{{ h.name }}</a> <small>비중 {{ h.weight|share }}</small>{% if not loop.last %}, {% endif %}
+        {% else %}없음{% endfor %}
+      </td></tr>
+    </table>
+  </div>
+  <div>
+    {{ m.h('주가와 의견 변경', '일별 종가', first=true) }}
+    {{ m.chart(c.chart, c.chart_data) }}
+    <div class="cap">{{ c.benchmark }}는 커버리지 개시일의 주가에 맞춰 환산. 점은 의견이나 목표주가를 바꾼 날.</div>
+  </div>
+</div>
+
+{{ m.h('투자포인트', (c.updated|ymd) ~ ' 리포트 기준') }}
+<ul class="dash">
+  {% for p in c.points %}<li>{{ p }}</li>{% endfor %}
+  {% if c.recheck %}<li><b>의견 재검토 조건</b>: {{ c.recheck }}</li>{% endif %}
+</ul>
+
+{% if c.est %}
+{{ m.h('실적 추정', '단위: 억원, 원, 배, %') }}
+<div class="scroll">
+<table class="grid">
+  <thead><tr><th class="l" style="width:22%">구분</th>{% for y in c.est.years %}<th{% if c.est.is_e[loop.index0] %} class="e"{% endif %}>{{ y }}</th>{% endfor %}</tr></thead>
+  <tbody>
+  {% for label, vals in c.est.rows %}
+    <tr><td class="lab">{{ label }}</td>{% for v in vals %}<td{% if c.est.is_e[loop.index0] %} class="e"{% endif %}>{{ v }}</td>{% endfor %}</tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+<div class="note">A는 실적, E는 작성자 추정. PER·PBR은 기준일 종가({{ c.last|num }}원) 기준</div>
+{% endif %}
+
+{{ m.h('리포트', '이후 수익률은 발행일 종가 대비') }}
+{{ m.report_table(c.reports, subject=false) }}
+
+<details class="fold"><summary>밸류에이션 상세</summary><div class="prose">{% if c.valuation %}{{ c.valuation }}{% else %}<p>아직 작성하지 않았습니다.</p>{% endif %}</div></details>
+<details class="fold"><summary>리스크 및 회고</summary><div class="prose">{% if c.risks %}{{ c.risks }}{% else %}<p>아직 작성하지 않았습니다.</p>{% endif %}</div></details>
+<details class="fold"><summary>관련 마켓노트 ({{ c.notes|length }})</summary><div class="prose">{{ m.note_list(c.notes) }}</div></details>
+
+{% endblock %}

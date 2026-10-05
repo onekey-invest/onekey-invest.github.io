@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% import "_m.html" as m %}
+{% block main %}
+
+{{ m.h('산업', (asof|ymd) ~ ' 종가 기준', first=true) }}
+<div class="scroll">
+<table class="grid" data-sortable>
+  <thead><tr>
+    <th class="l" data-type="text">산업</th><th class="c" data-type="text">산업 의견</th><th class="c" data-type="text">사이클 위치</th>
+    <th data-type="num">커버 기업</th><th data-type="num">평균 수익률</th><th data-type="num">평균 초과수익</th>
+    <th class="c" data-type="text">최근 업데이트</th>
+  </tr></thead>
+  <tbody>
+  {% for i in industries %}
+    <tr>
+      <td class="l"><a href="{{ url(i.path) }}"><b>{{ i.name }}</b></a></td>
+      <td class="c">{{ i.view }}</td>
+      <td class="c">{{ i.cycle }}</td>
+      <td data-v="{{ i.members|length }}">{{ i.members|length }}</td>
+      <td data-v="{{ i.avg_ret|raw }}">{{ m.ret(i.avg_ret) }}</td>
+      <td data-v="{{ i.avg_excess|raw }}">{{ m.ret(i.avg_excess, 'pp') }}</td>
+      <td class="c">{{ i.updated|ymd }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+<div class="note">평균은 소속 기업의 의견 이후 수익률을 단순 평균한 값</div>
+
+{% endblock %}

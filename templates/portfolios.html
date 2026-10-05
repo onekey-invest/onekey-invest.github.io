@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% import "_m.html" as m %}
+{% block main %}
+
+<div class="two even">
+  <div>
+    {{ m.h('운용 원칙', '', first=true) }}
+    <ul class="dash">
+      <li>전략의 규칙과 근거는 운용을 시작하기 전에 공개</li>
+      <li>거래비용과 세금을 반영. 체결 가정은 전략마다 명시</li>
+      <li>중단한 전략도 지우지 않고 회고와 함께 유지</li>
+      <li>실제 자금이 들어가지 않은 모의 운용 기록</li>
+    </ul>
+  </div>
+  <div>
+    {{ m.h(label ~ ' 현황', (asof|ymd) ~ ' 종가 기준', first=true) }}
+    <table class="kv">
+      <tr><th>운용 중인 전략</th><td>{{ strategies|selectattr('active')|list|length }}개</td></tr>
+      <tr><th>중단한 전략</th><td>{{ strategies|rejectattr('active')|list|length }}개</td></tr>
+      <tr><th>성과 계산</th><td>일별 종가 기준 <small>(<a href="{{ url('methodology/') }}">방법론</a>)</small></td></tr>
+    </table>
+  </div>
+</div>
+
+{% if strategies %}
+<div class="two even">
+  <div>
+    {{ m.h('전략별 누적수익률', '각 전략의 운용 개시일 = 0') }}
+    {{ m.chart(chart, chart_data, small=true) }}
+  </div>
+  <div>
+    {{ m.h('읽는 법', '') }}
+    <ul class="dash">
+      <li>수익률은 초기자금 대비 평가금액의 변화. 평가금액 = 현금 + 보유 수량 × 종가</li>
+      <li>초과수익은 같은 기간 벤치마크 수익률과의 차이</li>
+      <li>MDD는 운용 기간 중 고점 대비 가장 크게 내려간 폭</li>
+      <li>전략마다 개시일이 달라 전략끼리 수익률을 평균하지 않음</li>
+      <li>중단한 전략의 숫자는 중단일까지의 최종 성과</li>
+    </ul>
+  </div>
+</div>
+
+{{ m.h('전략', strategies|length ~ '개') }}
+{{ m.strategy_table(strategies) }}
+{% else %}
+{{ m.h('전략', '') }}
+<p class="intro">{{ label }} 전략은 아직 없습니다. 전략을 추가하면 이 자리에 누적수익률 차트와 전략 표가 나옵니다.</p>
+{% endif %}
+
+{% endblock %}

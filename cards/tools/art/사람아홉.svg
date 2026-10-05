@@ -1,0 +1,22 @@
+<!-- 사진이 없을 때 표지 .art 안에 붙여 넣는 그림: 아홉 가운데 셋만 불이 켜진 사람. 비율을 말할 때 쓴다 -->
+<svg viewBox="0 0 1080 900" xmlns="http://www.w3.org/2000/svg" font-family="Pretendard Variable, Pretendard, sans-serif">
+  <defs>
+    <filter id="glow2" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="14" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <g style="fill:var(--teal-bright)" filter="url(#glow2)">
+    <circle cx="92" cy="400" r="40"/><path d="M40,620 V520 a52,52 0 0 1 104,0 V620 Z"/>
+    <circle cx="204" cy="400" r="40"/><path d="M152,620 V520 a52,52 0 0 1 104,0 V620 Z"/>
+    <circle cx="316" cy="400" r="40"/><path d="M264,620 V520 a52,52 0 0 1 104,0 V620 Z"/>
+  </g>
+  <g fill="none" stroke="#ffffff" stroke-opacity=".26" stroke-width="5">
+    <circle cx="428" cy="400" r="38"/><path d="M378,618 V520 a50,50 0 0 1 100,0 V618 Z"/>
+    <circle cx="540" cy="400" r="38"/><path d="M490,618 V520 a50,50 0 0 1 100,0 V618 Z"/>
+    <circle cx="652" cy="400" r="38"/><path d="M602,618 V520 a50,50 0 0 1 100,0 V618 Z"/>
+    <circle cx="764" cy="400" r="38"/><path d="M714,618 V520 a50,50 0 0 1 100,0 V618 Z"/>
+    <circle cx="876" cy="400" r="38"/><path d="M826,618 V520 a50,50 0 0 1 100,0 V618 Z"/>
+    <circle cx="988" cy="400" r="38"/><path d="M938,618 V520 a50,50 0 0 1 100,0 V618 Z"/>
+  </g>
+  <path d="M40,300 V276 H1040 V300" fill="none" stroke="#ffffff" stroke-opacity=".45" stroke-width="4"/>
+  <text x="540" y="246" text-anchor="middle" font-size="46" font-weight="700" fill="#ffffff" fill-opacity=".7" letter-spacing="-1">예상 8만 9천 명</text>
+  <path d="M40,668 V690 H368 V668" fill="none" style="stroke:var(--teal-bright)" stroke-width="5"/>
+</svg>

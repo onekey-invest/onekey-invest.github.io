@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% import "_m.html" as m %}
+{% block main %}
+
+<div class="stock">
+  <div>
+    <h1>{{ s.name }}</h1><span class="code">{{ s.subtitle }}</span>
+    <div class="meta">
+      {{ m.status(s) }}
+      {% for key, label, path in categories %}{% if key == s.category %}<a href="{{ url(path) }}">{{ label }}</a>{% endif %}{% endfor %}
+      <i>|</i>벤치마크 {{ s.benchmark }}<i>|</i>규칙 공개 {{ s.published|ymd }}<i>|</i>운용 개시 {{ s.started|ymd }}
+      {% if s.stopped %}<i>|</i>중단 {{ s.stopped|ymd }}{% endif %}
+    </div>
+  </div>
+  <div class="strip">
+    <div><span>평가금액</span><b>{{ s.value|num }}</b></div>
+    <div><span>수익률</span><b class="{{ s.ret|sign }}">{{ s.ret|pct }}</b></div>
+    <div><span>초과수익</span><b class="{{ s.excess|sign }}">{{ s.excess|pp }}</b></div>
+    <div><span>MDD</span><b>{{ s.mdd|pct }}</b></div>
+  </div>
+</div>
+
+<div class="two">
+  <div>
+    {{ m.h('운용 현황', (s.end|ymd) ~ ' 종가 기준', first=true) }}
+    <table class="kv">
+      <tr><th>초기자금 / 평가금액</th><td>{{ s.initial|num }}원 / {{ s.value|num }}원</td></tr>
+      <tr><th>수익률</th><td>{{ m.ret(s.ret) }}</td></tr>
+      <tr><th>{{ s.benchmark }} 동기간 수익률</th><td>{{ m.ret(s.bench_ret) }}</td></tr>
+      <tr><th>초과수익</th><td>{{ m.ret(s.excess, 'pp') }}</td></tr>
+      <tr><th>MDD</th><td>{{ s.mdd|pct }}</td></tr>
+      <tr><th>샤프</th><td>{{ s.sharpe|dec }} <small>(일별 수익률, 무위험 0%)</small></td></tr>
+      <tr><th>거래 횟수 / 누적 비용</th><td>{{ s.n_trades }}회 / {{ s.fees|num }}원</td></tr>
+      <tr><th>현금 비중</th><td>{{ s.cash_weight|share }}</td></tr>
+    </table>
+  </div>
+  <div>
+    {{ m.h('누적수익률', '운용 개시일 = 0', first=true) }}
+    {{ m.chart(s.chart, s.chart_data) }}
+    {% if s.has_backtest %}<div class="cap">점선은 운용 개시 전의 백테스트, 실선은 규칙을 공개한 뒤의 운용 기록.</div>{% endif %}
+  </div>
+</div>
+
+{{ m.h('운용 규칙', (s.published|ymd) ~ ' 공개') }}
+<ul class="dash">
+  {% for r in s.rules %}<li>{{ r }}</li>{% endfor %}
+  <li><b>체결·비용 가정</b>: {{ s.fill }}. 수수료 {{ '%.3f'|format(s.commission * 100) }}%, 매도 세금 {{ '%.2f'|format(s.sell_tax * 100) }}%</li>
+</ul>
+
+{{ m.h('보유 종목', (s.end|ymd) ~ ' 종가 기준') }}
+<div class="scroll">
+<table class="grid">
+  <thead><tr><th class="l">종목</th><th>수량</th><th>평균 매입가</th><th>종가</th><th>평가금액</th><th>비중</th><th>평가손익률</th></tr></thead>
+  <tbody>
+  {% for h in s.holdings %}
+    <tr>
+      <td class="l">{% if h.path %}<a href="{{ url(h.path) }}"><b>{{ h.name }}</b></a>{% else %}<b>{{ h.name }}</b>{% endif %}</td>
+      <td>{{ h.qty|num }}</td><td>{{ h.avg|num }}</td><td>{{ h.close|num }}</td><td>{{ h.value|num }}</td>
+      <td>{{ h.weight|share }}</td><td>{{ m.ret(h.pnl) }}</td>
+    </tr>
+  {% endfor %}
+    <tr><td class="l">현금</td><td>–</td><td>–</td><td>–</td><td>{{ s.cash|num }}</td><td>{{ s.cash_weight|share }}</td><td>–</td></tr>
+  </tbody>
+</table>
+</div>
+
+{{ m.h('매매 기록', '최근 순 · ' ~ s.n_trades ~ '건') }}
+<div class="scroll">
+<table class="grid">
+  <thead><tr><th class="c">날짜</th><th class="l">종목</th><th class="c">구분</th><th>수량</th><th>가격</th><th>금액</th><th>비용</th><th class="l">메모</th></tr></thead>
+  <tbody>
+  {% for t in s.trades %}
+    <tr>
+      <td class="c">{{ t.date|ymd }}</td>
+      <td class="l">{% if t.path %}<a href="{{ url(t.path) }}">{{ t.name }}</a>{% else %}{{ t.name }}{% endif %}</td>
+      <td class="c {{ 'up' if t.side == '매수' else 'down' }}">{{ t.side }}</td>
+      <td>{{ t.qty|num }}</td><td>{{ t.price|num }}</td><td>{{ t.amount|num }}</td><td>{{ t.fee|num }}</td>
+      <td class="l">{{ t.note }}</td>
+    </tr>
+  {% else %}
+    <tr><td class="c" colspan="8">아직 매매 기록이 없습니다.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+
+<details class="fold" open><summary>전략 근거</summary><div class="prose">{{ s.rationale }}</div></details>
+<details class="fold"><summary>백테스트</summary><div class="prose">{{ s.backtest }}{% if s.code_url %}<p>코드: <a href="{{ s.code_url }}" rel="noopener">{{ s.code_url }}</a></p>{% endif %}</div></details>
+<details class="fold"{% if not s.active %} open{% endif %}><summary>회고 및 변경 이력</summary><div class="prose">{{ s.log }}</div></details>
+
+{% endblock %}

@@ -1,0 +1,398 @@
+/* 카드뉴스 공통 양식. 한 장은 1080 x 1350 (4:5).
+   색은 바탕·글씨·강조 한 색으로 좁힌다. 사이트(One Key)와 같은 남색·청록을 쓴다. */
+:root{
+  --ink:#1f2a44; --ink-deep:#0f1a30; --ink-soft:#1b2945;
+  --teal:#0f766e; --teal-bright:#2dd4bf;
+  --paper:#f4f5f7; --card:#ffffff; --line:#d5dae3; --mute:#687389; --mute-dark:#93a0ba;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#9aa0aa}
+body{
+  font-family:"Pretendard Variable",Pretendard,"Noto Sans KR","Malgun Gothic",sans-serif;
+  color:var(--ink); word-break:keep-all; line-break:strict;
+  -webkit-font-smoothing:antialiased; font-feature-settings:"tnum" 1;
+}
+body.preview{padding:40px 0;display:flex;flex-direction:column;align-items:center;gap:40px}
+
+.slide{
+  width:1080px;height:1350px;position:relative;overflow:hidden;flex:none;
+  background:var(--paper);padding:176px 80px 150px;
+  display:flex;flex-direction:column;
+}
+.slide.dark{background:var(--ink-deep);color:#fff}
+
+/* 모든 장에 붙는 것: 꼬리표, 이름, 쪽 번호 */
+.top{
+  position:absolute;top:66px;left:80px;right:80px;
+  display:flex;justify-content:space-between;align-items:center;
+  font-size:27px;font-weight:600;color:var(--mute);letter-spacing:-.01em;
+}
+.dark .top{color:var(--mute-dark)}
+.brand{display:flex;align-items:center;gap:12px;font-size:28px;font-weight:800;color:var(--ink);letter-spacing:-.02em}
+.dark .brand{color:#fff}
+.mark{position:relative;width:30px;height:34px;flex:none}
+.mark::before,.mark::after{content:"";position:absolute;border-radius:5px}
+.mark::before{left:0;top:0;width:17px;height:26px;background:var(--teal)}
+.mark::after{right:0;bottom:0;width:17px;height:24px;background:var(--ink)}
+.dark .mark::before{background:var(--teal-bright)}
+.dark .mark::after{background:#fff}
+.page{
+  position:absolute;bottom:64px;right:80px;
+  font-size:26px;font-weight:600;color:var(--mute);letter-spacing:.02em;
+}
+.dark .page{color:var(--mute-dark)}
+
+/* 제목 */
+h1{font-size:86px;line-height:1.17;font-weight:800;letter-spacing:-.04em}
+h1 em{font-style:normal;color:var(--teal)}
+.dark h1 em{color:var(--teal-bright)}
+.sub{margin-top:26px;font-size:36px;line-height:1.45;font-weight:500;color:var(--mute);letter-spacing:-.02em}
+.dark .sub{color:var(--mute-dark)}
+.label{font-size:34px;font-weight:700;color:var(--teal);letter-spacing:-.02em}
+.dark .label{color:var(--teal-bright)}
+
+.body{margin-top:50px;flex:1;display:flex;flex-direction:column;justify-content:center;gap:32px;padding-bottom:40px}
+.push{margin-top:auto}
+
+/* 맺는 박스: 그 장의 결론 한두 줄 */
+.take{
+  background:var(--ink);color:#fff;border-radius:26px;
+  padding:40px 46px;font-size:42px;line-height:1.4;font-weight:700;letter-spacing:-.03em;
+}
+.take b{color:var(--teal-bright);font-weight:700}
+.dark .take{background:var(--ink-soft)}
+
+/* 비교 카드 */
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.box{background:var(--card);border-radius:26px;padding:48px 42px 54px;border:3px solid transparent}
+.box.on{border-color:var(--teal)}
+.box .who{font-size:32px;font-weight:700;color:var(--mute);letter-spacing:-.02em}
+.box.on .who{color:var(--teal)}
+.box ul{list-style:none;margin-top:34px;display:flex;flex-direction:column;gap:30px}
+.box li{font-size:46px;line-height:1.25;font-weight:700;letter-spacing:-.035em;padding-left:36px;position:relative}
+.box li::before{content:"";position:absolute;left:0;top:.42em;width:15px;height:15px;border-radius:50%;background:var(--line)}
+.box.on li::before{background:var(--teal)}
+.box li.off{color:#a6adbb;font-weight:600}
+.box li.off::before{background:transparent;border:3px solid #c3c9d4}
+.box li small{display:block;font-size:28px;font-weight:500;color:var(--mute);margin-top:6px;letter-spacing:-.02em}
+
+/* 큰 숫자 */
+.num{font-size:236px;line-height:1;font-weight:800;letter-spacing:-.055em;color:var(--teal);margin-top:30px}
+.dark .num{color:var(--teal-bright)}
+.num span{font-size:104px;letter-spacing:-.04em;margin-left:10px}
+.num i{font-style:normal;font-size:70px;letter-spacing:-.03em;margin-right:14px;color:inherit;opacity:.85}
+.lead{font-size:52px;line-height:1.32;font-weight:700;letter-spacing:-.035em;margin-top:44px}
+.note{font-size:36px;line-height:1.5;font-weight:500;color:var(--mute);letter-spacing:-.02em;margin-top:26px}
+.dark .note{color:var(--mute-dark)}
+.rule{width:96px;height:6px;border-radius:3px;background:var(--teal);margin-top:54px}
+.dark .rule{background:var(--teal-bright)}
+
+/* 단계 표 */
+.rows{display:flex;flex-direction:column;gap:22px}
+.row{background:var(--card);border-radius:26px;padding:38px 42px 42px}
+.row .head{display:flex;justify-content:space-between;align-items:center;gap:20px}
+.row .name{font-size:46px;font-weight:800;letter-spacing:-.035em}
+.row .desc{font-size:32px;font-weight:500;color:var(--mute);margin-top:10px;letter-spacing:-.02em}
+.badge{flex:none;font-size:30px;font-weight:700;padding:10px 22px;border-radius:999px;border:2px solid var(--line);color:var(--mute);letter-spacing:-.02em}
+.badge.on{background:var(--teal);border-color:var(--teal);color:#fff}
+.meter{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:24px}
+.meter i{height:16px;border-radius:8px;background:#e3e7ee}
+.meter i.f{background:var(--teal)}
+.scale{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;font-size:28px;font-weight:600;color:var(--mute);letter-spacing:-.02em;padding:0 42px;margin-top:-8px}
+
+/* 흐름 */
+.flow{display:flex;align-items:stretch;gap:0}
+.node{flex:1;background:var(--card);border-radius:24px;padding:56px 18px;text-align:center;border:2px solid var(--line);display:flex;flex-direction:column;justify-content:center;gap:10px}
+.node b{font-size:44px;font-weight:800;letter-spacing:-.035em;line-height:1.25}
+.node small{font-size:30px;font-weight:500;color:var(--mute);letter-spacing:-.02em;line-height:1.35}
+.node.end{background:var(--teal);border-color:var(--teal);color:#fff}
+.node.end small{color:#c9f3ec}
+.arrow{flex:none;width:60px;display:flex;align-items:center;justify-content:center;font-size:40px;font-weight:700;color:var(--mute)}
+.aside{font-size:34px;font-weight:500;color:var(--mute);letter-spacing:-.02em;line-height:1.5}
+
+/* 묶음 두 개 */
+.chips{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.chip{background:var(--card);border-radius:26px;padding:54px 42px 60px;font-size:56px;font-weight:800;line-height:1.3;letter-spacing:-.035em}
+.chip small{display:block;font-size:30px;font-weight:700;color:var(--teal);margin-bottom:20px;letter-spacing:-.02em}
+
+/* 맺는 장의 목록 */
+.checks{display:flex;flex-direction:column;gap:34px;margin-top:90px}
+.check{display:flex;align-items:center;gap:30px;font-size:62px;font-weight:700;letter-spacing:-.035em}
+.check i{flex:none;width:84px;height:84px;border-radius:50%;border:3px solid var(--teal-bright);color:var(--teal-bright);display:flex;align-items:center;justify-content:center;font-style:normal;font-size:36px;font-weight:800}
+.foot{margin-top:auto;font-size:30px;font-weight:500;color:var(--mute-dark);line-height:1.6;letter-spacing:-.02em}
+.foot b{color:#fff;font-weight:700}
+
+/* 표지 */
+.cover{justify-content:flex-end;padding-bottom:170px}
+.cover h1{font-size:132px;line-height:1.1;letter-spacing:-.05em;margin-top:26px}
+.cover .sub{font-size:40px;margin-top:38px}
+.duel{display:flex;align-items:flex-end;gap:84px;margin-bottom:auto;margin-top:8px}
+.duel span{display:block;font-size:36px;font-weight:700;color:var(--mute-dark);letter-spacing:-.02em;margin-bottom:6px}
+.duel b{display:block;font-size:400px;line-height:.86;font-weight:800;letter-spacing:-.05em;color:var(--teal-bright)}
+.duel b.ghost{color:transparent;-webkit-text-stroke:5px #53628a}
+
+/* ---------- 2차: 그림 표지와 새 꼴 (2026-10-04, 수정 기록 규칙 5·6) ---------- */
+
+/* 그림 표지: 화면 가득 그림, 아래에 센 제목 */
+.slide.pic{padding:0;justify-content:flex-end;background:#070c18;color:#fff}
+.pic .art{position:absolute;inset:0;overflow:hidden;
+  background:
+    radial-gradient(900px 620px at 78% 18%, rgba(45,212,191,.28), transparent 70%),
+    radial-gradient(700px 520px at 12% 40%, rgba(99,102,241,.22), transparent 70%),
+    #070c18}
+.pic .art img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.pic .shade{position:absolute;inset:0;
+  background:linear-gradient(180deg, rgba(7,12,24,.72) 0%, rgba(7,12,24,0) 16%, rgba(7,12,24,0) 44%, rgba(7,12,24,.86) 64%, #070c18 82%)}
+.pic .top{color:#c6cfdf;z-index:2}
+.pic .top .brand{color:#fff}
+.pic .top .mark::before{background:var(--teal-bright)}
+.pic .top .mark::after{background:#fff}
+.pic .copy{position:relative;z-index:2;padding:0 80px 150px}
+.pic h1{font-size:132px;line-height:1.1;letter-spacing:-.05em;margin-top:30px}
+.pic h1 em{color:var(--teal-bright)}
+.pic .sub{font-size:42px;color:#c6cfdf;margin-top:34px;font-weight:600}
+.pic .page{color:#93a0ba;z-index:2}
+.kicker{display:inline-block;background:var(--teal-bright);color:#06121f;font-size:36px;font-weight:800;letter-spacing:-.03em;padding:12px 24px;border-radius:12px}
+
+/* 코드로 그린 웨이퍼 (사진을 넣기 전까지 쓰는 그림) */
+.wafer{position:absolute;left:50%;top:-40px;width:1120px;height:1120px;margin-left:-520px;border-radius:50%;
+  background:
+    repeating-linear-gradient(0deg, rgba(7,12,24,.92) 0 5px, transparent 5px 62px),
+    repeating-linear-gradient(90deg, rgba(7,12,24,.92) 0 5px, transparent 5px 62px),
+    conic-gradient(from 200deg, #0f766e 0%, #2dd4bf 10%, #a5f3fc 17%, #6366f1 28%, #1f2a44 40%, #0f766e 52%, #2dd4bf 60%, #fde68a 68%, #f59e0b 73%, #7c3aed 84%, #0f766e 100%);
+  transform:perspective(1700px) rotateX(58deg) rotateZ(-26deg);
+  box-shadow:0 0 0 10px rgba(255,255,255,.10), 0 0 160px rgba(45,212,191,.55), inset 0 0 160px rgba(7,12,24,.55)}
+.wafer::after{content:"";position:absolute;inset:0;border-radius:50%;
+  background:linear-gradient(115deg, rgba(255,255,255,.55) 0%, rgba(255,255,255,0) 28%, rgba(255,255,255,0) 62%, rgba(255,255,255,.28) 100%);mix-blend-mode:overlay}
+
+/* 비율 막대 */
+.ratio{display:flex;height:128px;border-radius:24px;overflow:hidden;font-size:42px;font-weight:800;letter-spacing:-.03em}
+.ratio .a{background:var(--teal);color:#fff;display:flex;align-items:center;padding-left:36px}
+.ratio .b{background:#dde2ea;color:var(--mute);display:flex;align-items:center;justify-content:center;font-size:32px}
+
+/* 숫자 둘 */
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.stat{background:var(--card);border-radius:26px;padding:42px 40px 46px}
+.stat small{display:block;font-size:30px;font-weight:700;color:var(--mute);letter-spacing:-.02em}
+.stat b{display:block;font-size:88px;font-weight:800;letter-spacing:-.05em;line-height:1.1;margin-top:14px;color:var(--teal);white-space:nowrap}
+.stat b span{font-size:44px;margin-left:4px;letter-spacing:-.03em}
+.stat p{font-size:30px;font-weight:500;color:var(--mute);margin-top:14px;line-height:1.4;letter-spacing:-.02em}
+
+/* 뒤집는 장 */
+.turn h1{font-size:136px;line-height:1.1;letter-spacing:-.05em;margin-top:26px}
+.turn .label{font-size:46px}
+.turn .lead{font-size:46px;font-weight:600;color:#c6cfdf}
+.next{position:absolute;bottom:64px;left:80px;font-size:30px;font-weight:700;color:var(--teal-bright);letter-spacing:-.02em}
+
+/* 번호 붙은 항목 (밝은 장) */
+.points{display:flex;flex-direction:column;gap:22px}
+.point{background:var(--card);border-radius:26px;padding:40px 40px 42px;display:flex;gap:28px;align-items:flex-start}
+.point i{flex:none;width:64px;height:64px;border-radius:50%;background:var(--teal);color:#fff;font-style:normal;font-weight:800;font-size:32px;display:flex;align-items:center;justify-content:center;margin-top:2px}
+.point b{display:block;font-size:44px;font-weight:800;letter-spacing:-.04em;line-height:1.28}
+.point b u{text-decoration:none;color:var(--teal)}
+.point span{display:block;font-size:32px;font-weight:500;color:var(--mute);margin-top:10px;line-height:1.42;letter-spacing:-.02em}
+
+/* 세로로 쌓는 비교 */
+.pair.stack{grid-template-columns:1fr;gap:22px}
+.pair.stack .box{padding:32px 42px 36px}
+.pair.stack ul{margin-top:18px;gap:12px}
+.pair.stack li{font-size:40px}
+
+/* 종목 줄 (어두운 장). 오른 것은 빨강: 국내 관례 */
+.ticks{display:flex;flex-direction:column;margin-top:44px}
+.tick{display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #24324f;padding:30px 2px 32px}
+.tick:first-child{border-top:2px solid #24324f}
+.tick .n{font-size:50px;font-weight:700;letter-spacing:-.04em}
+.tick .n small{display:block;font-size:30px;font-weight:500;color:var(--mute-dark);margin-top:8px;letter-spacing:-.02em}
+.tick .v{font-size:84px;font-weight:800;letter-spacing:-.05em;color:#ff6b6b;white-space:nowrap}
+
+/* 맺는 장: 항목이 셋일 때 */
+.checks.three{gap:30px;margin-top:70px}
+.checks.three .check{font-size:52px;align-items:flex-start}
+.checks.three .check i{width:72px;height:72px;font-size:32px;margin-top:2px}
+.check small{display:block;font-size:31px;font-weight:500;color:var(--mute-dark);margin-top:8px;letter-spacing:-.02em}
+
+/* ---------- 3차: 역할 꼬리표와 그림 종류 넓히기 (2026-10-05, 06_스토리텔링_분석) ---------- */
+:root{--up:#e5484d;--down:#2563eb;--up-d:#ff6b6b;--down-d:#7cb0ff}
+
+/* 역할 꼬리표: 그 장이 이야기에서 맡은 일 */
+.role{display:inline-block;background:var(--teal);color:#fff;font-size:25px;font-weight:800;padding:7px 16px 8px;border-radius:9px;margin-right:16px;letter-spacing:-.01em;vertical-align:2px}
+.dark .role,.pic .role{background:var(--teal-bright);color:#06121f}
+/* 오른 것은 빨강, 내린 것은 파랑: 국내 관례 */
+.up{color:var(--up)}.down{color:var(--down)}
+.dark .up{color:var(--up-d)}.dark .down{color:var(--down-d)}
+h1.m{font-size:76px}
+.take.s{font-size:37px;padding:32px 40px}
+
+/* 표 */
+.tbl{background:var(--card);border-radius:26px;padding:8px 40px}
+.tbl .tr{display:flex;align-items:center;gap:24px;padding:28px 0;border-bottom:2px solid #e8ebf0}
+.tbl .tr:last-child{border-bottom:0}
+.tbl .k{flex:1;font-size:38px;font-weight:700;letter-spacing:-.03em;line-height:1.25}
+.tbl .k small{display:block;font-size:27px;font-weight:500;color:var(--mute);margin-top:6px;letter-spacing:-.02em}
+.tbl .v{font-size:46px;font-weight:800;letter-spacing:-.04em;white-space:nowrap}
+.tbl .d{font-size:36px;font-weight:800;letter-spacing:-.03em;white-space:nowrap;min-width:150px;text-align:right}
+.tbl .tr.hit{background:#fdeeee;margin:0 -40px;padding-left:40px;padding-right:40px}
+.dark .tbl{background:var(--ink-soft)}
+.dark .tbl .tr{border-color:#2a3a5c}
+.dark .tbl .k small{color:var(--mute-dark)}
+.dark .tbl .tr.hit{background:#3a2330}
+
+/* 전 → 후 */
+.ba{display:flex;align-items:center;justify-content:center;gap:36px;background:var(--card);border-radius:26px;padding:44px 30px 48px}
+.ba div{text-align:center}
+.ba small{display:block;font-size:30px;font-weight:700;color:var(--mute);letter-spacing:-.02em}
+.ba b{display:block;font-size:112px;font-weight:800;letter-spacing:-.05em;line-height:1.1;margin-top:10px;white-space:nowrap}
+.ba b span{font-size:52px;letter-spacing:-.03em}
+.ba .from b{color:#a6adbb}
+.ba .to b{color:var(--teal)}
+.ba i{font-style:normal;font-size:64px;font-weight:700;color:var(--mute)}
+.dark .ba{background:var(--ink-soft)}
+.dark .ba small{color:var(--mute-dark)}
+.dark .ba .from b{color:#6f7d99}
+.dark .ba .to b{color:var(--teal-bright)}
+
+/* 세로 막대. 높이는 장에서 style로 준다 */
+.bars{display:flex;align-items:flex-end;justify-content:center;gap:40px;background:var(--card);border-radius:26px;padding:40px 44px 34px}
+.bar{flex:1;max-width:250px;text-align:center}
+.bar b{display:block;font-size:46px;font-weight:800;letter-spacing:-.04em;margin-bottom:12px;white-space:nowrap}
+.bar b span{font-size:28px;letter-spacing:-.02em}
+.bar i{display:block;border-radius:16px 16px 4px 4px;background:#cfd5df}
+.bar.on i{background:var(--teal)}
+.bar.on b{color:var(--teal)}
+.bar em{display:block;font-style:normal;font-size:29px;font-weight:600;color:var(--mute);margin-top:16px;letter-spacing:-.02em;line-height:1.3}
+.dark .bars{background:var(--ink-soft)}
+.dark .bar i{background:#3b4a6b}
+.dark .bar.on i{background:var(--teal-bright)}
+.dark .bar.on b{color:var(--teal-bright)}
+.dark .bar em{color:var(--mute-dark)}
+
+/* 선 그래프 (SVG) */
+.chart{background:var(--card);border-radius:26px;padding:30px 26px 22px}
+.chart svg{display:block;width:100%;height:auto}
+.chart .ln{fill:none;stroke:var(--teal);stroke-width:8;stroke-linecap:round;stroke-linejoin:round}
+.chart .ar{fill:var(--teal);opacity:.10}
+.chart .pt{fill:#fff;stroke:var(--teal);stroke-width:7}
+.chart .gv{font-size:40px;font-weight:800;fill:var(--ink);letter-spacing:-1.5px;text-anchor:middle}
+.chart .gx{font-size:28px;font-weight:600;fill:var(--mute);text-anchor:middle}
+.chart .gd{stroke:#e3e7ee;stroke-width:2}
+.dark .chart{background:var(--ink-soft)}
+.dark .chart .ln{stroke:var(--teal-bright)}
+.dark .chart .ar{fill:var(--teal-bright)}
+.dark .chart .pt{fill:var(--ink-soft);stroke:var(--teal-bright)}
+.dark .chart .gv{fill:#fff}
+.dark .chart .gx{fill:var(--mute-dark)}
+.dark .chart .gd{stroke:#2a3a5c}
+
+/* 수식 */
+.formula{display:flex;align-items:stretch;gap:14px}
+.formula .f{flex:1;background:var(--card);border-radius:22px;padding:28px 12px 32px;text-align:center}
+.formula .f small{display:block;font-size:27px;font-weight:700;color:var(--mute);letter-spacing:-.02em}
+.formula .f b{display:block;font-size:50px;font-weight:800;letter-spacing:-.04em;margin-top:8px;white-space:nowrap}
+.formula .f.on{background:var(--teal);color:#fff}
+.formula .f.on small{color:#c9f3ec}
+.formula .o{flex:none;align-self:center;font-size:50px;font-weight:700;color:var(--mute)}
+
+/* 세로 흐름 (칸이 넷 넘을 때) */
+.steps{display:flex;flex-direction:column;gap:0}
+.step{background:var(--card);border-radius:22px;padding:28px 36px 30px;display:flex;align-items:center;gap:26px}
+.step i{flex:none;width:56px;height:56px;border-radius:50%;background:#e3e7ee;color:var(--mute);font-style:normal;font-weight:800;font-size:28px;display:flex;align-items:center;justify-content:center}
+.step b{font-size:42px;font-weight:800;letter-spacing:-.035em;line-height:1.25}
+.step b small{display:block;font-size:29px;font-weight:500;color:var(--mute);margin-top:6px;letter-spacing:-.02em}
+.step.end{background:var(--teal);color:#fff}
+.step.end i{background:#fff;color:var(--teal)}
+.step.end b small{color:#c9f3ec}
+.steps .dn{align-self:flex-start;margin:4px 0 4px 50px;font-size:34px;font-weight:800;color:var(--mute);line-height:1}
+
+/* 흐름 칸에 가위표 (막힌 곳) */
+.node.cut{border-color:var(--up);background:#fdeeee}
+.node.cut b{color:var(--up)}
+
+/* 표지 그림 (SVG) */
+.pic .art svg{position:absolute;left:0;top:0;width:1080px;height:900px}
+
+/* ---------- 4차: 편마다 바탕과 강조색을 바꾼다 + 실제 사진 자리 (2026-10-05, 수정 기록 규칙 10·11) ---------- */
+/* 쓰는 법: 편의 body에 t-white, t-beige, t-amber 가운데 하나를 붙인다. 안 붙이면 회백 바탕 + 청록.
+   뼈대, 글씨, 로고와 쪽 번호 자리는 그대로 두고 바탕과 강조색만 바꾼다. */
+body.t-white{--paper:#ffffff;--card:#f1f3f6;--line:#d5dae3}
+body.t-beige{--paper:#f2ece1;--card:#fffaf1;--line:#ddd2bf;--ink:#262019;--ink-deep:#1f1a14;--ink-soft:#30281f;--mute:#7b6f5e;--mute-dark:#b8ab94;--teal:#c2410c;--teal-bright:#fb923c}
+body.t-amber{--ink-deep:#14110c;--ink-soft:#241d14;--mute-dark:#b3a58c;--teal:#b45309;--teal-bright:#fbbf24}
+
+.t-beige .tbl .tr{border-color:#ece2d0}
+.t-beige .tbl .tr.hit{background:#fde8da}
+.t-beige .bar:not(.on) i{background:#dccfb9}
+.t-beige .step i{background:#ece2d0}
+.t-beige .ba .from b{color:#b9ad98}
+.t-beige .box li::before{background:#d8ccb6}
+.t-beige .chart .gd{stroke:#ece2d0}
+.t-white .tbl .tr{border-color:#dfe3ea}
+.t-white .bar:not(.on) i{background:#c5ccd8}
+
+/* 색 칸 안의 작은 글씨는 어느 강조색에서도 읽히게 */
+.node.end small,.step.end b small,.formula .f.on small{color:rgba(255,255,255,.84)}
+
+/* 어두운 장에서도 모든 꼴을 쓸 수 있게 (전부 어두운 편용) */
+.dark .point,.dark .box,.dark .node,.dark .step,.dark .stat,.dark .formula .f,.dark .row,.dark .chip{background:var(--ink-soft)}
+.dark .node{border-color:rgba(255,255,255,.12)}
+.dark .point span,.dark .box .who,.dark .node small,.dark .step b small,.dark .stat small,.dark .stat p,.dark .aside,.dark .box li small{color:var(--mute-dark)}
+.dark .point i{background:var(--teal-bright);color:#14110c}
+.dark .point b u,.dark .stat b{color:var(--teal-bright)}
+.dark .box.on{border-color:var(--teal-bright)}
+.dark .box.on .who{color:var(--teal-bright)}
+.dark .box.on li::before{background:var(--teal-bright)}
+.dark .box li::before{background:rgba(255,255,255,.28)}
+.dark .node.end{background:var(--teal-bright);border-color:var(--teal-bright);color:#14110c}
+.dark .node.end small{color:rgba(20,17,12,.72)}
+.dark .step i{background:rgba(255,255,255,.12);color:#fff}
+.dark .step.end{background:var(--teal-bright);color:#14110c}
+.dark .step.end i{background:#14110c;color:var(--teal-bright)}
+.dark .step.end b small{color:rgba(20,17,12,.72)}
+.dark .arrow,.dark .steps .dn{color:var(--mute-dark)}
+.dark .take{border:2px solid rgba(255,255,255,.10)}
+.dark .tbl .tr{border-color:rgba(255,255,255,.10)}
+.dark .tick,.dark .tick:first-child{border-color:rgba(255,255,255,.14)}
+.dark .bar i{background:rgba(255,255,255,.20)}
+.dark .chart .gd{stroke:rgba(255,255,255,.10)}
+
+/* 속 장의 사진: 제목 아래에 넓게 한 장 */
+.shot{position:relative;border-radius:26px;overflow:hidden;height:400px;flex:none;background:#222}
+.shot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.shot .cap{position:absolute;left:28px;bottom:26px;background:rgba(10,14,24,.78);color:#fff;font-size:30px;font-weight:700;letter-spacing:-.02em;padding:10px 20px;border-radius:10px}
+
+/* 속 장 위쪽에 사진을 넓게 까는 꼴 (2026-10-05, 수정 기록 규칙 10) */
+.slide.half{padding-top:0}
+.half .hero{position:relative;height:380px;margin:0 -80px;flex:none;overflow:hidden;background:#1a1a1a}
+.half .hero img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.half .hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,12,22,.66) 0%,rgba(8,12,22,.10) 46%,rgba(8,12,22,0) 100%)}
+.half .top{color:#e9edf4;z-index:2}
+.half .top .brand{color:#fff}
+.half .top .mark::before{background:var(--teal-bright)}
+.half .top .mark::after{background:#fff}
+.half h1{margin-top:46px}
+.half .body{margin-top:36px;padding-bottom:30px}
+
+/* 항목이 셋이고 맺는 박스까지 있을 때 쓰는 촘촘한 꼴 */
+.points.c{gap:16px}
+.points.c .point{padding:30px 36px 32px}
+.points.c .point b{font-size:42px}
+.points.c .point span{font-size:30px;margin-top:8px}
+/* 전→후와 표를 한 장에 같이 둘 때 */
+.ba.c{padding:30px 30px 34px}
+.ba.c b{font-size:92px}
+.tbl.c .tr{padding-top:16px;padding-bottom:16px}
+.tbl.c .k{font-size:36px}
+.tbl.c .v{font-size:42px}
+
+/* ---------- 5차: 네 편 시험에서 나온 것 (2026-10-05) ---------- */
+/* 색 세 가지를 더한다. t-night는 t-amber처럼 모든 장에 dark를 붙여 쓴다 */
+body.t-night{--ink-deep:#0b1530;--ink-soft:#18274a;--mute-dark:#9aabcc;--teal:#0d9488;--teal-bright:#5eead4}
+body.t-violet{--paper:#f4f2f9;--card:#ffffff;--line:#dcd7ea;--ink:#221d3d;--ink-deep:#16122b;--ink-soft:#231d40;--mute:#6b6684;--mute-dark:#aaa3c8;--teal:#6d28d9;--teal-bright:#c4b5fd}
+body.t-moss{--paper:#f1f1e6;--card:#fcfcf6;--line:#d8d9c4;--ink:#1e2a22;--ink-deep:#0f1a14;--ink-soft:#1a2a20;--mute:#687265;--mute-dark:#a2b09c;--teal:#4d7c0f;--teal-bright:#bef264}
+.t-violet .tbl .tr{border-color:#e7e3f1}
+.t-violet .tbl .tr.hit{background:#efe9fb}
+.t-violet .bar:not(.on) i{background:#cfc8e3}
+.t-moss .tbl .tr{border-color:#e6e7d6}
+.t-moss .tbl .tr.hit{background:#eaf2d3}
+.t-moss .bar:not(.on) i{background:#d3d5bd}
+/* 막대 아래 글이 한 줄짜리와 두 줄짜리가 섞이면 밑선이 어긋난다. 그때 bars l2를 쓴다 */
+.bars.l2 .bar em{min-height:2.6em}

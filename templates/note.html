@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% import "_m.html" as m %}
+{% block main %}
+
+<div class="stock">
+  <div>
+    <div class="meta">{% if n.draft %}<span class="tag on">공개 전</span> {% endif %}마켓노트<i>|</i>{{ n.date|ymd }}<i>|</i>작성 {{ site.author }}</div>
+    <h1 class="rt-title">{{ n.headline }}</h1>
+  </div>
+  {{ m.indicators(n) }}
+</div>
+
+<div class="two even">
+  <div>
+    {{ m.h('최종 요약', '', first=true) }}
+    <ul class="dash">
+      {% for x in n.summary or [] %}<li>{{ x }}</li>{% endfor %}
+    </ul>
+  </div>
+  <div>
+    {% if n.comment %}
+    {{ m.h('내 코멘트', '', first=true) }}
+    <div class="prose tight">{{ n.comment_html }}</div>
+    {% endif %}
+    {% if n.review %}
+    {{ m.h('어제 확인한 것', '', first=not n.comment) }}
+    <p class="prose tight">{{ n.review }}</p>
+    {% endif %}
+    {{ m.h('오늘 일정', '', first=not (n.comment or n.review)) }}
+    <ul class="dash">
+      {% for w in n.week or [] %}<li>{{ w }}</li>{% else %}<li>등록된 일정 없음</li>{% endfor %}
+    </ul>
+    <table class="kv">
+      <tr><th>관련 종목·산업</th><td>{{ m.note_links(n) }}</td></tr>
+      <tr><th>태그</th><td>{% for t in n.tags or [] %}<span class="tag">{{ t }}</span> {% else %}–{% endfor %}</td></tr>
+    </table>
+  </div>
+</div>
+
+{% for title, body in n.sections %}
+<details class="fold"{% if loop.first %} open{% endif %}><summary>{{ title }}</summary><div class="prose">{{ body }}</div></details>
+{% endfor %}
+
+{% if newer or older %}
+{{ m.h('다른 날짜', '') }}
+<ul class="dash">
+  {% if newer %}<li>다음: <a href="{{ url(newer.path) }}">{{ newer.headline }}</a> <small>{{ newer.date|ymd }}</small></li>{% endif %}
+  {% if older %}<li>이전: <a href="{{ url(older.path) }}">{{ older.headline }}</a> <small>{{ older.date|ymd }}</small></li>{% endif %}
+</ul>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ title }} | {{ site.name }}</title>
+<meta name="description" content="{{ description or site.tagline }}">
+<meta property="og:title" content="{{ title }} | {{ site.name }}">
+<meta property="og:description" content="{{ description or site.tagline }}">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='6' y='5' width='10' height='18' rx='2' fill='%230f766e'/%3E%3Crect x='14' y='11' width='10' height='16' rx='2' fill='%231f2a44'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+<link rel="stylesheet" href="{{ url('static/style.css') }}">
+</head>
+<body>
+{% if site.demo and nav != 'notes' %}
+<div class="demo">리서치·가상운용 화면은 예시 데이터입니다. 회사명·숫자·투자의견은 실제가 아닙니다. 마켓노트는 실제 내용입니다.</div>
+{% endif %}
+
+<header class="top"><div class="w">
+  <a class="logo" href="{{ url() }}">{{ site.name }}</a>
+  <nav class="gnb">
+    <a href="{{ url() }}"{% if nav == 'home' %} class="on"{% endif %}>홈</a>
+    <a href="{{ url('research/') }}"{% if nav == 'research' %} class="on"{% endif %}>리서치·커버리지</a>
+    <a href="{{ url('portfolios/') }}"{% if nav == 'portfolios' %} class="on"{% endif %}>가상운용</a>
+    <a href="{{ url('notes/') }}"{% if nav == 'notes' %} class="on"{% endif %}>마켓노트</a>
+  </nav>
+  <div class="r">
+    <a href="{{ url('methodology/') }}"{% if nav == 'methodology' %} class="on"{% endif %}>방법론</a>
+    <a href="{{ url('about/') }}"{% if nav == 'about' %} class="on"{% endif %}>About</a>
+    {% for l in site.links or [] %}<a href="{{ l.url }}" rel="noopener">{{ l.label }}</a>{% endfor %}
+  </div>
+</div></header>
+
+{% if nav == 'research' %}
+<div class="sub"><div class="w">
+  <a href="{{ url('research/') }}"{% if sub == 'companies' %} class="on"{% endif %}>기업</a>
+  <a href="{{ url('research/industries/') }}"{% if sub == 'industries' %} class="on"{% endif %}>산업</a>
+  <a href="{{ url('research/reports/') }}"{% if sub == 'reports' %} class="on"{% endif %}>리포트 목록</a>
+</div></div>
+{% elif nav == 'portfolios' %}
+<div class="sub"><div class="w">
+  {% for key, label, path in categories %}
+  <a href="{{ url(path) }}"{% if sub == key %} class="on"{% endif %}>{{ label }}</a>
+  {% endfor %}
+</div></div>
+{% endif %}
+
+<main class="w">
+{% block main %}{% endblock %}
+</main>
+
+<footer class="foot"><div class="w">
+  <b>{{ site.name }}</b> · 작성 {{ site.author }}{% if site.email %} · {{ site.email }}{% endif %}<br>
+  개인 학습 목적으로 작성한 자료이며 투자 권유가 아닙니다. 수익률은 일별 종가 기준이고 배당은 포함하지 않습니다.
+  계산 방식은 <a href="{{ url('methodology/') }}">방법론</a>에 적었습니다. 시세 기준일 {{ asof|ymd }}.<br>
+  차트: TradingView Lightweight Charts™ · Copyright © TradingView, Inc. <a href="https://www.tradingview.com/" rel="noopener">tradingview.com</a>
+</div></footer>
+<script src="https://unpkg.com/lightweight-charts@5.2.1/dist/lightweight-charts.standalone.production.js" defer></script>
+<script src="{{ url('static/charts.js') }}" defer></script>
+<script src="{{ url('static/app.js') }}" defer></script>
+</body>
+</html>
