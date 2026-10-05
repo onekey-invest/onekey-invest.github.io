@@ -6,7 +6,10 @@
       --jpg를 주면 올릴것/01.jpg, ...
 점검: 장수, 크기, 넘침, 사진·글꼴이 떴는지. 문제가 있으면 적어 주고 종료 코드 1로 끝난다.
 
-크롬 찾기: 환경 변수 CARD_CHROME → PATH의 chrome/chromium/edge → 윈도 기본 설치 위치 순서.
+크롬 찾기: 환경 변수 CARD_CHROME → PATH의 chrome/chromium/edge → 윈도 기본 설치 위치
+          → 플레이라이트가 깔아 둔 크로미엄(/opt/pw-browsers, ~/.cache/ms-playwright) 순서.
+창 높이: 크롬에 따라 보이는 칸이 창보다 낮게 잡힌다(클라우드에서 87px 낮았다).
+        그래서 창을 넉넉히 높게 띄우고 위에서 1350px만 잘라 낸다.
 """
 from __future__ import annotations
 
@@ -20,9 +23,12 @@ import sys
 import tempfile
 from pathlib import Path
 
+import glob
+
 from PIL import Image
 
 W, H = 1080, 1350
+SLACK = 300  # 창을 이만큼 더 높게 띄운 뒤 잘라 낸다
 MAX_SLIDES = 10  # 인스타 API로 올릴 때 한 게시물의 한도. 지금은 넘어도 막지 않고 알려만 준다
 NAMES = ("google-chrome", "google-chrome-stable", "chromium", "chromium-browser", "chrome", "msedge", "microsoft-edge")
 WINDOWS = (
@@ -44,13 +50,18 @@ def browser() -> str:
     for b in WINDOWS:
         if Path(b).exists():
             return b
+    for pat in ("/opt/pw-browsers/chromium-*/chrome-linux/chrome",
+                str(Path.home() / ".cache/ms-playwright/chromium-*/chrome-linux/chrome")):
+        found = sorted(glob.glob(pat))
+        if found:
+            return found[-1]
     sys.exit("크롬이나 엣지를 찾지 못했다. CARD_CHROME에 실행 파일 경로를 적어 준다")
 
 
 def chrome(exe: str, profile: str, *args: str) -> subprocess.CompletedProcess:
     return subprocess.run([
         exe, "--headless=new", "--disable-gpu", "--hide-scrollbars", "--no-sandbox",
-        "--force-device-scale-factor=1", f"--window-size={W},{H}",
+        "--force-device-scale-factor=1", f"--window-size={W},{H + SLACK}",
         "--virtual-time-budget=8000", f"--user-data-dir={profile}", *args,
     ], check=True, capture_output=True, timeout=180)
 
@@ -63,6 +74,10 @@ def render(folder: Path) -> list[Path]:
         for i in range(1, count + 1):
             png = folder / f"{i:02d}.png"
             chrome(exe, profile, f"--screenshot={png}", f"{deck.as_uri()}?s={i}")
+            shot = Image.open(png)
+            if shot.size[0] != W or shot.size[1] < H:
+                raise SystemExit(f"{png.name}: 찍힌 크기가 {shot.size}다. 가로 {W}, 세로 {H} 이상이어야 한다")
+            shot.crop((0, 0, W, H)).save(png)
             size = Image.open(png).size
             if size != (W, H):
                 raise SystemExit(f"{png.name}: 크기가 {size}다. {W}x{H}이어야 한다")
