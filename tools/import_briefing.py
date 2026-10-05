@@ -25,7 +25,10 @@ def main(argv=None):
     a = ap.parse_args(argv)
 
     text = Path(a.src).read_text(encoding="utf-8-sig")
-    day, note = to_note(text, date.fromisoformat(a.date) if a.date else None, draft=a.draft)
+    try:
+        day, note = to_note(text, date.fromisoformat(a.date) if a.date else None, draft=a.draft)
+    except ValueError as e:
+        sys.exit(f"변환하지 않았다. {e}")
     out = ROOT / "content" / "notes" / f"{day:%Y-%m-%d}.md"
     if out.exists() and not a.force:
         sys.exit(f"{out.name}이 이미 있다. 같은 날짜 글을 덮어쓰지 않으려고 멈췄다. 덮어쓰려면 --force")

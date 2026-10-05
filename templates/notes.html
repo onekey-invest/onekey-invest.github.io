@@ -27,7 +27,7 @@
     <div class="note"><a href="{{ url(n.path) }}">노트 전체 보기</a></div>
   </div>
   <div>
-    {{ m.h('이번 주 주요 일정', '', first=true) }}
+    {{ m.h('오늘 일정', '', first=true) }}
     <ul class="dash">
       {% for w in n.week or [] %}<li>{{ w }}</li>{% else %}<li>등록된 일정 없음</li>{% endfor %}
     </ul>

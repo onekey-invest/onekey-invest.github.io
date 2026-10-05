@@ -24,7 +24,7 @@
     <div class="prose tight">{{ n.comment_html }}</div>
     {% endif %}
     {% if n.review %}
-    {{ m.h('어제 확인한 것', '', first=not n.comment) }}
+    {{ m.h('지난 글의 확인 포인트', '', first=not n.comment) }}
     <p class="prose tight">{{ n.review }}</p>
     {% endif %}
     {{ m.h('오늘 일정', '', first=not (n.comment or n.review)) }}

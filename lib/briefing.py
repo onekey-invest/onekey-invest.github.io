@@ -10,6 +10,8 @@ from datetime import date
 
 import yaml
 
+from lib import dates
+
 # 구획 번호와 제목의 앞머리. 본문 속 번호 목록("1. ...")과 헷갈리지 않게 둘 다 맞아야 구획으로 본다
 HEADS = {0: "오늘의 한 줄", 1: "통합 브리핑", 2: "오늘의 시장", 3: "기업", 4: "오늘 예정", 5: "최종 요약",
          6: "PDF", 7: "짧은 노트", 8: "검증 기록"}
@@ -124,6 +126,15 @@ def to_note(text: str, day: date | None = None, draft: bool = False) -> tuple[da
         if not m:
             raise ValueError("짧은 노트에 '날짜: YYYY-MM-DD'가 없다. --date로 날짜를 준다")
         day = date(*map(int, m.groups()))
+
+    # 날짜 점검. 요일이 달력과 다르거나 일정이 대상 날짜 밖이면 올리지 않고 돌려보낸다
+    public = "\n".join(sec.get(k, "") for k in (0, 1, 2, 3, 4, 5, 7))
+    events = [x for x in sec.get(4, "").splitlines() if "(한국 시간" in x and x.rstrip().endswith(")")]
+    problems = dates.weekday_errors(public, day) + dates.event_errors(short.get("오늘 일정", []) + events, day)
+    if not short.get("지표 기준"):
+        problems.append("짧은 노트에 '지표 기준:' 줄이 없다. 지표가 어느 날 종가인지 적는다")
+    if problems:
+        raise ValueError("날짜 점검에서 걸렸다. 글을 고쳐 다시 변환한다:\n- " + "\n- ".join(problems))
 
     headline = short.get("오늘의 한 줄") or sec.get(0, "").strip()
     if not headline:
