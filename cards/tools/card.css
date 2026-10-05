@@ -5,10 +5,15 @@
   --teal:#0f766e; --teal-bright:#2dd4bf;
   --paper:#f4f5f7; --card:#ffffff; --line:#d5dae3; --mute:#687389; --mute-dark:#93a0ba;
 }
+/* 글꼴은 tools/fonts/에 받아 둔 파일을 먼저 쓴다(render.py --font가 받아 둔다).
+   파일이 없으면 deck.html이 부르는 인터넷 주소의 글꼴("Pretendard Variable")로 넘어간다.
+   클라우드에서는 크롬이 인터넷 글꼴을 못 가져와서 파일이 있어야 한다. */
+@font-face{font-family:"Pretendard Local";font-weight:45 920;font-style:normal;font-display:block;
+  src:url("fonts/PretendardVariable.woff2") format("woff2-variations")}
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{background:#9aa0aa}
 body{
-  font-family:"Pretendard Variable",Pretendard,"Noto Sans KR","Malgun Gothic",sans-serif;
+  font-family:"Pretendard Local","Pretendard Variable",Pretendard,"Noto Sans KR","Malgun Gothic",sans-serif;
   color:var(--ink); word-break:keep-all; line-break:strict;
   -webkit-font-smoothing:antialiased; font-feature-settings:"tnum" 1;
 }

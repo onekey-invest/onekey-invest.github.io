@@ -45,12 +45,22 @@
     });
     return out;
   }
+  // 글꼴이 정말 실렸는지 본다. fonts.check()는 글꼴 정의를 못 읽었을 때도 참을 돌려줘서 쓰지 않는다
+  // (클라우드 시험에서 다른 글꼴로 뽑혔는데 통과로 나왔다). 실제로 읽어 들인 글꼴만 센다.
+  async function fonts() {
+    for (let k = 0; k < 6; k++) {
+      try { await document.fonts.ready; } catch (e) {}
+      await new Promise(r => setTimeout(r, 60));
+      if (document.fonts.status !== 'loading') break;
+    }
+    const ok = [...document.fonts].filter(f => /Pretendard/.test(f.family) && f.status === 'loaded');
+    return { font: ok.length > 0, fontFrom: ok.some(f => /Local/.test(f.family)) ? 'file' : ok.length ? 'net' : '' };
+  }
   async function run() {
-    try { await document.fonts.ready; } catch (e) {}
-    const font = document.fonts.check('800 20px "Pretendard Variable"');
+    const f = await fonts();
     const pre = document.createElement('pre');
     pre.id = '__check';
-    pre.textContent = JSON.stringify({ slides: find(), font, count: slides.length });
+    pre.textContent = JSON.stringify({ slides: find(), font: f.font, fontFrom: f.fontFrom, count: slides.length });
     document.body.appendChild(pre);
   }
   if (document.readyState === 'complete') run(); else window.addEventListener('load', run);
