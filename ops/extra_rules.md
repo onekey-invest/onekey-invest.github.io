@@ -105,6 +105,7 @@
 
 ## 6. 저장소 다루기 (올리기 실패를 막는다)
 
+- 패키지는 `python -m pip install -r requirements.txt`로 설치한다. `pip`만 쓰면 다른 파이썬에 설치돼 빌드가 실패하는 환경이 있다.
 - 일을 시작하자마자, 다른 것을 하기 전에 아래를 실행해 내 작업 가지를 원격 `main`의 최신 상태에 맞춘다. 실행 환경이 주는 저장소는 `main`이 뒤처져 있거나 다른 가지에 올라가 있을 수 있다.
   `git fetch origin main && git checkout -B main origin/main`
 - live 모드에서 올릴 때는 `git push origin HEAD:main`을 쓴다.
