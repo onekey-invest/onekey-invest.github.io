@@ -25,7 +25,7 @@
   <div>
     {{ m.h('핵심 지표 추이', '첫 값 대비 변화율', first=true) }}
     {% if i.indicators %}
-    {{ m.chart(i.indicator_chart, i.indicator_data, ranges=false, small=true) }}
+    {{ m.chart(i.indicator_chart, i.name ~ ' 핵심 지표 추이', small=true) }}
     {% else %}
     <p class="intro">등록된 지표가 없습니다.</p>
     {% endif %}
@@ -36,7 +36,7 @@
 {{ m.h('시장 점유율', (i.market_asof or '') ~ ' 기준') }}
 {% if i.market_lead %}<p class="intro">{{ i.market_lead }}</p>{% endif %}
 <div class="mktwrap">
-  <div class="mktpie">{{ i.market_pie }}</div>
+  <div class="mktpie">{{ m.chart(i.market_pie, i.name ~ ' 시장 점유율') }}</div>
   <div class="scroll">
   <table class="grid mkt">
     <thead><tr><th class="c" style="width:48px">순위</th><th class="l">업체</th><th>생산실적</th><th>점유율</th></tr></thead>

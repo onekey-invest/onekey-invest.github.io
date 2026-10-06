@@ -20,7 +20,7 @@ python build.py
 python -m unittest discover tests
 ```
 
-수익률 계산과 차트 눈금을 검증한다.
+수익률 계산과, 엑셀에 넘기는 그림 자료의 꼴을 검증한다.
 
 필요한 패키지는 `requirements.txt`에 있다(Jinja2, PyYAML, Markdown).
 
@@ -41,8 +41,8 @@ python -m unittest discover tests
 | `content/pages/*.md` | 방법론, About |
 | `lib/metrics.py` | 커버리지 수익률 계산 |
 | `lib/portfolio.py` | 가상운용 평가금액·MDD·샤프 계산 |
-| `lib/chart.py` | 표 안의 추이선과, 스크립트가 안 될 때 보이는 대체 차트(SVG) |
-| `static/charts.js` | 화면의 차트. TradingView Lightweight Charts를 쓴다 |
+| `tools/excel_charts.ps1` | 화면의 그림을 엑셀로 그려 `static/charts/`에 내보낸다(아래 "그림" 참고) |
+| `static/charts/` | 엑셀이 내보낸 그림(SVG)과 목록(`manifest.json`) |
 | `templates/` | 화면 틀 |
 | `static/` | 스타일, 표 정렬·검색 스크립트. 리포트 PDF는 `static/reports/`에 둔다 |
 | `DESIGN.md` | 디자인 규칙. 화면을 고치기 전에 읽는다 |
@@ -174,3 +174,20 @@ python tools/update_prices.py
 - 리포트 PDF 첫 장 썸네일
 - 해외 주식·멀티에셋 전략(화면 자리는 있고 전략이 없다)
 - 마켓노트 주간 정리, 공시 연동, 실시간 시세(추후)
+
+## 그림
+
+화면의 그림(주가와 목표주가, 누적수익률, 지표 추이, 시장 점유율, 표 안의 작은 그림)은 모두 엑셀 차트다. 사이트 프로그램은 그림을 그리지 않는다.
+엑셀 통합 문서를 열어 색·글꼴·크기를 고칠 수 있고, 고친 모양은 다음 갱신에도 남는다(갱신은 자료 칸만 바꾼다).
+
+```
+python build.py --charts <자료.json>                 # 그림마다 쓸 자료를 적어 낸다
+powershell -ExecutionPolicy Bypass -File tools\excel_charts.ps1 -Spec <자료.json> -Workbook <그림.xlsx> -Out static\charts
+python build.py                                      # 내보낸 그림을 화면에 넣는다
+```
+
+- 엑셀이 깔린 윈도우 PC에서만 돌릴 수 있다. GitHub의 매일 갱신(시세 받기·화면 만들기)은 그림을 다시 그리지 못하므로, 그림은 PC에서 위 순서를 돌려 올릴 때 바뀐다. 그림 아래에 그림의 자료 기준일이 적힌다.
+- 통합 문서는 그림마다 시트가 하나다(왼쪽 자료, 오른쪽 차트). 표 안의 작은 그림은 `작은그림` 시트에 모여 있고, `목록` 시트에 그림과 시트의 짝이 있다.
+- 새 그림은 기본 모양으로 만들어진다. 어떤 그림을 처음 모양으로 되돌리려면 그 시트를 지우고 다시 돌린다.
+- 시세가 이틀 치 이상 쌓이지 않은 그림(갓 올린 기업, 갓 시작한 전략)은 만들지 않는다. 화면에는 "그림을 준비하고 있습니다"가 나온다.
+

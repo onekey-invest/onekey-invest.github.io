@@ -36,7 +36,7 @@
   </div>
   <div>
     {{ m.h('누적수익률', '운용 개시일 = 0', first=true) }}
-    {{ m.chart(s.chart, s.chart_data) }}
+    {{ m.chart(s.chart, s.name ~ ' 누적수익률') }}
     {% if s.has_backtest %}<div class="cap">점선은 운용 개시 전의 백테스트, 실선은 규칙을 공개한 뒤의 운용 기록.</div>{% endif %}
   </div>
 </div>

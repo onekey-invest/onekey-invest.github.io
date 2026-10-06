@@ -26,7 +26,7 @@
 <div class="two even">
   <div>
     {{ m.h('전략별 누적수익률', '각 전략의 운용 개시일 = 0') }}
-    {{ m.chart(chart, chart_data, small=true) }}
+    {{ m.chart(chart, label ~ ' 전략별 누적수익률', small=true) }}
   </div>
   <div>
     {{ m.h('읽는 법', '') }}

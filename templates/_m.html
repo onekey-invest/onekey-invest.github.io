@@ -16,24 +16,21 @@
 <span class="tag{% if v == '최초' %} f{% endif %}">{{ v }}</span>
 {%- endmacro %}
 
-{# 차트. svg는 스크립트가 안 될 때 남는 그림, data는 static/charts.js가 읽는 자료 #}
-{% macro chart(svg, data, ranges=true, small=false) %}
-<div class="chart{% if small %} small{% endif %}">
-  <div class="chart-top">
-    <div class="chart-legend"></div>
-    {% if ranges %}
-    <div class="chart-range">
-      <button type="button" data-months="3">3M</button>
-      <button type="button" data-months="6">6M</button>
-      <button type="button" data-months="12">1Y</button>
-      <button type="button" class="on">전체</button>
-    </div>
-    {% endif %}
-  </div>
-  <div class="chart-canvas">{{ svg }}</div>
-  <script type="application/json">{{ data }}</script>
-</div>
+{# 그림. 엑셀이 그려 static/charts/에 내보낸 것을 넣는다(tools/excel_charts.ps1). 아직 내보내지 않은 그림은 자리를 비워 둔다 #}
+{% macro chart(id, alt='', small=false) %}
+{% set c = charts.get(id) if id else none %}
+<figure class="xl{% if small %} small{% endif %}">
+  {% if c %}
+  <img src="{{ url('static/charts/' ~ id ~ '.svg') }}" width="{{ c.w }}" height="{{ c.h }}" alt="{{ alt }}" loading="lazy">
+  {% if c.asof %}<figcaption>그림 기준 {{ c.asof }}</figcaption>{% endif %}
+  {% else %}
+  <p class="intro">그림을 준비하고 있습니다.</p>
+  {% endif %}
+</figure>
 {% endmacro %}
+
+{# 표 안의 작은 그림(엑셀이 그린 것) #}
+{% macro spark(id) %}{% if id and charts.get(id) %}<img class="spark" src="{{ url('static/charts/' ~ id ~ '.svg') }}" width="96" height="27" alt="">{% endif %}{% endmacro %}
 
 {# 표 위의 검색 상자. options가 있으면 고르는 칸도 함께 나온다 #}
 {% macro filter(table_id, placeholder, options) %}
@@ -105,7 +102,7 @@
       <td class="l"><a href="{{ url(s.path) }}"><b>{{ s.name }}</b></a> <small>{{ s.subtitle }}</small></td>
       <td class="c">{{ status(s) }}</td>
       <td class="c">{{ s.started|ymd }}</td>
-      <td class="sp">{{ s.spark }}</td>
+      <td class="sp">{{ spark(s.spark) }}</td>
       <td>{{ s.value|num }}</td>
       <td>{{ ret(s.ret) }}</td>
       <td>{{ ret(s.bench_ret) }} <small>{{ s.benchmark }}</small></td>
@@ -137,7 +134,7 @@
       <td class="l"><a href="{{ url(c.path) }}"><b>{{ c.name }}</b></a> <small>{{ c.ticker }}</small></td>
       <td class="l">{% for i in c.industry_objs %}<a href="{{ url(i.path) }}">{{ i.name }}</a>{% if not loop.last %}, {% endif %}{% endfor %}</td>
       <td class="c">{{ rating(c.rating) }}</td>
-      <td class="sp">{{ c.spark }}</td>
+      <td class="sp">{{ spark(c.spark) }}</td>
       <td data-v="{{ c.target }}">{{ c.target|num }}</td>
       <td data-v="{{ c.last }}">{{ c.last|num }}</td>
       <td data-v="{{ c.upside|raw }}">{{ c.upside|pct }}</td>

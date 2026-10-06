@@ -54,7 +54,7 @@
   </div>
   <div>
     {{ m.h('주가와 의견 변경', '일별 종가', first=true) }}
-    {{ m.chart(c.chart, c.chart_data) }}
+    {{ m.chart(c.chart, c.name ~ ' 주가와 목표주가') }}
     <div class="cap">{{ c.benchmark }}는 커버리지 개시일의 주가에 맞춰 환산. 점은 의견이나 목표주가를 바꾼 날.</div>
   </div>
 </div>

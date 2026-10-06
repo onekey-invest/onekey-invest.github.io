@@ -4,7 +4,9 @@
 결과: dist/ 폴더. 이 폴더를 그대로 호스팅에 올린다.
 
 읽는 것: data/*.yaml, data/prices/*.csv, content/reports/*.md, content/pages/*.md
-계산: lib/metrics.py   차트: lib/chart.py   화면 틀: templates/   규칙: DESIGN.md
+계산: lib/metrics.py   화면 틀: templates/   규칙: DESIGN.md
+그림: 엑셀이 그린다. python build.py --charts <파일>로 그림 자료를 적어 내고, tools/excel_charts.ps1이 엑셀 통합 문서의
+      자료 칸을 바꿔 static/charts/에 그림을 내보낸다. 이 프로그램은 그림을 그리지 않는다.
 """
 from __future__ import annotations
 
@@ -26,7 +28,6 @@ sys.path.insert(0, str(ROOT))
 
 from lib import metrics as M  # noqa: E402
 from lib import portfolio as PF  # noqa: E402
-from lib.chart import company_chart, pct_chart, pie_chart, pie_colors, sparkline  # noqa: E402
 
 DIST = ROOT / "dist"
 
@@ -164,18 +165,79 @@ LINE_COLORS = [INK, ACCENT, "#7c5cc4", "#c2410c"]   # 운용 중인 전략의 �
 OFF_COLOR = "#b0b7c3"                               # 중단한 전략
 
 
-def payload(fmt, series, markers=()):
-    """브라우저의 차트(static/charts.js)가 읽는 자료. 화면 틀에서 <script type="application/json">에 넣는다."""
-    data = {
-        "format": fmt,
-        "series": [
-            {**{k: v for k, v in s.items() if k != "points"},
-             "data": [[d.isoformat(), round(v, 4)] for d, v in s["points"]]}
-            for s in series if len(s["points"]) >= 2
-        ],
-        "markers": [{"time": d.isoformat(), "text": t} for d, t in markers],
-    }
-    return Markup(json.dumps(data, ensure_ascii=False).replace("</", "<\\/"))
+# ---------- 그림: 엑셀이 그린다 ----------
+# 이 프로그램은 그림을 그리지 않는다. 그림마다 "무슨 자료를 어떤 선으로"만 정해 XL에 담는다.
+# tools/excel_charts.ps1이 XL을 읽어 엑셀 통합 문서의 자료 칸을 바꾸고, 엑셀 차트를 static/charts/<그림>.svg로 내보낸다.
+# 차트의 모양(색·굵기·글꼴·크기)은 엑셀에서 고친다. 여기의 색은 차트를 처음 만들 때만 쓰인다.
+
+XL = []
+PIE_COLORS = ["#0f766e", "#1f2a44", "#5fa8a0", "#475467", "#b5d9d4", "#0b5c56", "#98a2b3", "#2d8f85", "#344054", "#cfe8e4"]
+PIE_REST = "#e4e7ec"
+
+
+def pie_colors(parts) -> list[str]:
+    """조각마다 쓸 색. '그 밖'(rest)은 옅은 회색, 나머지는 순서대로. 표의 색 점과 엑셀 원그래프의 첫 색이 같아진다."""
+    out, k = [], 0
+    for p in parts:
+        if p.get("rest"):
+            out.append(PIE_REST)
+        else:
+            out.append(PIE_COLORS[k % len(PIE_COLORS)])
+            k += 1
+    return out
+
+
+def step_points(points):
+    """계단 선: 값이 바뀌는 날에 직전 값을 한 번 더 찍는다(엑셀의 직선으로 계단을 그리려고)."""
+    out = []
+    for k, (d, v) in enumerate(points):
+        if k and points[k - 1][1] != v:
+            out.append((d, points[k - 1][1]))
+        out.append((d, v))
+    return out
+
+
+def xl_time(cid, fmt, series, markers=(), w=500, h=270):
+    """시계열 그림 한 장. series = [{name, type(line|step), color, dash, main, points[(날짜, 값)]}], markers = [(날짜, 글)].
+    표시(markers)는 main 계열 위의 점으로 찍는다. 그 날짜의 값이 없으면 직전 값.
+    w·h는 차트를 처음 만들 때의 크기(pt)다. 화면에 놓이는 너비에 맞춰야 글자가 작아지지 않는다. 뒤에는 엑셀에서 고친다."""
+    out = []
+    main = next((x for x in series if x.get("main")), series[-1] if series else None)
+    for x in series:
+        pts = x["points"]
+        if len(pts) < 2:
+            continue
+        if x.get("type") == "step":
+            pts = step_points(pts)
+        out.append({"name": x["name"], "type": "line", "color": x["color"], "dash": bool(x.get("dash")), "main": bool(x.get("main")),
+                    "points": [[d.isoformat(), round(v, 4)] for d, v in pts]})
+    if markers and main and len(main["points"]) >= 2:
+        mp = main["points"]
+        dots = []
+        for d, text in markers:
+            prior = [v for dd, v in mp if dd <= d]
+            dots.append([d.isoformat(), round(prior[-1] if prior else mp[0][1], 4), text])
+        out.append({"name": "의견·목표주가 변경" if fmt == "price" else "표시", "type": "points", "color": ACCENT, "points": dots})
+    if not out:
+        return None
+    asof = max(x["points"][-1][0] for x in out if x["type"] == "line")
+    XL.append({"id": cid, "kind": "time", "format": fmt, "asof": asof, "w": w, "h": h, "series": out})
+    return cid
+
+
+def xl_pie(cid, parts, asof=""):
+    if not parts:
+        return None
+    XL.append({"id": cid, "kind": "pie", "asof": str(asof or ""), "w": 430, "h": 330,
+               "parts": [{"name": p["name"], "pct": p["pct"], "color": c} for p, c in zip(parts, pie_colors(parts))]})
+    return cid
+
+
+def xl_spark(cid, values, color, asof):
+    if len(values) < 2:
+        return None
+    XL.append({"id": cid, "kind": "spark", "asof": asof.isoformat(), "color": color, "values": [round(float(v), 4) for v in values]})
+    return cid
 
 
 def pct_points(points):
@@ -216,19 +278,13 @@ def build_strategy(s, prices, bench_map, asof, comp_by_id):
     b0 = bench.close_at(calendar[0])
     bench_line = [(d, bench.close_at(d) / b0 - 1) for d in calendar]
     bt = [(d, v) for d, v in load_backtest(s["id"]) if d <= calendar[0]]
-    lines = []
-    if len(bt) >= 2:
-        lines.append({"points": [(d, v / bt[-1][1] - 1) for d, v in bt], "color": INK, "width": 1.6, "dash": "4 3"})
-    lines.append({"points": bench_line, "color": GREY, "width": 1.4})
-    lines.append({"points": live, "color": INK, "width": 2})
     series = []
     if len(bt) >= 2:
         series.append({"name": "백테스트", "type": "line", "color": INK, "dash": True,
                        "points": pct_points([(d, v / bt[-1][1] - 1) for d, v in bt])})
     series.append({"name": s["benchmark"], "type": "line", "color": GREY, "points": pct_points(bench_line)})
-    series.append({"name": "운용 기록", "type": "area", "color": INK, "points": pct_points(live)})
-    chart_data = payload("pct", series, [(calendar[0], "개시")] if len(bt) >= 2 else [])
-    chart = pct_chart(lines, vline=(calendar[0], "운용 개시") if len(bt) >= 2 else None)
+    series.append({"name": "운용 기록", "type": "line", "color": INK, "main": True, "points": pct_points(live)})
+    chart = xl_time(f"strategy-{s['id']}", "pct", series, [(calendar[0], "운용 개시")] if len(bt) >= 2 else [], w=500, h=270)
 
     return {
         **s,
@@ -250,9 +306,8 @@ def build_strategy(s, prices, bench_map, asof, comp_by_id):
         "trades": trade_rows,
         "live": live,
         "has_backtest": len(bt) >= 2,
-        "chart": Markup(chart),
-        "chart_data": chart_data,
-        "spark": Markup(sparkline(navs, UP if (ret or 0) >= 0 else DOWN)),
+        "chart": chart,
+        "spark": xl_spark(f"spark-strategy-{s['id']}", navs, UP if (ret or 0) >= 0 else DOWN, end),
         "rationale": md(s.get("rationale") or ""),
         "backtest": md(s.get("backtest") or ""),
         "log": md(s.get("log") or ""),
@@ -303,25 +358,18 @@ def build_company(c, reports, prices, bench_map, asof):
         # 직전 종가 한 점에서 시작하고, 그날 종가가 들어오면 발행일부터 다시 그려진다.
         window = series.between(series.at(asof)[0], asof)
         bwin = bench.between(bench.at(asof)[0], asof)
-    chart = company_chart(
-        list(zip(window.dates, window.closes)),
-        list(zip(bwin.dates, bwin.closes)),
-        targets,
-        markers,
-    )
-
     marker_days = [(window.at(d)[0], t) for d, t in markers if window.at(d)]
-    # 목표주가 선: 날짜를 시세가 있는 구간 안으로 맞추고, 같은 날짜가 겹치면 나중 값만 둔다(차트는 날짜가 겹치면 그리지 못한다)
+    # 목표주가 선: 날짜를 시세가 있는 구간 안으로 맞추고, 같은 날짜가 겹치면 나중 값만 둔다
     tp_by_day = {min(max(d, window.dates[0]), asof): t for d, t in targets}
     tp_by_day[asof] = targets[-1][1]
     tp_points = sorted(tp_by_day.items())
     b0 = bwin.closes[0] if len(bwin) else None
-    chart_data = payload("price", [
+    chart = xl_time(f"company-{c['id']}", "price", [
         {"name": f"{c['benchmark']}(환산)", "type": "line", "color": GREY,
          "points": [(d, v / b0 * window.closes[0]) for d, v in zip(bwin.dates, bwin.closes)] if b0 else []},
         {"name": "목표주가", "type": "step", "color": ACCENT, "dash": True, "points": tp_points},
-        {"name": c["name"], "type": "area", "color": INK, "points": list(zip(window.dates, window.closes))},
-    ], marker_days)
+        {"name": c["name"], "type": "line", "color": INK, "main": True, "points": list(zip(window.dates, window.closes))},
+    ], marker_days, w=500, h=270)
     # 개시 기준가에서 목표주가까지 가는 길에서 지금 어디쯤인지 (0~100)
     span = latest["target"] - base if base else 0
     progress = max(0.0, min(1.0, (last - base) / span)) if span > 0 else None
@@ -369,10 +417,9 @@ def build_company(c, reports, prices, bench_map, asof):
         "r3m": M.period_return(series, M.months_before(asof, 3), asof),
         "r6m": M.period_return(series, M.months_before(asof, 6), asof),
         "change": change,
-        "chart": Markup(chart),
-        "chart_data": chart_data,
+        "chart": chart,
         "progress": progress,
-        "spark": Markup(sparkline(window.closes, UP if (ret or 0) >= 0 else DOWN)),
+        "spark": xl_spark(f"spark-company-{c['id']}", window.closes, UP if (ret or 0) >= 0 else DOWN, asof),
         "est": est,
         "valuation": md(c.get("valuation") or ""),
         "risks": md(c.get("risks") or ""),
@@ -433,6 +480,14 @@ def f_raw(v):
 
 # ---------- 쓰기 ----------
 
+def load_chart_manifest():
+    """엑셀이 내보낸 그림의 목록(static/charts/manifest.json). 그림마다 자료 기준일과 크기가 있다. 없으면 화면에 그림 자리가 비어 나온다."""
+    p = ROOT / "static" / "charts" / "manifest.json"
+    if not p.exists():
+        return {}
+    return json.loads(p.read_text(encoding="utf-8"))
+
+
 def main():
     site = load_yaml("site.yaml")
     prices = load_prices()
@@ -459,26 +514,21 @@ def main():
     for i in industries_raw:
         members = [c for c in companies if i["id"] in c.get("industries", [])]
         series = load_indicators(i["id"])
-        ind_lines = [
-            {"points": [(d, v / pts[0][1] - 1) for d, v in pts], "color": LINE_COLORS[k % len(LINE_COLORS)], "width": 2}
-            for k, (name, pts) in enumerate(series) if len(pts) >= 2 and pts[0][1]
-        ]
         industries.append({
             **i,
             "indicators": [
                 {"name": name, "color": LINE_COLORS[k % len(LINE_COLORS)], "last": pts[-1][1], "last_date": pts[-1][0]}
                 for k, (name, pts) in enumerate(series) if len(pts) >= 2 and pts[0][1]
             ],
-            "indicator_chart": Markup(pct_chart(ind_lines)),
-            "indicator_data": payload("pct", [
+            "indicator_chart": xl_time(f"industry-{i['id']}-indicators", "pct", [
                 {"name": name, "type": "line", "color": LINE_COLORS[k % len(LINE_COLORS)],
                  "points": [(d, (v / pts[0][1] - 1) * 100) for d, v in pts]}
                 for k, (name, pts) in enumerate(series) if len(pts) >= 2 and pts[0][1]
-            ]),
+            ], w=420, h=230),
             "value_chain": md(i.get("value_chain") or ""),
             # 시장 점유율: 원그래프와, 표에 같은 색을 쓰도록 조각마다 색을 붙인 목록
             "market": [dict(p, color=col) for p, col in zip(i.get("market") or [], pie_colors(i.get("market") or []))],
-            "market_pie": Markup(pie_chart(i.get("market") or [])),
+            "market_pie": xl_pie(f"industry-{i['id']}-market", i.get("market") or []),   # 기준은 구획 제목에 적는다
             "path": f"industries/{i['id']}/",
             "members": members,
             "reports": [r for r in reversed(reports) if r.get("industry") == i["id"]],
@@ -550,6 +600,7 @@ def main():
         url=lambda p="": f"{base}/{p}",
         built=datetime.now(),
         categories=CATEGORIES,
+        charts=load_chart_manifest(),
     )
 
     if DIST.exists():
@@ -607,17 +658,13 @@ def main():
 
     for key, label, path in CATEGORIES:
         members = [s for s in strategies if s["category"] == key]
-        chart = pct_chart([
-            {"points": s["live"], "color": s["color"], "width": 2 if s["active"] else 1.4}
-            for s in reversed(members)   # 운용 중인 전략의 선이 위에 오도록 나중에 그린다
-        ])
-        chart_data = payload("pct", [
+        chart = xl_time(f"portfolios-{key}", "pct", [
             {"name": s["name"] + ("" if s["active"] else " (중단)"), "type": "line", "color": s["color"],
              "points": pct_points(s["live"])}
-            for s in reversed(members)
-        ])
+            for s in reversed(members)   # 운용 중인 전략의 선이 위에 오도록 나중에 그린다
+        ], w=420, h=230)
         write(path, "portfolios.html", nav="portfolios", sub=key, title=f"가상운용 · {label}",
-              label=label, strategies=members, chart=Markup(chart), chart_data=chart_data)
+              label=label, strategies=members, chart=chart)
     for s in strategies:
         write(s["path"], "strategy.html", nav="portfolios", sub=s["category"], title=s["name"], s=s)
 
@@ -635,3 +682,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+    if "--charts" in sys.argv:      # 엑셀에 넘길 그림 자료를 적어 낸다(tools/excel_charts.ps1이 읽는다)
+        out = Path(sys.argv[sys.argv.index("--charts") + 1])
+        out.write_text(json.dumps({"charts": XL}, ensure_ascii=False), encoding="utf-8")
+        print(f"그림 자료 {len(XL)}개 → {out}")
