@@ -32,6 +32,27 @@
   </div>
 </div>
 
+{% if i.shares %}
+{{ m.h('품목별 점유율', (i.shares_asof or '') ~ ' 기준') }}
+{% if i.shares_note %}<p class="intro share-note">{{ i.shares_note }}</p>{% endif %}
+<div class="scroll">
+<table class="grid share">
+  <thead><tr><th class="l" style="width:112px">품목</th><th class="l" style="width:26%">누가 차지하나</th><th class="l">업체와 점유율</th><th class="l" style="width:26%">기준</th></tr></thead>
+  <tbody>
+  {% for s in i.shares %}
+    {% if loop.first or s.kind != i.shares[loop.index0 - 1].kind %}<tr class="share-kind"><td class="l" colspan="4">{{ s.kind }}</td></tr>{% endif %}
+    <tr>
+      <td class="l"><b>{{ s.item }}</b></td>
+      <td class="l"><div class="sharebar">{% set ns = namespace(k=0) %}{% for p in s.parts %}{% if p.rest %}<span class="rest" style="width:{{ p.pct }}%" title="{{ p.name }} {{ p.pct }}%"></span>{% else %}{% set ns.k = ns.k + 1 %}<span class="k{{ ns.k }}" style="width:{{ p.pct }}%" title="{{ p.name }} {{ p.pct }}%"></span>{% endif %}{% endfor %}</div></td>
+      <td class="l">{% set ns = namespace(k=0) %}{% for p in s.parts %}{% if p.rest %}<span class="sharetag rest"><i class="rest"></i>{{ p.name }} {{ p.pct }}%</span>{% else %}{% set ns.k = ns.k + 1 %}<span class="sharetag"><i class="k{{ ns.k }}"></i>{{ p.name }} <b>{{ p.pct }}%</b></span>{% endif %}{% endfor %}</td>
+      <td class="l share-basis">{{ s.basis }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% endif %}
+
 {{ m.h('소속 기업', (asof|ymd) ~ ' 종가 기준') }}
 {{ m.company_table(i.members) }}
 

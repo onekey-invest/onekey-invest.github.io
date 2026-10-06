@@ -124,6 +124,23 @@ table{width:100%;border-collapse:collapse}
 .grid[data-sortable] th[aria-sort="ascending"]::after{content:" ▲";font-size:9px;color:var(--accent)}
 .grid[data-sortable] th[aria-sort="descending"]::after{content:" ▼";font-size:9px;color:var(--accent)}
 .grid tr.off td{color:var(--dim)}
+/* 산업 화면의 품목별 점유율 */
+.share td{white-space:normal;vertical-align:middle}
+.share .share-kind td{background:var(--bg-soft);color:var(--sub);font-size:12.5px;font-weight:600;padding:6px 14px}
+.share tbody tr.share-kind:hover td{background:var(--bg-soft)}
+.share-note{font-size:13px;margin-bottom:12px}
+.share-basis{color:var(--sub);font-size:12.5px}
+.sharebar{display:flex;height:14px;min-width:150px;border-radius:3px;overflow:hidden;background:var(--line-soft)}
+.sharebar span{display:block;height:100%;border-right:1px solid #fff}
+.sharebar span:last-child{border-right:0}
+.sharebar .k1,.sharetag i.k1{background:var(--accent)}
+.sharebar .k2,.sharetag i.k2{background:#5fa8a0}
+.sharebar .k3,.sharetag i.k3{background:#b5d9d4}
+.sharebar .k4,.sharetag i.k4{background:var(--ink-2)}
+.sharebar .rest,.sharetag i.rest{background:#cdd3dc}
+.sharetag{display:inline-flex;align-items:center;gap:5px;margin:1px 12px 1px 0;white-space:nowrap}
+.sharetag i{width:8px;height:8px;border-radius:2px;display:inline-block;flex:none}
+.sharetag.rest{color:var(--sub)}
 .grid td.sp{padding-top:6px;padding-bottom:2px}
 .spark{display:block;margin-left:auto}
 .note{font-size:12px;color:var(--dim);text-align:right;padding-top:8px}
