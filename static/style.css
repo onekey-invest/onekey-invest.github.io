@@ -124,15 +124,12 @@ table{width:100%;border-collapse:collapse}
 .grid[data-sortable] th[aria-sort="ascending"]::after{content:" ▲";font-size:9px;color:var(--accent)}
 .grid[data-sortable] th[aria-sort="descending"]::after{content:" ▼";font-size:9px;color:var(--accent)}
 .grid tr.off td{color:var(--dim)}
-/* 산업 화면의 시장 점유율(전체 시장) */
-.mktbar{display:flex;height:22px;border-radius:4px;overflow:hidden;background:var(--line-soft);margin:4px 0 14px}
-.mktbar span{display:block;height:100%;border-right:1px solid #fff;background:var(--accent)}
-.mktbar span:nth-child(even){background:#5fa8a0}
-.mktbar span.rest{background:#cdd3dc;border-right:0}
-.mkt td{vertical-align:middle}
-.mktrow{height:10px;background:var(--line-soft);border-radius:2px;overflow:hidden;min-width:120px}
-.mktrow i{display:block;height:100%;background:var(--accent)}
-.mkt-note{font-size:12.5px;line-height:1.65;color:var(--sub);margin:10px 0 0}
+/* 산업 화면의 시장 점유율(전체 시장): 원그래프와 순위 표 */
+.mktwrap{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:36px;align-items:center;margin-top:6px}
+.mktpie{display:flex;justify-content:center}
+.mkt td{vertical-align:middle;padding-top:8px;padding-bottom:8px}
+.mkt .dot{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:8px;vertical-align:1px}
+.mkt-note{font-size:12.5px;line-height:1.65;color:var(--sub);margin:12px 0 0}
 /* 기업 화면 머리의 바로가기 */
 .doclinks{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
 .doclinks a{display:inline-flex;align-items:center;gap:7px;padding:7px 12px;border:1px solid var(--line);border-radius:8px;font-size:13.5px;color:var(--sub);background:#fff}
@@ -246,13 +243,14 @@ table{width:100%;border-collapse:collapse}
   .gnb{order:3;width:100%;overflow-x:auto;margin:6px -4px 0}
   .gnb a{padding:10px 10px;font-size:14px}
   .top .r a:nth-child(n+3){display:none}
-  .two,.two.top,.two.even,.rep,.cards{grid-template-columns:1fr;gap:28px}
+  .two,.two.top,.two.even,.rep,.cards,.mktwrap{grid-template-columns:1fr;gap:28px}
   .stock h1{font-size:25px}
   .stock h1.rt-title{font-size:21px}
   .strip{width:100%;gap:0;justify-content:space-between}
   .strip b{font-size:18px}
   .scroll{overflow-x:auto;margin:0 -16px;padding:0 16px}
   .scroll table{min-width:700px}
+  .scroll table.mkt{min-width:0}
   .chart-canvas.live{height:250px}
   .chart-top{flex-direction:column-reverse;gap:6px}
   .filter .count{margin-left:0}

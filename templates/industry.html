@@ -35,23 +35,23 @@
 {% if i.market %}
 {{ m.h('시장 점유율', (i.market_asof or '') ~ ' 기준') }}
 {% if i.market_lead %}<p class="intro">{{ i.market_lead }}</p>{% endif %}
-<div class="mktbar">{% for p in i.market %}<span class="{{ 'rest' if p.rest else '' }}" style="width:{{ p.pct }}%" title="{{ p.name }} {{ p.pct }}%"></span>{% endfor %}</div>
-{% set top = i.market|rejectattr('rest')|map(attribute='pct')|max %}
-<div class="scroll">
-<table class="grid mkt">
-  <thead><tr><th class="c" style="width:56px">순위</th><th class="l">업체</th><th>생산실적</th><th>점유율</th><th class="l" style="width:38%"></th></tr></thead>
-  <tbody>
-  {% for p in i.market %}
-    <tr{% if p.rest %} class="off"{% endif %}>
-      <td class="c">{{ '' if p.rest else loop.index }}</td>
-      <td class="l">{% if p.rest %}{{ p.name }}{% else %}<b>{{ p.name }}</b>{% endif %}</td>
-      <td>{{ p.amt }}</td>
-      <td><b>{{ p.pct }}%</b></td>
-      <td class="l">{% if not p.rest %}<div class="mktrow"><i style="width:{{ '%.1f'|format(p.pct / top * 100) }}%"></i></div>{% endif %}</td>
-    </tr>
-  {% endfor %}
-  </tbody>
-</table>
+<div class="mktwrap">
+  <div class="mktpie">{{ i.market_pie }}</div>
+  <div class="scroll">
+  <table class="grid mkt">
+    <thead><tr><th class="c" style="width:48px">순위</th><th class="l">업체</th><th>생산실적</th><th>점유율</th></tr></thead>
+    <tbody>
+    {% for p in i.market %}
+      <tr{% if p.rest %} class="off"{% endif %}>
+        <td class="c">{{ '' if p.rest else loop.index }}</td>
+        <td class="l"><i class="dot" style="background:{{ p.color }}"></i>{% if p.rest %}{{ p.name }}{% else %}<b>{{ p.name }}</b>{% endif %}</td>
+        <td>{{ p.amt }}</td>
+        <td><b>{{ p.pct }}%</b></td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
 </div>
 {% if i.market_note %}<p class="mkt-note">{{ i.market_note }}. {{ i.market_foot }}</p>{% endif %}
 {% endif %}

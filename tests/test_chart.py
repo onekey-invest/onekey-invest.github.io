@@ -6,7 +6,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from lib.chart import _nice_ticks, company_chart  # noqa: E402
+from lib.chart import _nice_ticks, company_chart, pie_chart, pie_colors  # noqa: E402
 
 
 class TicksTest(unittest.TestCase):
@@ -33,6 +33,27 @@ class ChartTest(unittest.TestCase):
 
     def test_too_short_series_returns_empty(self):
         self.assertEqual(company_chart([(date(2026, 1, 1), 100)]), "")
+
+
+class PieTest(unittest.TestCase):
+    PARTS = [{"name": "가", "pct": 3.5}, {"name": "나", "pct": 3.2}, {"name": "다", "pct": 14.7}, {"name": "그 밖", "pct": 78.6, "rest": True}]
+
+    def test_one_slice_per_part_and_every_label(self):
+        svg = pie_chart(self.PARTS)
+        self.assertEqual(svg.count("<path "), len(self.PARTS))
+        for p in self.PARTS:
+            self.assertIn(f'{p["name"]} {p["pct"]}%', svg.replace("</text>", "").replace('<tspan font-weight="700" fill="#111827">', ""))
+            self.assertIn(f'<title>{p["name"]} {p["pct"]}%</title>', svg)
+
+    def test_small_slices_get_outside_labels_and_rest_is_grey(self):
+        svg = pie_chart(self.PARTS)
+        self.assertEqual(svg.count("<polyline "), 2)            # 8% 미만인 두 조각만 밖에 쓴다
+        self.assertEqual(pie_colors(self.PARTS)[-1], "#e4e7ec")
+        self.assertEqual(len(set(pie_colors(self.PARTS)[:3])), 3)
+
+    def test_single_part_and_empty(self):
+        self.assertIn("<circle", pie_chart([{"name": "하나", "pct": 100}]))
+        self.assertEqual(pie_chart([]), "")
 
 
 if __name__ == "__main__":

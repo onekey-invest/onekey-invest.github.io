@@ -218,3 +218,84 @@ def pct_chart(lines, vline=None) -> str:
 
     out.append("</svg>")
     return "".join(out)
+
+
+PIE_COLORS = ["#0f766e", "#1f2a44", "#5fa8a0", "#475467", "#b5d9d4", "#0b5c56", "#98a2b3", "#2d8f85", "#344054", "#cfe8e4"]
+PIE_REST = "#e4e7ec"
+_DARK = {"#0f766e", "#1f2a44", "#475467", "#0b5c56", "#2d8f85", "#344054"}
+
+
+def pie_colors(parts) -> list[str]:
+    """조각마다 쓸 색. '그 밖'(rest)은 옅은 회색, 나머지는 순서대로."""
+    out, k = [], 0
+    for p in parts:
+        if p.get("rest"):
+            out.append(PIE_REST)
+        else:
+            out.append(PIE_COLORS[k % len(PIE_COLORS)])
+            k += 1
+    return out
+
+
+def pie_chart(parts, center_note: str = "") -> str:
+    """점유율 원그래프. parts = [{name, pct, rest?}], pct의 합은 100.
+
+    12시에서 시작해 시계 방향으로 돈다. 큰 조각(8% 이상)과 '그 밖'은 조각 안에 이름과 %를 쓰고,
+    작은 조각은 원 밖 옆줄에 이름과 %를 쓰고 선으로 잇는다(오른쪽 반은 오른쪽 줄, 왼쪽 반은 왼쪽 줄).
+    """
+    total = sum(p["pct"] for p in parts)
+    if not parts or total <= 0:
+        return ""
+    colors = pie_colors(parts)
+    r, gap, row = 118, 22, 21
+    slices, a0 = [], 0.0
+    for p, col in zip(parts, colors):
+        a1 = a0 + p["pct"] / total * 360
+        slices.append({**p, "a0": a0, "a1": a1, "mid": (a0 + a1) / 2, "color": col})
+        a0 = a1
+    inside = [s for s in slices if s.get("rest") or s["pct"] / total >= 0.08]
+    outside = [s for s in slices if s not in inside]
+    right = [s for s in outside if s["mid"] < 180]
+    left = sorted([s for s in outside if s["mid"] >= 180], key=lambda s: -s["mid"])   # 왼쪽은 위에서 아래로
+    lab_w = 150
+    w = (lab_w if left else 14) + 2 * r + gap + (lab_w if right else 14)
+    cx = (lab_w if left else 14) + r
+    need = max(len(right), len(left)) * row + 24
+    h = max(2 * r + 28, need)
+    cy = h / 2
+
+    def pt(angle, radius):
+        t = math.radians(angle)
+        return cx + radius * math.sin(t), cy - radius * math.cos(t)
+
+    o = [f'<svg viewBox="0 0 {w:.0f} {h:.0f}" role="img" aria-label="점유율 원그래프" {FONT} style="width:100%;max-width:{w:.0f}px;height:auto;display:block">']
+    for s in slices:
+        if s["a1"] - s["a0"] >= 359.999:
+            o.append(f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="{r}" fill="{s["color"]}"/>')
+            continue
+        (x0, y0), (x1, y1) = pt(s["a0"], r), pt(s["a1"], r)
+        big = 1 if s["a1"] - s["a0"] > 180 else 0
+        o.append(f'<path d="M{cx:.1f},{cy:.1f} L{x0:.1f},{y0:.1f} A{r},{r} 0 {big} 1 {x1:.1f},{y1:.1f} Z" fill="{s["color"]}" stroke="#fff" stroke-width="1.2"><title>{s["name"]} {s["pct"]}%</title></path>')
+    for s in inside:
+        x, y = pt(s["mid"], r * (0.5 if s["a1"] - s["a0"] > 120 else 0.62))
+        ink = "#fff" if s["color"] in _DARK else "#344054"
+        o.append(f'<text x="{x:.1f}" y="{y - 3:.1f}" text-anchor="middle" font-size="12.5" fill="{ink}">{s["name"]}</text>')
+        o.append(f'<text x="{x:.1f}" y="{y + 14:.1f}" text-anchor="middle" font-size="15" font-weight="700" fill="{ink}">{s["pct"]}%</text>')
+    for side, group in (("r", right), ("l", left)):
+        if not group:
+            continue
+        top = cy - (len(group) - 1) * row / 2
+        for k, s in enumerate(group):
+            ly = top + k * row
+            px, py = pt(s["mid"], r + 3)
+            if side == "r":
+                ex, tx, anchor = cx + r + gap - 6, cx + r + gap, "start"
+            else:
+                ex, tx, anchor = cx - r - gap + 6, cx - r - gap, "end"
+            o.append(f'<polyline points="{px:.1f},{py:.1f} {ex:.1f},{ly:.1f} {tx - (3 if side == "r" else -3):.1f},{ly:.1f}" fill="none" stroke="#98a2b3" stroke-width="0.8"/>')
+            o.append(f'<text x="{tx:.1f}" y="{ly + 4:.1f}" text-anchor="{anchor}" font-size="12.5" fill="#344054">{s["name"]} <tspan font-weight="700" fill="#111827">{s["pct"]}%</tspan></text>')
+    if center_note:
+        o.append(f'<text x="{cx:.1f}" y="{h - 4:.1f}" text-anchor="middle" font-size="11" fill="#98a2b3">{center_note}</text>')
+    o.append("</svg>")
+    return "".join(o)
+

@@ -26,7 +26,7 @@ sys.path.insert(0, str(ROOT))
 
 from lib import metrics as M  # noqa: E402
 from lib import portfolio as PF  # noqa: E402
-from lib.chart import company_chart, pct_chart, sparkline  # noqa: E402
+from lib.chart import company_chart, pct_chart, pie_chart, pie_colors, sparkline  # noqa: E402
 
 DIST = ROOT / "dist"
 
@@ -476,6 +476,9 @@ def main():
                 for k, (name, pts) in enumerate(series) if len(pts) >= 2 and pts[0][1]
             ]),
             "value_chain": md(i.get("value_chain") or ""),
+            # 시장 점유율: 원그래프와, 표에 같은 색을 쓰도록 조각마다 색을 붙인 목록
+            "market": [dict(p, color=col) for p, col in zip(i.get("market") or [], pie_colors(i.get("market") or []))],
+            "market_pie": Markup(pie_chart(i.get("market") or [])),
             "path": f"industries/{i['id']}/",
             "members": members,
             "reports": [r for r in reversed(reports) if r.get("industry") == i["id"]],
