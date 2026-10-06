@@ -40,7 +40,7 @@
           {{ c.change.prev.target|num }} → {{ c.change.cur.target|num }} <small>{{ c.change.cur.date|ymd }}</small>
         {% else %}없음{% endif %}
       </td></tr>
-      <tr><th>리포트</th><td>{{ c.reports|length }}건 <small>최초 {{ c.n_first }}, 업데이트 {{ c.n_update }}</small></td></tr>
+      <tr><th>리포트</th><td>{{ c.reports|length }}건 <small>최초 {{ c.n_first }}, 업데이트 {{ c.n_update }}{% if c.n_brief %}, 브리프 {{ c.n_brief }}{% endif %}</small></td></tr>
       <tr><th>가상운용 편입</th><td>
         {% for h in c.held_by %}<a href="{{ url(h.path) }}">{{ h.name }}</a> <small>비중 {{ h.weight|share }}</small>{% if not loop.last %}, {% endif %}
         {% else %}없음{% endfor %}

@@ -36,7 +36,7 @@ python -m unittest discover tests
 | `data/strategies.yaml` | 가상운용 전략. 규칙, 근거, 백테스트 설명, 회고 |
 | `data/trades/전략id.csv` | 전략의 거래 기록 |
 | `data/backtests/전략id.csv` | 운용 개시 전 백테스트 곡선(없어도 된다) |
-| `content/reports/*.md` | 리포트 원고. 투자의견과 목표주가는 여기서 읽는다 |
+| `content/reports/*.md` | 리포트 원고. 투자의견과 목표주가는 여기서 읽는다. 종류(kind): 최초, 업데이트, 브리프(정식 보고서를 서너 쪽으로 줄인 기업 브리프), 산업 |
 | `content/notes/날짜.md` | 마켓노트. 하루에 한 파일 |
 | `content/pages/*.md` | 방법론, About |
 | `lib/metrics.py` | 커버리지 수익률 계산 |

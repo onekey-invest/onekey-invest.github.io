@@ -3,7 +3,7 @@
 {% block main %}
 
 {{ m.h('리포트 목록', reports|length ~ '건 · 이후 수익률은 발행일 종가 대비 ' ~ (asof|ymd) ~ ' 종가', first=true) }}
-{{ m.filter('report-table', '제목, 대상 검색', ['최초', '업데이트', '산업']) }}
+{{ m.filter('report-table', '제목, 대상 검색', ['최초', '업데이트', '브리프', '산업']) }}
 {{ m.report_table(reports, id='report-table') }}
 
 {% endblock %}
