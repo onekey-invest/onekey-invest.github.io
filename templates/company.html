@@ -10,6 +10,11 @@
       {% for t in c.tags %}<i>|</i>{{ t }}{% endfor %}
       <i>|</i>커버리지 개시 {{ c.started|ymd }}<i>|</i>최근 업데이트 {{ c.updated|ymd }}
     </div>
+    <div class="doclinks">
+      {% if c.brief %}<a href="{{ url(c.brief.path) }}"><span class="tag">브리프</span><b>기업 브리프</b><small>{{ c.brief.date|ymd }}</small></a>{% endif %}
+      {% if c.full %}<a href="{{ url(c.full.path) }}"><span class="tag f">{{ c.full.kind }}</span><b>리포트 전문</b><small>{{ c.full.date|ymd }}</small></a>{% endif %}
+      <a href="#reports">리포트 {{ c.reports|length }}건 모두 보기</a>
+    </div>
     {% if c.progress is not none %}
     <div class="track">
       <div class="bar"><i style="width:{{ '%.1f'|format(c.progress * 100) }}%"></i><b style="left:{{ '%.1f'|format(c.progress * 100) }}%"></b></div>
@@ -40,7 +45,7 @@
           {{ c.change.prev.target|num }} → {{ c.change.cur.target|num }} <small>{{ c.change.cur.date|ymd }}</small>
         {% else %}없음{% endif %}
       </td></tr>
-      <tr><th>리포트</th><td>{{ c.reports|length }}건 <small>최초 {{ c.n_first }}, 업데이트 {{ c.n_update }}{% if c.n_brief %}, 브리프 {{ c.n_brief }}{% endif %}</small></td></tr>
+      <tr><th>리포트</th><td><a class="lnk" href="#reports">{{ c.reports|length }}건</a> <small>최초 {{ c.n_first }}, 업데이트 {{ c.n_update }}{% if c.n_brief %}, 브리프 {{ c.n_brief }}{% endif %}</small></td></tr>
       <tr><th>가상운용 편입</th><td>
         {% for h in c.held_by %}<a href="{{ url(h.path) }}">{{ h.name }}</a> <small>비중 {{ h.weight|share }}</small>{% if not loop.last %}, {% endif %}
         {% else %}없음{% endfor %}
@@ -75,6 +80,7 @@
 <div class="note">A는 실적, E는 작성자 추정. PER·PBR은 기준일 종가({{ c.last|num }}원) 기준</div>
 {% endif %}
 
+<div id="reports" class="anchor"></div>
 {{ m.h('리포트', '이후 수익률은 발행일 종가 대비') }}
 {{ m.report_table(c.reports, subject=false) }}
 

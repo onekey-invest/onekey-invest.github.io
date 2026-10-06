@@ -30,7 +30,7 @@ python -m unittest discover tests
 |---|---|
 | `data/site.yaml` | 사이트 이름, 작성자, 홈의 큰 문장과 소개, 외부 링크 |
 | `data/companies.yaml` | 커버 종목, 투자포인트, 실적 추정, 밸류에이션 상세, 리스크·회고 |
-| `data/industries.yaml` | 커버 산업, 산업 의견, 핵심 논점, 품목별 점유율(`shares`: 품목마다 업체와 %, 기준), 밸류체인 |
+| `data/industries.yaml` | 커버 산업, 산업 의견, 핵심 논점, 시장 점유율(`market`: 전체 시장에서 업체별 %), 품목별 점유율(`shares`: 품목마다 업체와 %, 기준), 밸류체인 |
 | `data/indicators/산업id.csv` | 산업 핵심 지표. 첫 열은 date, 나머지 열이 지표(없어도 된다) |
 | `data/prices/*.csv` | 일별 종가. 파일 이름은 종목 id 또는 벤치마크 이름 |
 | `data/strategies.yaml` | 가상운용 전략. 규칙, 근거, 백테스트 설명, 회고 |

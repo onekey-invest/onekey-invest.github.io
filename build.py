@@ -352,6 +352,9 @@ def build_company(c, reports, prices, bench_map, asof):
         "n_first": sum(1 for r in reps if r["kind"] == "최초"),
         "n_update": sum(1 for r in reps if r["kind"] not in ("최초", "브리프")),
         "n_brief": sum(1 for r in reps if r["kind"] == "브리프"),
+        # 기업 화면 머리의 바로가기: 가장 최근의 기업 브리프와, 브리프가 아닌 가장 최근 리포트
+        "brief": next((r for r in rows if r["kind"] == "브리프"), None),
+        "full": next((r for r in rows if r["kind"] != "브리프"), None),
         "started": first["date"],
         "updated": latest["date"],
         "rating": latest["rating"],
