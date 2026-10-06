@@ -1,13 +1,13 @@
 # 마켓노트 예약 실행 설정. 예약 실행이 시작할 때 이 파일을 읽는다.
 # mode: live  → 실행한 날(한국 시간)의 글을 써서 main에 올린다. 올리면 바로 공개된다.
 # mode: test  → test_date의 글을 다시 써서 test_branch에만 올린다. 공개되지 않는다.
-mode: live
+mode: test
 cutoff: "08:30"          # 이 시각(한국 시간)까지 도착한 뉴스레터만 쓴다
 # 재료로 쓰는 메일의 범위(한국 시간). 대상 날짜 00:00부터 cutoff까지 도착한 것만 쓴다.
 # 월요일에도 금요일·주말에 온 메일은 쓰지 않는다. 지시문의 범위 규칙 대신 이 줄을 따른다(자세한 것은 extra_rules 0번).
 mail_window: "대상 날짜 00:00 ~ cutoff"
-test_date: 2026-09-18
-test_branch: routine-fill-20260918
+test_date: 2026-09-21
+test_branch: routine-fill-20260921
 
 # Gmail을 검색하기 전에 반드시 이 파일을 읽고, 지시문의 규칙에 더해 따른다. 겹치면 이 파일이 우선한다.
 extra_rules: ops/extra_rules.md
