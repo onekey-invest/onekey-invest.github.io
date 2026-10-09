@@ -1,4 +1,14 @@
 {
+    "company-orion":  {
+                          "asof":  "2026-10-07",
+                          "w":  667,
+                          "h":  360
+                      },
+    "spark-company-orion":  {
+                                "asof":  "2026-10-07",
+                                "w":  160,
+                                "h":  45
+                            },
     "industry-food-indicators":  {
                                      "asof":  "2026-09-01",
                                      "w":  560,
@@ -8,5 +18,15 @@
                                  "asof":  "",
                                  "w":  573,
                                  "h":  440
-                             }
+                             },
+    "industry-casino-indicators":  {
+                                       "asof":  "2026-09-01",
+                                       "w":  560,
+                                       "h":  307
+                                   },
+    "industry-casino-market":  {
+                                   "asof":  "",
+                                   "w":  573,
+                                   "h":  440
+                               }
 }

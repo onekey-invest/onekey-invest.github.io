@@ -39,7 +39,7 @@
   <div class="mktpie">{{ m.chart(i.market_pie, i.name ~ ' 시장 점유율') }}</div>
   <div class="scroll">
   <table class="grid mkt">
-    <thead><tr><th class="c" style="width:48px">순위</th><th class="l">업체</th><th>생산실적</th><th>점유율</th></tr></thead>
+    <thead><tr><th class="c" style="width:48px">순위</th><th class="l">업체</th><th>{{ i.market_amt_label or "생산실적" }}</th><th>점유율</th></tr></thead>
     <tbody>
     {% for p in i.market %}
       <tr{% if p.rest %} class="off"{% endif %}>
