@@ -14,6 +14,7 @@ KOSPI: {source: yahoo, symbol: "^KS11", start: 2024-01-01}
 orion: {source: yahoo, symbol: "271560.KS", start: 2024-01-01}
 samyang: {source: yahoo, symbol: "003230.KS", start: 2024-01-01}
 paradise: {source: yahoo, symbol: "034230.KS", start: 2024-01-01}
+nh: {source: yahoo, symbol: "005940.KS", start: 2024-01-01}
 
 # 예시
 # KOSDAQ:  {source: yahoo, symbol: "^KQ11", start: 2025-01-01}
