@@ -1,10 +1,10 @@
 # 사이트 전체 설정. 이름과 소개는 직접 채운다.
 name: "One Key"            # 머리 띠에 나오는 사이트 이름
 tagline: "기업·산업 분석과 판단 기록"
-author: "One Key"                   # 바닥글과 About에 나오는 작성자
+author: "이원기"                    # 바닥글과 About에 나오는 작성자
 email: ""                          # 비워 두면 표시하지 않는다
 links:                             # 머리 띠 오른쪽에 나오는 외부 링크
-  # - {label: LinkedIn, url: "https://www.linkedin.com/in/..."}
+  - {label: LinkedIn, url: "https://www.linkedin.com/in/원기-이-049809427/"}
   # - {label: GitHub, url: "https://github.com/..."}
 headline: "직접 쓴 리포트와 그 뒤의 주가를 함께 기록합니다."   # 홈 맨 위의 큰 문장
 intro: >-
