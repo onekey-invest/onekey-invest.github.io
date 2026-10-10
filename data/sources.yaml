@@ -18,6 +18,7 @@ nh: {source: yahoo, symbol: "005940.KS", start: 2024-01-01}
 hmm: {source: yahoo, symbol: "011200.KS", start: 2024-01-01}
 samsung: {source: yahoo, symbol: "005930.KS", start: 2024-01-01}
 bgf: {source: yahoo, symbol: "282330.KS", start: 2024-01-01}
+shi: {source: yahoo, symbol: "010140.KS", start: 2024-01-01}
 
 # 예시
 # KOSDAQ:  {source: yahoo, symbol: "^KQ11", start: 2025-01-01}
