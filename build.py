@@ -629,7 +629,7 @@ def main():
         }
 
     write("", "home.html", nav="home", title="홈",
-          companies=companies, reports=all_reports[:6], summary=summary, n_reports=len(all_reports),
+          companies=companies, reports=all_reports[:12], summary=summary, n_reports=len(all_reports),
           strategies=strategies, featured=featured[:3], notes=notes[:5])
     write("research", "research.html", nav="research", sub="companies", title="커버리지 성적표",
           companies=companies, summary=summary)
