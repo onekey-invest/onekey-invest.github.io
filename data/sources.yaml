@@ -27,6 +27,9 @@ shi: {source: yahoo, symbol: "010140.KS", start: 2024-01-01}
 "KODEX 국고채3년": {source: yahoo, symbol: "114260.KS", start: 2026-01-01}
 "KOSEF 국고채10년": {source: yahoo, symbol: "148070.KS", start: 2026-01-01}
 
+# 미국 주식 전략(us-t12 등)의 벤치마크. 가격 지수라 배당은 들어 있지 않다.
+SP500: {source: yahoo, symbol: "^GSPC", start: 2026-01-01}
+
 # 예시
 # KOSDAQ:  {source: yahoo, symbol: "^KQ11", start: 2025-01-01}
 # SP500:   {source: yahoo, symbol: "^GSPC", start: 2025-01-01}

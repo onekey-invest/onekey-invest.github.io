@@ -333,6 +333,22 @@ def pct_points(points):
     return [(d, v * 100) for d, v in points]
 
 
+def build_pending(s):
+    """규칙을 먼저 공개하고 운용 개시일이 아직 오지 않은 전략. 운용 기록 없이 규칙 · 근거 · 백테스트만 보인다."""
+    if s["category"] not in {c[0] for c in CATEGORIES}:
+        raise ValueError(f"{s['id']}: 없는 category {s['category']}")
+    return {
+        **s,
+        "path": f"strategies/{s['id']}/",
+        "pre": True,
+        "active": False,
+        "bt": backtest_view(s["id"], s.get("backtest_bench", "견줄 것")),
+        "rationale": md(s.get("rationale") or ""),
+        "backtest": md(s.get("backtest") or ""),
+        "log": md(s.get("log") or ""),
+    }
+
+
 def build_strategy(s, prices, bench_map, asof, comp_by_id):
     if s["category"] not in {c[0] for c in CATEGORIES}:
         raise ValueError(f"{s['id']}: 없는 category {s['category']}")
@@ -669,11 +685,12 @@ def main():
             row.update(subject=i["name"], subject_path=f"industries/{i['id']}/", close=None, after=None)
         all_reports.append(row)
 
-    strategies = []
+    strategies, pending = [], []   # pending: 규칙을 공개했고 운용 개시일이 아직 오지 않은 전략
     for s in load_yaml("strategies.yaml") or []:
         # 규칙만 먼저 공개하고 개시일의 종가가 아직 없는 전략은 건너뛴다(종가가 들어오면 나타난다)
         if s["started"] > prices[bench_map[s["benchmark"]]].dates[-1]:
-            print(f"  (개시 전) {s['id']}: 운용 개시일 {s['started']}의 종가가 아직 없어 건너뜀")
+            print(f"  (개시 전) {s['id']}: 운용 개시일 {s['started']}의 종가가 아직 없어 규칙과 백테스트만 보임")
+            pending.append(build_pending(s))
             continue
         strategies.append(build_strategy(s, prices, bench_map, asof, comp_by_id))
     # 운용 중인 전략을 위에, 중단한 전략을 아래에 둔다
@@ -796,8 +813,8 @@ def main():
             for name, s in bench_first.items()
         ], w=420, h=230)
         write(path, "portfolios.html", nav="portfolios", sub=key, title=f"가상운용 · {label}",
-              label=label, strategies=members, chart=chart)
-    for s in strategies:
+              label=label, strategies=members, chart=chart, pending=[s for s in pending if s["category"] == key])
+    for s in strategies + pending:
         write(s["path"], "strategy.html", nav="portfolios", sub=s["category"], title=s["name"], s=s)
 
     write("notes", "notes.html", nav="notes", title="마켓노트", notes=notes)

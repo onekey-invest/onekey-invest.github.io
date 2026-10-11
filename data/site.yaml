@@ -17,3 +17,4 @@ demo: false                        # true면 모든 화면 위에 예시 데이�
 benchmarks:                        # 벤치마크 이름 → 시세 파일(data/prices/이름.csv)
   KOSPI: KOSPI
   KOSDAQ: KOSDAQ
+  "S&P 500": SP500

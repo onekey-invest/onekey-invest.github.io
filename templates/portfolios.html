@@ -17,6 +17,7 @@
     <table class="kv">
       <tr><th>운용 중인 전략</th><td>{{ strategies|selectattr('active')|list|length }}개</td></tr>
       <tr><th>중단한 전략</th><td>{{ strategies|rejectattr('active')|list|length }}개</td></tr>
+      {% if pending %}<tr><th>규칙 공개 · 개시 전</th><td>{{ pending|length }}개</td></tr>{% endif %}
       <tr><th>성과 계산</th><td>일별 종가 기준 <small>(<a href="{{ url('methodology/') }}">방법론</a>)</small></td></tr>
     </table>
   </div>
@@ -42,9 +43,29 @@
 
 {{ m.h('전략', strategies|length ~ '개') }}
 {{ m.strategy_table(strategies) }}
-{% else %}
+{% elif not pending %}
 {{ m.h('전략', '') }}
 <p class="intro">{{ label }} 전략은 아직 없습니다. 전략을 추가하면 이 자리에 누적수익률 차트와 전략 표가 나옵니다.</p>
+{% endif %}
+
+{% if pending %}
+{{ m.h('규칙 공개 · 개시 전', pending|length ~ '개') }}
+<div class="scroll">
+<table class="grid">
+  <thead><tr><th class="l">전략</th><th class="c">상태</th><th class="c">규칙 공개</th><th class="c">운용 개시 예정</th><th class="l">벤치마크</th></tr></thead>
+  <tbody>
+  {% for s in pending %}
+    <tr>
+      <td class="l"><a href="{{ url(s.path) }}"><b>{{ s.name }}</b></a> <small>{{ s.subtitle }}</small></td>
+      <td class="c">{{ m.status(s) }}</td>
+      <td class="c">{{ s.published|ymd }}</td>
+      <td class="c">{{ s.started|ymd }}</td>
+      <td class="l">{{ s.benchmark }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
 {% endif %}
 
 {% endblock %}

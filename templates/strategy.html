@@ -8,10 +8,11 @@
     <div class="meta">
       {{ m.status(s) }}
       {% for key, label, path in categories %}{% if key == s.category %}<a href="{{ url(path) }}">{{ label }}</a>{% endif %}{% endfor %}
-      <i>|</i>벤치마크 {{ s.benchmark }}<i>|</i>규칙 공개 {{ s.published|ymd }}<i>|</i>운용 개시 {{ s.started|ymd }}
+      <i>|</i>벤치마크 {{ s.benchmark }}<i>|</i>규칙 공개 {{ s.published|ymd }}<i>|</i>운용 개시 {% if s.pre %}예정 {% endif %}{{ s.started|ymd }}
       {% if s.stopped %}<i>|</i>중단 {{ s.stopped|ymd }}{% endif %}
     </div>
   </div>
+  {% if not s.pre %}
   <div class="strip">
     <div><span>초기자금</span><b>{{ s.initial|num }}</b></div>
     {% if s.live_now and s.live_layout == 'strip' %}
@@ -24,8 +25,12 @@
     <div><span>MDD</span><b>{{ s.mdd|pct }}</b></div>
     <div><span>변동성 <small>연율</small></span><b>{% if s.vol is not none %}{{ '%.1f'|format(s.vol * 100) }}%{% else %}–{% endif %}</b></div>
   </div>
+  {% endif %}
 </div>
 
+{% if s.pre %}
+<p class="intro">규칙을 먼저 공개한 전략입니다. 운용 기록은 개시일({{ s.started|ymd }})의 종가부터 쌓이며, 그 전까지는 규칙 · 근거 · 백테스트만 보입니다.</p>
+{% else %}
 {% if s.live_now and s.live_layout == 'band' %}
 <div class="liveband">
   <span class="tag">{{ '장중' if s.live_now.open else '장 마감 뒤' }}</span>
@@ -62,12 +67,15 @@
   </div>
 </div>
 
+{% endif %}
+
 {{ m.h('운용 규칙', (s.published|ymd) ~ ' 공개') }}
 <ul class="dash">
   {% for r in s.rules %}<li>{{ r }}</li>{% endfor %}
   <li><b>체결·비용 가정</b>: {{ s.fill }}. 수수료 {{ '%.3f'|format(s.commission * 100) }}%, 매도 세금 {{ '%.2f'|format(s.sell_tax * 100) }}%</li>
 </ul>
 
+{% if not s.pre %}
 {{ m.h('보유 종목', (s.end|ymd) ~ ' 종가 기준') }}
 <div class="scroll">
 <table class="grid">
@@ -104,6 +112,7 @@
   </tbody>
 </table>
 </div>
+{% endif %}
 
 <details class="fold" open><summary>전략 근거</summary><div class="prose">{{ s.rationale }}</div></details>
 <details class="fold"{% if s.bt %} open{% endif %}><summary>백테스트</summary>
