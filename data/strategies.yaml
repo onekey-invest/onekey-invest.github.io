@@ -1,7 +1,7 @@
 # 가상운용 전략. 지금은 전략이 없다(예시 전략은 2026-10-06에 걷어냈다).
 #
 # category: domestic(국내 주식) / overseas(해외 주식) / multi(멀티에셋) / etf(ETF)
-# status: 운용 중 / 중단
+# status: 운용 중 / 중단 / 개시 전(규칙만 먼저 공개. started가 벤치마크의 마지막 종가보다 뒤면 규칙 · 근거 · 백테스트만 보인다)
 # published: 규칙을 공개한 날. started: 운용 개시일. stopped: 중단일(운용 중이면 비운다)
 # 거래 기록은 data/trades/전략id.csv, 백테스트는 data/backtests/전략id.csv(없어도 된다)
 # rationale, backtest, log는 마크다운으로 쓴다. 기업 페이지가 있는 종목은 거래 기록에 종목 id를 쓴다.
