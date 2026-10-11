@@ -173,6 +173,9 @@ table{width:100%;border-collapse:collapse}
 .claims td{vertical-align:top}
 .claims td.l{min-width:260px;line-height:1.55}
 .scroll.wide{overflow-x:auto}
+.claims .both{margin-top:2px;font-size:12.5px;font-weight:600;color:var(--ink)}
+.two.wl{grid-template-columns:minmax(0,7fr) minmax(0,5fr)}
+.kv td .vbar{margin-left:auto}
 .claims .how{margin-top:3px;font-size:12.5px;color:var(--accent);font-weight:600}
 .claims .how small{font-weight:400}
 .bars{border-top:1px solid var(--line)}
@@ -243,7 +246,7 @@ table{width:100%;border-collapse:collapse}
   .gnb{order:3;width:100%;overflow-x:auto;margin:6px -4px 0}
   .gnb a{padding:10px 10px;font-size:14px}
   .top .r a:nth-child(n+3){display:none}
-  .two,.two.top,.two.even,.rep,.cards,.mktwrap{grid-template-columns:1fr;gap:28px}
+  .two,.two.top,.two.even,.two.wl,.rep,.cards,.mktwrap{grid-template-columns:1fr;gap:28px}
   .stock h1{font-size:25px}
   .stock h1.rt-title{font-size:21px}
   .strip{width:100%;gap:0;justify-content:space-between}

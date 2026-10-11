@@ -8,3 +8,6 @@
 
 {# 판정 막대: 맞더라 · 아니더라 · 뚜렷하지 않음 #}
 {% macro vbar(c) %}{% set s = c[0] + c[1] + c[2] %}{% if s %}<div class="vbar"><span class="ok" style="width:{{ '%.1f'|format(c[0] / s * 100) }}%"></span><span class="no" style="width:{{ '%.1f'|format(c[1] / s * 100) }}%"></span><span class="un" style="width:{{ '%.1f'|format(c[2] / s * 100) }}%"></span></div><small>{{ c[0] }} · {{ c[1] }} · {{ c[2] }}</small>{% else %}<small>–</small>{% endif %}{% endmacro %}
+
+{# 판정 수를 문장으로: "9가지가 맞았고 10가지는 뚜렷하지 않았다." #}
+{% macro tally(c) %}{% if c[0] %}{{ c[0] }}가지가 맞았고{% else %}맞은 것이 없었고{% endif %}{% if c[1] %} {{ c[1] }}가지는 책과 반대였으며{% endif %} {% if c[2] %}{{ c[2] }}가지는 뚜렷하지 않았다.{% else %}뚜렷하지 않은 것은 없었다.{% endif %}{% endmacro %}

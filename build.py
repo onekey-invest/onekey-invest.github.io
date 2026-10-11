@@ -481,25 +481,25 @@ def f_raw(v):
 # ---------- 쓰기 ----------
 
 def load_books():
-    """책 검증: data/books.yaml(책 정보, 손으로 고침)과 data/books/*.json(검사 결과, 내보내기 도구가 만듦). 결과 파일이 없으면 이 구역을 만들지 않는다."""
+    """책 검증: content/books/*.md(책 이름, 지은이, 핵심, 독후감 — 손으로 고침)와 data/books/*.json(검사 결과 — 내보내기 도구가 만듦).
+    결과 파일이 없으면 이 구역을 만들지 않는다."""
     d = ROOT / "data" / "books"
     if not (d / "_summary.json").exists():
         return None
     S = json.loads((d / "_summary.json").read_text(encoding="utf-8"))
-    meta = {b["id"]: b for b in load_yaml("books.yaml")}
     books = []
-    for s in S["books"]:
-        b = json.loads((d / f"{s['id']}.json").read_text(encoding="utf-8"))
-        b.update({k: v for k, v in meta.get(b["id"], {}).items() if k in ("title", "author", "kind", "memo")})   # 책 정보는 yaml이 우선
-        b["memo_html"] = md(b["memo"]) if b.get("memo") else ""
-        b["path"] = f"books/{b['id']}/"
-        # 종목 주장은 한국(없으면 미국)에서 차이가 큰 순으로
-        b["stock_lines"] = sorted((x for x in b["lines"] if x.get("stock")),
-                                  key=lambda x: -abs((x["stock"].get("kr") or x["stock"].get("us") or {}).get("t") or 0))
-        b["macro_lines"] = [x for x in b["lines"] if any(q.get("label") for q in x.get("macro", []))]
-        b["market_lines"] = [x for x in b["lines"] if (x.get("market") or {}).get("label")]
+    for path in sorted((ROOT / "content" / "books").glob("*.md")):
+        front, body = split_front(path)
+        for key in ("id", "title", "sources"):
+            if not front.get(key):
+                raise ValueError(f"{path.name}: {key} 항목이 없다")
+        f = d / f"{front['id']}.json"
+        if not f.exists():
+            raise ValueError(f"{path.name}: 검사 결과(data/books/{front['id']}.json)가 없다. 내보내기 도구를 다시 돌린다")
+        b = json.loads(f.read_text(encoding="utf-8"))
+        b.update(title=front["title"], author=front.get("author") or "", key=front.get("key") or [], body=md(body), path=f"books/{front['id']}/")
         books.append(b)
-    S["list"] = sorted(books, key=lambda b: -b["n_tested"])
+    S["list"] = sorted(books, key=lambda b: -(b["n_claims"] + b["n_macro"] + b["n_market"]))   # 검사한 주장이 많은 책부터
     return S
 
 
