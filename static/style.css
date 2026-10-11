@@ -165,6 +165,16 @@ table{width:100%;border-collapse:collapse}
 /* 홈: 큰 소개와 성적 막대 */
 .lead{font-size:26px;font-weight:800;letter-spacing:-.035em;line-height:1.4;margin:0 0 14px}
 .lead em{font-style:normal;color:var(--accent)}
+/* 책 검증: 판정 표시와 판정 막대 */
+.tag.x{color:var(--dim);background:transparent;box-shadow:inset 0 0 0 1px var(--line)}
+.vbar{display:flex;gap:2px;height:8px;min-width:120px;max-width:180px;margin:3px 0 3px}
+.vbar span{display:block;height:100%;border-radius:1px}
+.vbar .ok{background:var(--accent)} .vbar .no{background:var(--ink-2)} .vbar .un{background:#cdd3dc}
+.claims td{vertical-align:top}
+.claims td.l{min-width:260px;line-height:1.55}
+.scroll.wide{overflow-x:auto}
+.claims .how{margin-top:3px;font-size:12.5px;color:var(--accent);font-weight:600}
+.claims .how small{font-weight:400}
 .bars{border-top:1px solid var(--line)}
 .bars .row{display:grid;grid-template-columns:120px 1fr 64px;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line-soft);font-size:13.5px}
 .bars .row a{font-weight:600}

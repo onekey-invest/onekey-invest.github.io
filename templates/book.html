@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+{% import "_m.html" as m %}
+{% import "_books.html" as k %}
+{% block main %}
+
+<div class="stock">
+  <div>
+    <h1>{{ b.title }}</h1>
+    <div class="meta"><a href="{{ url('books/') }}">책 검증</a><i>|</i>{% if b.author %}{{ b.author }}<i>|</i>{% endif %}{{ b.kind }}<i>|</i>독후감 {% if b.pages %}{{ b.pages }}쪽 · {% endif %}{{ b.n_lines }}줄</div>
+  </div>
+  <div class="strip">
+    <div><span>검사한 줄</span><b>{{ b.n_tested }}</b></div>
+    <div><span>맞더라</span><b>{{ b.counts.kr[0] + b.counts.mac[0] }}</b>{% if b.counts.us|sum %}<span>미국 종목 {{ b.counts.us[0] }}</span>{% endif %}</div>
+    <div><span>아니더라</span><b>{{ b.counts.kr[1] + b.counts.mac[1] }}</b>{% if b.counts.us|sum %}<span>미국 종목 {{ b.counts.us[1] }}</span>{% endif %}</div>
+    <div><span>뚜렷하지 않음</span><b>{{ b.counts.kr[2] + b.counts.mac[2] }}</b>{% if b.counts.us|sum %}<span>미국 종목 {{ b.counts.us[2] }}</span>{% endif %}</div>
+  </div>
+</div>
+
+<div class="two even">
+  <div>
+    {% if b.memo_html %}
+    {{ m.h('읽고 나서', '', first=true) }}
+    <div class="prose tight">{{ b.memo_html }}</div>
+    {{ m.h('이 독후감이 다루는 것', '') }}
+    {% else %}
+    {{ m.h('이 독후감이 다루는 것', '', first=true) }}
+    {% endif %}
+    <p class="intro">{{ b.covers }}</p>
+  </div>
+  <div>
+    {{ m.h('줄이 어디로 갔나', b.n_lines ~ '줄', first=true) }}
+    <table class="kv">
+      {% for g, n in b.groups.items() %}<tr><th>{{ g }}</th><td>{{ n }}줄</td></tr>{% endfor %}
+    </table>
+    <p class="mkt-note">큰 숫자의 맞더라·아니더라는 한국 종목 검사와 시장·금리 검사를 더한 것이고, 미국 종목 검사는 아래에 따로 적었습니다. 한 줄에 관계가 여럿이면 관계마다 셉니다.</p>
+  </div>
+</div>
+
+{% if b.stock_lines %}
+{{ m.h('종목을 고르는 주장', '조건에 맞는 종목과 나머지의 다음 달 수익률 차이 · 한국 ' ~ B.period.kr ~ ' · 미국 ' ~ B.period.us) }}
+{{ m.filter('claim-table', '주장, 검사 검색', ['맞더라', '아니더라', '뚜렷하지 않음', '방향 없음']) }}
+<div class="scroll wide">
+<table class="grid claims" data-sortable id="claim-table">
+  <thead><tr>
+    <th class="c" data-type="num">쪽</th><th class="l" data-type="text">책의 주장 → 검사한 것</th>
+    <th class="c" data-type="text">한국</th><th data-type="num">월 차이</th><th data-type="num">t</th><th data-type="num" title="기간을 다섯으로 나눴을 때 전체와 방향이 같은 조각 수">다섯 기간</th><th data-type="num" title="거래비용을 뺀 뒤의 t">비용 뒤 t</th>
+    <th class="c" data-type="text">미국</th><th data-type="num">월 차이</th><th data-type="num">t</th>
+  </tr></thead>
+  <tbody>
+  {% for x in b.stock_lines %}{% set a = x.stock.kr %}{% set u = x.stock.us %}
+    <tr data-key="{{ (a.v if a else u.v) }}">
+      <td class="c" data-v="{{ x.page }}">{{ x.page }}</td>
+      <td class="l">{{ x.text }}<div class="how">{{ x.stock.label }} <small>{{ x.stock.how }}{% if x.stock.want %} · 책은 {{ x.stock.want }}고 봄{% endif %}</small></div></td>
+      {% if a %}
+      <td class="c">{{ k.vd(a.v) }}</td>
+      <td data-v="{{ a.d if a.d is not none else '' }}">{% if a.d is not none %}<span class="{{ 'up' if a.d > 0 else 'down' }}">{{ '%+.2f'|format(a.d) }}%</span>{% else %}–{% endif %}</td>
+      <td data-v="{{ a.t if a.t is not none else '' }}">{% if a.t is not none %}<b>{{ '%+.1f'|format(a.t) }}</b>{% else %}–{% endif %}</td>
+      <td data-v="{{ a.same if a.same is not none else '' }}">{% if a.same is not none %}{{ a.same }}/5{% else %}–{% endif %}</td>
+      <td data-v="{{ a.net_t if a.net_t is not none else '' }}">{% if a.net_t is not none %}{{ '%+.1f'|format(a.net_t) }}{% else %}–{% endif %}</td>
+      {% else %}<td class="c"><span class="tag x">자료 없음</span></td><td>–</td><td>–</td><td>–</td><td>–</td>{% endif %}
+      {% if u %}
+      <td class="c">{{ k.vd(u.v) }}</td>
+      <td data-v="{{ u.d if u.d is not none else '' }}">{% if u.d is not none %}<span class="{{ 'up' if u.d > 0 else 'down' }}">{{ '%+.2f'|format(u.d) }}%</span>{% else %}–{% endif %}</td>
+      <td data-v="{{ u.t if u.t is not none else '' }}">{% if u.t is not none %}<b>{{ '%+.1f'|format(u.t) }}</b>{% else %}–{% endif %}</td>
+      {% else %}<td class="c"><span class="tag x">자료 없음</span></td><td>–</td><td>–</td>{% endif %}
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+<p class="note">월 차이의 부호는 검사한 것 기준입니다(줄 세우기는 값이 큰 쪽 − 작은 쪽). 판정은 책이 말한 방향과 맞춰 붙였습니다. 책이 방향을 말하지 않은 줄은 "방향 없음"으로 두고 결과만 적었습니다.<br>
+비용 뒤 t는 더 좋았던 쪽 − 나빴던 쪽에서 종목을 바꾸는 비용을 뺀 값이라 +가 클수록 비용 뒤에도 남는다는 뜻입니다.</p>
+{% endif %}
+
+{% if b.macro_lines %}
+{{ m.h('시장·금리에 관한 주장', '지표가 그 상태인 달과 아닌 달의 차이 · 숫자는 책이 말한 방향이 +') }}
+<div class="scroll wide">
+<table class="grid claims">
+  <thead><tr><th class="c">쪽</th><th class="l">책의 주장 → 검사한 것</th><th class="c">같은 때</th><th>차이</th><th class="c">그 뒤</th><th>차이</th></tr></thead>
+  <tbody>
+  {% for x in b.macro_lines %}{% for q in x.macro if q.label %}
+    <tr>
+      {% if loop.first %}<td class="c" rowspan="{{ x.macro|selectattr('label')|list|length }}">{{ x.page }}</td>{% endif %}
+      <td class="l">{% if loop.first %}{{ x.text }}{% endif %}<div class="how">{{ q.label }}{% if q.start %} <small>{{ q.start[:4] }}년~{% if q.note %} · {{ q.note }}{% endif %}</small>{% endif %}</div></td>
+      <td class="c">{{ k.vd(q.co.v if q.co else '') }}</td><td>{% if q.co %}{{ k.val(q.co.d * (1 if q.up else -1) if q.co.d is not none else none, q.co.t * (1 if q.up else -1) if q.co.t is not none else none, q.unit) }}{% else %}–{% endif %}</td>
+      <td class="c">{{ k.vd(q.fwd.v) }}</td><td>{{ k.val(q.fwd.d * (1 if q.up else -1) if q.fwd.d is not none else none, q.fwd.t * (1 if q.up else -1) if q.fwd.t is not none else none, q.unit) }}{% if q.fwd.h and q.fwd.h != 3 %} <small>{{ q.fwd.h }}개월</small>{% endif %}</td>
+    </tr>
+  {% endfor %}{% endfor %}
+  </tbody>
+</table>
+</div>
+<p class="note">같은 때는 지표의 상태와 같은 6개월 동안의 변화, 그 뒤는 그 상태를 실제로 알 수 있던 달 말부터 3개월의 변화입니다. 책에 숫자가 없는 조건은 "6개월 전보다 높다", "지난 10년의 위·아래 30%"로 통일했습니다.</p>
+{% endif %}
+
+{% if b.market_lines %}
+{{ m.h('지수로 시장 방향을 읽는 주장', '신호가 선 날 뒤 60거래일의 지수 변화를 그 밖의 날과 비교') }}
+<div class="scroll wide">
+<table class="grid claims">
+  <thead><tr><th class="c">쪽</th><th class="l">책의 주장 → 검사한 것</th><th class="c">미국</th><th>차이</th><th class="c">한국</th><th>차이</th></tr></thead>
+  <tbody>
+  {% for x in b.market_lines %}{% set q = x.market %}
+    <tr>
+      <td class="c">{{ x.page }}</td>
+      <td class="l">{{ x.text }}<div class="how">{{ q.label }} <small>책은 그 뒤 {{ '오른다' if q.up else '내린다' }}고 봄</small></div></td>
+      <td class="c">{{ k.vd(q.us.v) }}</td><td>{{ k.val(q.us.d, q.us.t, '%p') }}{% if q.us.idx %} <small>{{ q.us.idx }}</small>{% endif %}</td>
+      <td class="c">{{ k.vd(q.kr.v) }}</td><td>{{ k.val(q.kr.d, q.kr.t, '%p') }}{% if q.kr.idx %} <small>{{ q.kr.idx }}</small>{% endif %}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% endif %}
+
+{% if b.n_timing %}
+{{ m.h('사고파는 시점에 관한 주장', '시장 평균보다 얼마나 더 벌었나 · 거래 한 번당') }}
+<p class="intro">이 독후감에는 사고파는 시점에 관한 줄이 {{ b.n_timing }}줄 있습니다. 줄마다 따로 검사하지 않고 아래 대표 규칙으로 검사했습니다. 사는 날은 주가가 52주 신고가를 넘고 그날 거래량이 앞 50일 평균의 1.5배 이상인 날의 다음 날입니다.</p>
+<div class="scroll wide">
+<table class="grid">
+  <thead><tr><th class="l">파는 규칙</th><th>한국 초과수익</th><th>이긴 비율</th><th>보유</th><th>다섯 기간</th><th>미국 초과수익</th><th>이긴 비율</th><th>보유</th><th>다섯 기간</th></tr></thead>
+  <tbody>
+  {% for r in B.timing %}
+    <tr><td class="l"><b>{{ r.label }}</b></td>
+      {% for q in (r.kr, r.us) %}<td>{{ k.val(q.d, q.t) }}</td><td>{{ q.win|int }}%</td><td>{{ q.days }}일</td><td>{{ q.same }}/5</td>{% endfor %}
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+<p class="note">한국 2011~2025년 {{ '{:,}'.format(B.timing[0].kr.trades) }}번, 미국 2017~2025년 {{ '{:,}'.format(B.timing[0].us.trades) }}번. 초과수익은 같은 기간 전 종목 평균 수익률을 뺀 값이고 거래비용은 넣지 않았습니다.</p>
+
+{{ m.h('차트 모양', '같은 신고가 돌파(모양을 가리지 않음)보다 60거래일에 얼마나 나았나') }}
+<div class="scroll wide">
+<table class="grid">
+  <thead><tr><th class="l">모양</th><th>한국 거래 수</th><th>모양 무관 대비</th><th>미국 거래 수</th><th>모양 무관 대비</th></tr></thead>
+  <tbody>
+  {% for r in B.patterns %}
+    <tr><td class="l"><b>{{ r.label }}</b></td>
+      {% for q in (r.kr, r.us) %}{% if q %}<td>{{ '{:,}'.format(q.trades) }}</td><td>{{ k.val(q.d, q.t, '%p') }}</td>{% else %}<td>–</td><td>–</td>{% endif %}{% endfor %}
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+<p class="note">모양의 숫자 기준(깊이, 기간)은 책에 적힌 범위를 썼습니다. 이중 바닥은 책에 숫자가 적어 넓게 잡혔습니다.</p>
+{% endif %}
+
+<details class="fold">
+  <summary>독후감 전체 · {{ b.n_lines }}줄</summary>
+  <div class="scroll wide">
+  <table class="grid claims">
+    <thead><tr><th class="c">번호</th><th class="c">쪽</th><th class="l">독후감의 줄</th><th class="l">종류</th><th class="c">결과</th></tr></thead>
+    <tbody>
+    {% for x in b.lines %}
+      <tr>
+        <td class="c">{{ x.n }}</td><td class="c">{{ x.page }}</td><td class="l">{{ x.text }}</td><td class="l lab">{{ x.cat }}</td>
+        <td class="c">{% if x.stock %}{{ k.vd((x.stock.kr or x.stock.us).v) }}{% elif x.macro and x.macro[0].fwd %}{{ k.vd(x.macro[0].fwd.v) }}{% elif x.market %}{{ k.vd(x.market.us.v) }}{% else %}<span class="tag x">{{ x.group }}</span>{% endif %}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+</details>
+
+{% endblock %}

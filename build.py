@@ -480,6 +480,29 @@ def f_raw(v):
 
 # ---------- 쓰기 ----------
 
+def load_books():
+    """책 검증: data/books.yaml(책 정보, 손으로 고침)과 data/books/*.json(검사 결과, 내보내기 도구가 만듦). 결과 파일이 없으면 이 구역을 만들지 않는다."""
+    d = ROOT / "data" / "books"
+    if not (d / "_summary.json").exists():
+        return None
+    S = json.loads((d / "_summary.json").read_text(encoding="utf-8"))
+    meta = {b["id"]: b for b in load_yaml("books.yaml")}
+    books = []
+    for s in S["books"]:
+        b = json.loads((d / f"{s['id']}.json").read_text(encoding="utf-8"))
+        b.update({k: v for k, v in meta.get(b["id"], {}).items() if k in ("title", "author", "kind", "memo")})   # 책 정보는 yaml이 우선
+        b["memo_html"] = md(b["memo"]) if b.get("memo") else ""
+        b["path"] = f"books/{b['id']}/"
+        # 종목 주장은 한국(없으면 미국)에서 차이가 큰 순으로
+        b["stock_lines"] = sorted((x for x in b["lines"] if x.get("stock")),
+                                  key=lambda x: -abs((x["stock"].get("kr") or x["stock"].get("us") or {}).get("t") or 0))
+        b["macro_lines"] = [x for x in b["lines"] if any(q.get("label") for q in x.get("macro", []))]
+        b["market_lines"] = [x for x in b["lines"] if (x.get("market") or {}).get("label")]
+        books.append(b)
+    S["list"] = sorted(books, key=lambda b: -b["n_tested"])
+    return S
+
+
 def load_chart_manifest():
     """엑셀이 내보낸 그림의 목록(static/charts/manifest.json). 그림마다 자료 기준일과 크기가 있다. 없으면 화면에 그림 자리가 비어 나온다."""
     p = ROOT / "static" / "charts" / "manifest.json"
@@ -674,10 +697,16 @@ def main():
               description=n["headline"],
               newer=notes[k - 1] if k > 0 else None,
               older=notes[k + 1] if k + 1 < len(notes) else None)
+    books = load_books()
+    if books:
+        write("books", "books.html", nav="books", title="책 검증", B=books,
+              description="읽은 책의 주장을 실제 자료로 검사한 기록")
+        for b in books["list"]:
+            write(b["path"], "book.html", nav="books", title=b["title"], b=b, B=books)
     write("404.html", "soon.html", nav="", title="페이지를 찾을 수 없습니다", items=[])
 
     print(f"기준일 {asof:%Y-%m-%d} · 화면 {count}개 · 기업 {len(companies)} · 산업 {len(industries)} · "
-          f"리포트 {len(all_reports)} · 전략 {len(strategies)} · 노트 {len(notes)} → {DIST}")
+          f"리포트 {len(all_reports)} · 전략 {len(strategies)} · 노트 {len(notes)} · 책 {len(books['list']) if books else 0} → {DIST}")
 
 
 if __name__ == "__main__":

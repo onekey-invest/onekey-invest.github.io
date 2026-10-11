@@ -1,0 +1,10 @@
+{# 책 검증 화면에서 같이 쓰는 조각 #}
+
+{# 판정 표시: 맞더라(청록) / 아니더라(남색 면) / 뚜렷하지 않음(회색) / 그 밖(테두리만) #}
+{% macro vd(v) %}{% if v %}<span class="tag{% if v == '맞더라' %} f{% elif v == '아니더라' %} on{% elif v != '뚜렷하지 않음' %} x{% endif %}">{{ v }}</span>{% endif %}{% endmacro %}
+
+{# 차이와 t #}
+{% macro val(d, t, unit='%') %}{% if d is not none %}<span class="{{ 'up' if d > 0 else 'down' if d < 0 else '' }}">{{ '%+.2f'|format(d) }}{{ unit }}</span>{% if t is not none %} <small>t {{ '%+.1f'|format(t) }}</small>{% endif %}{% else %}–{% endif %}{% endmacro %}
+
+{# 판정 막대: 맞더라 · 아니더라 · 뚜렷하지 않음 #}
+{% macro vbar(c) %}{% set s = c[0] + c[1] + c[2] %}{% if s %}<div class="vbar"><span class="ok" style="width:{{ '%.1f'|format(c[0] / s * 100) }}%"></span><span class="no" style="width:{{ '%.1f'|format(c[1] / s * 100) }}%"></span><span class="un" style="width:{{ '%.1f'|format(c[2] / s * 100) }}%"></span></div><small>{{ c[0] }} · {{ c[1] }} · {{ c[2] }}</small>{% else %}<small>–</small>{% endif %}{% endmacro %}
