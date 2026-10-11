@@ -174,6 +174,48 @@ table{width:100%;border-collapse:collapse}
 .claims td.l{min-width:260px;line-height:1.55}
 .scroll.wide{overflow-x:auto}
 .claims .both{margin-top:2px;font-size:12.5px;font-weight:600;color:var(--ink)}
+/* 책 검증: 주장마다 한국·미국 결과를 그림으로 */
+.vt td{vertical-align:top;white-space:normal;padding-top:16px;padding-bottom:16px}
+.vt td:first-child{width:36%;min-width:280px}
+.vt td:nth-child(n+2){width:32%;min-width:260px}
+.vt .lab{font-size:14.5px;font-weight:700;letter-spacing:-.02em}
+.vt .how{margin-top:2px;font-size:12.5px;color:var(--sub)}
+.vt .src{margin-top:6px;font-size:12.5px;color:var(--dim);line-height:1.55}
+.vt .both{margin-top:6px;font-size:13px;font-weight:700;color:var(--ink)}
+.vt tr:target td{background:#fffbe6}
+.mh{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 8px}
+.mh b{font-size:18px;font-weight:700;letter-spacing:-.02em}
+.mh small{font-size:12px}
+/* 다섯 기간 막대: 가운데 선이 0, 위는 책이 말한 방향 */
+.f5{position:relative;display:grid;grid-template-columns:repeat(5,1fr);gap:5px;height:58px;margin-top:8px;max-width:250px}
+.f5::before{content:"";position:absolute;left:0;right:0;top:50%;height:1px;background:var(--line)}
+.f5 span{position:relative}
+.f5 i{position:absolute;left:14%;right:14%;border-radius:2px}
+.f5 i.p{bottom:50%;background:var(--accent)}
+.f5 i.n{top:50%;background:var(--ink-2)}
+.f5.raw i.p,.f5.raw i.n{background:#98a2b3}
+.f5n{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;max-width:250px;font-size:11px;color:var(--dim);text-align:center}
+/* 강건성 점검 */
+.cks{display:flex;flex-wrap:wrap;gap:4px 10px;margin-top:9px;align-items:center}
+.st{font-size:12px;font-weight:700;padding:2px 8px;border-radius:4px;white-space:nowrap}
+.st.a{color:var(--accent);background:var(--accent-soft)} .st.b{color:var(--sub);background:var(--line-soft)} .st.c{color:#fff;background:var(--ink-2)}
+.ck{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--sub);white-space:nowrap;font-style:normal}
+.ck b{font-weight:600;color:var(--ink)}
+.ck::before{content:"";width:7px;height:7px;border-radius:50%;flex:none}
+.ck.pass::before{background:var(--accent)} .ck.weak::before{background:#cdd3dc} .ck.fail::before{background:#fff;box-shadow:inset 0 0 0 2px var(--ink-2)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:center;margin:26px 0 0;padding-top:12px;border-top:1px solid var(--line);font-size:12.5px;color:var(--sub);line-height:1.7}
+.legend b{color:var(--ink)}
+.legend .lg{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .lg.p{background:var(--accent)} .legend .lg.n{background:var(--ink-2)}
+.legend i.ck{margin:0 3px 0 6px;vertical-align:1px}
+/* 핵심 줄 아래의 검증 결과 */
+.keys li{padding-bottom:9px}
+.kl{display:flex;flex-direction:column;gap:3px;margin-top:4px}
+.kl a{display:flex;flex-wrap:wrap;align-items:center;gap:3px 8px;font-size:12px;color:var(--sub)}
+.kl a span{white-space:nowrap}
+.kl a small{color:var(--dim)}
+.kl a:hover small{color:var(--accent)}
+.kl.none{font-size:12px;color:var(--dim)}
 .two.wl{grid-template-columns:minmax(0,7fr) minmax(0,5fr)}
 .kv td .vbar{margin-left:auto}
 .claims .how{margin-top:3px;font-size:12.5px;color:var(--accent);font-weight:600}

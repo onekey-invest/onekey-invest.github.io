@@ -11,3 +11,21 @@
 
 {# 판정 수를 문장으로: "9가지가 맞았고 10가지는 뚜렷하지 않았다." #}
 {% macro tally(c) %}{% if c[0] %}{{ c[0] }}가지가 맞았고{% else %}맞은 것이 없었고{% endif %}{% if c[1] %} {{ c[1] }}가지는 책과 반대였으며{% endif %} {% if c[2] %}{{ c[2] }}가지는 뚜렷하지 않았다.{% else %}뚜렷하지 않은 것은 없었다.{% endif %}{% endmacro %}
+
+{# 다섯 기간 막대: 기간을 시간 순서로 다섯으로 나눈 조각마다의 차이. 위로 솟으면 책이 말한 방향(청록), 아래면 반대(남색) #}
+{% macro f5(vals, fmax, raw=false, digits=2) %}{% if vals %}
+<div class="f5{% if raw %} raw{% endif %}">{% for v in vals %}<span>{% if v is not none %}<i class="{{ 'p' if v >= 0 else 'n' }}" style="height:{{ '%.1f'|format([[(v|abs) / fmax * 46, 46]|min, 2]|max) }}%"></i>{% endif %}</span>{% endfor %}</div>
+<div class="f5n">{% for v in vals %}<span>{% if v is not none %}{{ ('%+.' ~ digits ~ 'f')|format(v) }}{% else %}–{% endif %}</span>{% endfor %}</div>
+{% endif %}{% endmacro %}
+
+{# 강건성 점검 줄 #}
+{% macro checks(q) %}{% if q.checks %}<div class="cks"><span class="st {{ 'a' if q.strength == '단단함' else 'b' if q.strength == '보통' else 'c' }}">강건성 {{ q.score }}/{{ q.n_checks }} · {{ q.strength }}</span>{% for c in q.checks %}<span class="ck {{ c.g }}"><b>{{ c.k }}</b> {{ c.txt }}</span>{% endfor %}</div>{% endif %}{% endmacro %}
+
+{# 한 시장의 결과 묶음: 판정 + 차이 + 다섯 기간 막대 + 강건성 #}
+{% macro mk(q, fmax, unit='%', per='월', raw=false) %}
+{% if q %}
+<div class="mh">{{ vd(q.v) }}{% if q.d is not none %}<b>{{ '%+.2f'|format(q.d) }}{{ unit }}</b><small>{{ per }}{% if q.t is not none %} · t {{ '%+.1f'|format(q.t) }}{% endif %}{% if q.months %} · {{ q.months }}개월{% endif %}{% if q.idx %} · {{ q.idx }}{% endif %}</small>{% endif %}</div>
+{{ f5(q.folds, fmax, raw) }}
+{{ checks(q) }}
+{% else %}<div class="mh"><span class="tag x">자료 없음</span></div>{% endif %}
+{% endmacro %}

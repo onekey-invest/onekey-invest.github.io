@@ -65,17 +65,19 @@
 {% for cat, title in (('두 시장 모두 맞더라', '한국과 미국 모두에서 맞은 주장'), ('한국에서만 맞더라', '한국에서만 맞은 주장'), ('미국에서만 맞더라', '미국에서만 맞은 주장'), ('시장마다 엇갈림', '시장마다 엇갈린 주장'), ('책과 달랐던 것', '책과 달랐던 주장')) %}
 {% set rows = B.tops[cat] %}
 {% if rows %}
-{{ m.h(title, '차이가 큰 순 · 같은 검사는 한 번만' ~ (' · 위 ' ~ rows|length ~ '개' if rows|length >= 15 else '')) }}
+{{ m.h(title, '차이가 큰 순 · 같은 지표는 한 번만' ~ (' · 위 ' ~ rows|length ~ '개' if rows|length >= 15 else '')) }}
 <div class="scroll wide">
-<table class="grid">
-  <thead><tr><th class="l">검사한 것</th><th class="c">한국</th><th>월 수익률 차이</th><th class="c">미국</th><th>월 수익률 차이</th><th class="l">이렇게 말한 책</th></tr></thead>
+<table class="grid vt">
+  <thead><tr><th class="l">검사한 것</th><th class="l">한국</th><th class="l">미국</th></tr></thead>
   <tbody>
   {% for x in rows %}
     <tr>
-      <td class="l"><b>{{ x.label }}</b>{% if x.want %} <small>책은 {{ x.want }}고 봄</small>{% endif %}</td>
-      <td class="c">{% if x.kr %}{{ k.vd(x.kr.v) }}{% else %}<span class="tag x">자료 없음</span>{% endif %}</td><td>{% if x.kr %}{{ k.val(x.kr.d, x.kr.t) }}{% else %}–{% endif %}</td>
-      <td class="c">{% if x.us %}{{ k.vd(x.us.v) }}{% else %}<span class="tag x">자료 없음</span>{% endif %}</td><td>{% if x.us %}{{ k.val(x.us.d, x.us.t) }}{% else %}–{% endif %}</td>
-      <td class="l">{{ x.books|join(', ') }}</td>
+      <td class="l"><b class="lab">{{ x.label }}</b>
+        <div class="how">{% if x.want %}책은 {{ x.want }}고 봄{% endif %}</div>
+        <div class="src">이렇게 말한 책: {{ x.books|join(', ') }}</div>
+        <div class="both">{{ x.both }}</div></td>
+      <td class="l">{{ k.mk(x.kr, x.fmax) }}</td>
+      <td class="l">{{ k.mk(x.us, x.fmax) }}</td>
     </tr>
   {% endfor %}
   </tbody>

@@ -6,7 +6,7 @@
 <div class="stock">
   <div>
     <h1>{{ b.title }}</h1>
-    <div class="meta"><a href="{{ url('books/') }}">책 검증</a>{% if b.author %}<i>|</i>{{ b.author }}{% endif %}<i>|</i>독후감에서 뽑은 줄 {{ b.n_lines }}개</div>
+    <div class="meta"><a href="{{ url('books/') }}">책 검증</a>{% if b.author %}<i>|</i>{{ b.author }}{% endif %}<i>|</i>독후감에서 뽑은 줄 {{ b.n_lines }}개<i>|</i><a href="#verify">실제 검증 바로 보기</a></div>
   </div>
   <div class="strip">
     <div><span>검사한 주장</span><b>{{ b.n_claims + b.n_macro + b.n_market }}</b></div>
@@ -24,13 +24,19 @@
     <div class="prose">{{ b.body }}</div>
   </div>
   <div>
-    {{ m.h('핵심', '', first=true) }}
-    <ul class="dash">
-      {% for x in b.key %}<li>{{ x }}</li>{% endfor %}
+    {{ m.h('핵심', '줄마다 실제 검증 결과', first=true) }}
+    <ul class="dash keys">
+      {% for x in b.key_items %}
+      <li>{{ x.text }}
+        {% if x.links %}<div class="kl">{% for l in x.links %}<a href="#{{ l.cid }}">{% if l.kind in ('claim', 'market') %}<span>한국 {{ k.vd(l.kr or '자료 없음') }}</span><span>미국 {{ k.vd(l.us or '자료 없음') }}</span>{% elif l.kind == 'macro' %}<span>그 뒤 3개월 {{ k.vd(l.fwd) }}</span>{% else %}<span class="tag">검사 보기</span>{% endif %}<small>{{ l.label }}</small></a>{% endfor %}</div>
+        {% elif x.why %}<div class="kl none">{{ x.why }}</div>{% endif %}
+      </li>
+      {% endfor %}
     </ul>
   </div>
 </div>
 
+<span class="anchor" id="verify"></span>
 {{ m.h('실제 검증', '한국 ' ~ B.period.kr ~ ' · 미국 ' ~ B.period.us) }}
 <div class="two even">
   <div class="prose tight">
@@ -40,13 +46,13 @@
     {% set usonly = b.claims|selectattr('cat', 'equalto', '미국에서만 맞더라')|list %}
     {% set wrong = b.claims|selectattr('cat', 'equalto', '책과 달랐던 것')|list %}
     {% set mixed = b.claims|selectattr('cat', 'equalto', '시장마다 엇갈림')|list %}
-    <p>종목을 고르는 주장 {{ b.n_claims }}가지를 꺼내 한국과 미국에서 따로 검사했다. 한국에서는 {{ k.tally(b.counts.kr) }} 미국에서는 {{ k.tally(b.counts.us) }}</p>
+    <p>종목을 고르는 주장 {{ b.n_claims }}가지를 한국과 미국에서 따로 검사했다. 한국에서는 {{ k.tally(b.counts.kr) }} 미국에서는 {{ k.tally(b.counts.us) }}</p>
     <ul>
-      {% if both %}<li>두 시장 모두에서 맞은 것: {% for x in both[:4] %}{{ x.label }}{% if not loop.last %}, {% endif %}{% endfor %}{% if both|length > 4 %} 등 {{ both|length }}가지{% endif %}</li>{% else %}<li>두 시장 모두에서 맞은 주장은 없었다</li>{% endif %}
-      {% if kronly %}<li>한국에서만 맞은 것: {% for x in kronly[:4] %}{{ x.label }}{% if not loop.last %}, {% endif %}{% endfor %}{% if kronly|length > 4 %} 등 {{ kronly|length }}가지{% endif %}</li>{% endif %}
-      {% if usonly %}<li>미국에서만 맞은 것: {% for x in usonly[:4] %}{{ x.label }}{% if not loop.last %}, {% endif %}{% endfor %}{% if usonly|length > 4 %} 등 {{ usonly|length }}가지{% endif %}</li>{% endif %}
-      {% if mixed %}<li>시장마다 엇갈린 것: {% for x in mixed[:4] %}{{ x.label }}{% if not loop.last %}, {% endif %}{% endfor %}</li>{% endif %}
-      {% if wrong %}<li>책과 달랐던 것: {% for x in wrong[:4] %}{{ x.label }}{% if not loop.last %}, {% endif %}{% endfor %}{% if wrong|length > 4 %} 등 {{ wrong|length }}가지{% endif %}</li>{% endif %}
+      {% if both %}<li>두 시장 모두에서 맞은 것: {% for x in both[:4] %}<a href="#{{ x.cid }}">{{ x.label }}</a>{% if not loop.last %}, {% endif %}{% endfor %}{% if both|length > 4 %} 등 {{ both|length }}가지{% endif %}</li>{% else %}<li>두 시장 모두에서 맞은 주장은 없었다</li>{% endif %}
+      {% if kronly %}<li>한국에서만 맞은 것: {% for x in kronly[:4] %}<a href="#{{ x.cid }}">{{ x.label }}</a>{% if not loop.last %}, {% endif %}{% endfor %}{% if kronly|length > 4 %} 등 {{ kronly|length }}가지{% endif %}</li>{% endif %}
+      {% if usonly %}<li>미국에서만 맞은 것: {% for x in usonly[:4] %}<a href="#{{ x.cid }}">{{ x.label }}</a>{% if not loop.last %}, {% endif %}{% endfor %}{% if usonly|length > 4 %} 등 {{ usonly|length }}가지{% endif %}</li>{% endif %}
+      {% if mixed %}<li>시장마다 엇갈린 것: {% for x in mixed[:4] %}<a href="#{{ x.cid }}">{{ x.label }}</a>{% if not loop.last %}, {% endif %}{% endfor %}</li>{% endif %}
+      {% if wrong %}<li>책과 달랐던 것: {% for x in wrong[:4] %}<a href="#{{ x.cid }}">{{ x.label }}</a>{% if not loop.last %}, {% endif %}{% endfor %}{% if wrong|length > 4 %} 등 {{ wrong|length }}가지{% endif %}</li>{% endif %}
     </ul>
     {% endif %}
     {% if b.n_macro %}<p>시장·금리에 관한 주장 {{ b.n_macro }}가지는 지표의 상태를 확인한 뒤 3개월을 보면 {{ k.tally(b.counts.mac) }} 같은 때의 움직임으로 보면 {{ k.tally(b.counts.mac_co) }}</p>{% endif %}
@@ -58,83 +64,82 @@
       {% if b.n_claims %}
       <tr><th>종목을 고르는 주장 · 한국</th><td>{{ k.vbar(b.counts.kr) }}</td></tr>
       <tr><th>종목을 고르는 주장 · 미국</th><td>{{ k.vbar(b.counts.us) }}</td></tr>
+      {% if b.robust.kr|sum %}<tr><th>한국에서 맞은 것의 강건성</th><td>단단함 {{ b.robust.kr[0] }} · 보통 {{ b.robust.kr[1] }} · 약함 {{ b.robust.kr[2] }}</td></tr>{% endif %}
+      {% if b.robust.us|sum %}<tr><th>미국에서 맞은 것의 강건성</th><td>단단함 {{ b.robust.us[0] }} · 보통 {{ b.robust.us[1] }} · 약함 {{ b.robust.us[2] }}</td></tr>{% endif %}
       {% endif %}
       {% if b.n_macro %}<tr><th>시장·금리 · 그 뒤 3개월</th><td>{{ k.vbar(b.counts.mac) }}</td></tr>
       <tr><th>시장·금리 · 같은 때</th><td>{{ k.vbar(b.counts.mac_co) }}</td></tr>{% endif %}
       {% if b.n_market %}<tr><th>지수로 시장 읽기 · 미국</th><td>{{ k.vbar(b.counts.idx_us) }}</td></tr>
       <tr><th>지수로 시장 읽기 · 한국</th><td>{{ k.vbar(b.counts.idx_kr) }}</td></tr>{% endif %}
     </table>
-    <p class="mkt-note">막대와 숫자는 맞더라 · 아니더라 · 뚜렷하지 않음 순서입니다. 맞더라는 책이 말한 방향으로 차이가 뚜렷한 것(|t| 2 이상)입니다. 독후감의 여러 줄이 같은 검사로 이어지면 주장 하나로 셉니다.</p>
+    <p class="mkt-note">막대와 숫자는 맞더라 · 아니더라 · 뚜렷하지 않음 순서입니다.</p>
   </div>
 </div>
 
+<div class="legend">
+  <b>읽는 법</b>
+  <span><i class="lg p"></i>위로 솟은 막대 = 그 기간에 책이 말한 방향</span>
+  <span><i class="lg n"></i>아래로 내린 막대 = 반대 방향</span>
+  <span>막대 다섯 개 = 기간을 시간 순서로 다섯으로 나눈 것 (한국 {{ B.fold_ranges.kr|join(' · ') }} / 미국 {{ B.fold_ranges.us|join(' · ') }}, 자료가 늦게 시작하는 지표는 앞쪽 조각이 비어 있음)</span>
+  <span><i class="ck pass"></i>통과 <i class="ck weak"></i>약함 <i class="ck fail"></i>실패 — 강건성 점검: 다섯 기간 중 넷 이상 같은 방향 / 거래비용을 빼도 / 큰 종목만 봐도 / 시가총액으로 가중해도 / 같은 업종 안에서도 (t 2 이상이면 통과)</span>
+</div>
+
 {% if b.claims %}
-{{ m.h('종목을 고르는 주장', '조건에 맞는 종목과 나머지의 다음 달 수익률 차이') }}
+{{ m.h('종목을 고르는 주장', '조건에 맞는 종목과 나머지의 다음 달 수익률 차이 · 숫자는 책이 말한 방향이 +') }}
 {{ m.filter('claim-table', '주장, 검사 검색', B.cats) }}
 <div class="scroll wide">
-<table class="grid claims" data-sortable id="claim-table">
-  <thead><tr>
-    <th class="l" data-type="text">책의 주장 → 검사한 것</th>
-    <th class="c" data-type="text">한국</th><th data-type="num">월 차이</th><th data-type="num" title="기간을 다섯으로 나눴을 때 전체와 방향이 같은 조각 수">다섯 기간</th><th data-type="num" title="거래비용을 뺀 뒤의 t">비용 뒤 t</th>
-    <th class="c" data-type="text">미국</th><th data-type="num">월 차이</th><th data-type="num">다섯 기간</th>
-  </tr></thead>
+<table class="grid vt" id="claim-table">
+  <thead><tr><th class="l">검사한 것 ← 책의 주장</th><th class="l">한국</th><th class="l">미국</th></tr></thead>
   <tbody>
   {% for x in b.claims %}
-    <tr data-key="{{ x.cat }}">
-      <td class="l">{{ x.text }}{% if x.n_lines > 1 %} <small>외 {{ x.n_lines - 1 }}줄</small>{% endif %}
-        <div class="how">{{ x.label }} <small>{{ x.how }}{% if x.want %} · 책은 {{ x.want }}고 봄{% endif %}</small></div>
+    <tr data-key="{{ x.cat }}" id="{{ x.cid }}">
+      <td class="l"><b class="lab">{{ x.label }}</b>
+        <div class="how">{{ x.how }}{% if x.want %} · 책은 {{ x.want }}고 봄{% endif %}</div>
+        <div class="src">독후감: {{ x.text }}{% if x.n_lines > 1 %} <small>외 {{ x.n_lines - 1 }}줄</small>{% endif %}</div>
         <div class="both">{{ x.both }}</div></td>
-      {% for q in (x.kr, x.us) %}
-      {% if q %}
-      <td class="c">{{ k.vd(q.v) }}</td>
-      <td data-v="{{ q.t if q.t is not none else '' }}">{{ k.val(q.d, q.t) }}</td>
-      <td data-v="{{ q.same if q.same is not none else '' }}">{% if q.same is not none %}{{ q.same }}/5{% else %}–{% endif %}</td>
-      {% if loop.first %}<td data-v="{{ q.net_t if q.net_t is not none else '' }}">{% if q.net_t is not none %}{{ '%+.1f'|format(q.net_t) }}{% else %}–{% endif %}</td>{% endif %}
-      {% else %}
-      <td class="c"><span class="tag x">자료 없음</span></td><td>–</td><td>–</td>{% if loop.first %}<td>–</td>{% endif %}
-      {% endif %}
-      {% endfor %}
+      <td class="l">{{ k.mk(x.kr, x.fmax, raw=not x.directed) }}</td>
+      <td class="l">{{ k.mk(x.us, x.fmax, raw=not x.directed) }}</td>
     </tr>
   {% endfor %}
   </tbody>
 </table>
 </div>
-<p class="note">월 차이의 부호는 검사한 것 기준입니다(줄 세우기는 값이 큰 쪽 − 작은 쪽). 판정은 책이 말한 방향과 맞춰 붙였고, 책이 방향을 말하지 않은 주장은 결과만 적었습니다.<br>
-비용 뒤 t는 더 좋았던 쪽 − 나빴던 쪽에서 종목을 바꾸는 비용을 뺀 값이라 +가 클수록 비용 뒤에도 남는다는 뜻입니다.</p>
 {% endif %}
 
 {% if b.macro %}
 {{ m.h('시장·금리에 관한 주장', '지표가 그 상태인 달과 아닌 달의 차이 · 숫자는 책이 말한 방향이 +') }}
 <div class="scroll wide">
-<table class="grid claims">
-  <thead><tr><th class="l">책의 주장 → 검사한 것</th><th class="c">같은 때</th><th>차이</th><th class="c">그 뒤</th><th>차이</th></tr></thead>
+<table class="grid vt">
+  <thead><tr><th class="l">검사한 것 ← 책의 주장</th><th class="l">같은 때 (관계가 있나)</th><th class="l">그 뒤 3개월 (보고 나서 써먹을 수 있나)</th></tr></thead>
   <tbody>
   {% for q in b.macro %}
-    <tr>
-      <td class="l">{{ q.text }}{% if q.n_lines > 1 %} <small>외 {{ q.n_lines - 1 }}줄</small>{% endif %}
-        <div class="how">{{ q.label }}{% if q.start %} <small>{{ q.start[:4] }}년~{% if q.note %} · {{ q.note }}{% endif %}</small>{% endif %}</div></td>
-      <td class="c">{{ k.vd(q.co.v) }}</td><td>{{ k.val(q.co.d, q.co.t, q.unit) }}</td>
-      <td class="c">{{ k.vd(q.fwd.v) }}</td><td>{{ k.val(q.fwd.d, q.fwd.t, q.unit) }}{% if q.fwd.h != 3 %} <small>{{ q.fwd.h }}개월</small>{% endif %}</td>
+    <tr id="{{ q.cid }}">
+      <td class="l"><b class="lab">{{ q.label }}</b>
+        <div class="how">{% if q.start %}{{ q.start[:4] }}년부터{% endif %}{% if q.note %} · {{ q.note }}{% endif %}</div>
+        <div class="src">독후감: {{ q.text }}{% if q.n_lines > 1 %} <small>외 {{ q.n_lines - 1 }}줄</small>{% endif %}</div></td>
+      <td class="l"><div class="mh">{{ k.vd(q.co.v) }}{% if q.co.d is not none %}<b>{{ '%+.2f'|format(q.co.d) }}{{ q.unit }}</b><small>같은 6개월 · t {{ '%+.1f'|format(q.co.t) }}</small>{% endif %}</div></td>
+      <td class="l">{{ k.mk(q.fwd, q.fmax, q.unit, '그 뒤 ' ~ q.fwd.h ~ '개월') }}</td>
     </tr>
   {% endfor %}
   </tbody>
 </table>
 </div>
-<p class="note">같은 때는 지표의 상태와 같은 6개월 동안의 변화, 그 뒤는 그 상태를 실제로 알 수 있던 달 말부터 3개월의 변화입니다. 책에 숫자가 없는 조건은 "6개월 전보다 높다", "지난 10년의 위·아래 30%"로 통일했습니다.</p>
+<p class="note">같은 때는 지표의 상태와 같은 6개월 동안의 변화, 그 뒤는 그 상태를 실제로 알 수 있던 달 말부터의 변화입니다. 책에 숫자가 없는 조건은 "6개월 전보다 높다", "지난 10년의 위·아래 30%"로 통일했습니다.</p>
 {% endif %}
 
 {% if b.market %}
 {{ m.h('지수로 시장 방향을 읽는 주장', '신호가 선 날 뒤 60거래일의 지수 변화 · 숫자는 책이 말한 방향이 +') }}
 <div class="scroll wide">
-<table class="grid claims">
-  <thead><tr><th class="l">책의 주장 → 검사한 것</th><th class="c">미국</th><th>차이</th><th class="c">한국</th><th>차이</th></tr></thead>
+<table class="grid vt">
+  <thead><tr><th class="l">검사한 것 ← 책의 주장</th><th class="l">미국</th><th class="l">한국</th></tr></thead>
   <tbody>
   {% for q in b.market %}
-    <tr>
-      <td class="l">{{ q.text }}{% if q.n_lines > 1 %} <small>외 {{ q.n_lines - 1 }}줄</small>{% endif %}
-        <div class="how">{{ q.label }} <small>책은 그 뒤 {{ '오른다' if q.up else '내린다' }}고 봄</small></div></td>
-      <td class="c">{{ k.vd(q.us.v) }}</td><td>{{ k.val(q.us.d, q.us.t, '%p') }}{% if q.us.idx %} <small>{{ q.us.idx }}</small>{% endif %}</td>
-      <td class="c">{{ k.vd(q.kr.v) }}</td><td>{{ k.val(q.kr.d, q.kr.t, '%p') }}{% if q.kr.idx %} <small>{{ q.kr.idx }}</small>{% endif %}</td>
+    <tr id="{{ q.cid }}">
+      <td class="l"><b class="lab">{{ q.label }}</b>
+        <div class="how">책은 그 뒤 {{ '오른다' if q.up else '내린다' }}고 봄</div>
+        <div class="src">독후감: {{ q.text }}{% if q.n_lines > 1 %} <small>외 {{ q.n_lines - 1 }}줄</small>{% endif %}</div></td>
+      <td class="l">{{ k.mk(q.us, q.fmax, '%p', '60거래일') }}</td>
+      <td class="l">{{ k.mk(q.kr, q.fmax, '%p', '60거래일') }}</td>
     </tr>
   {% endfor %}
   </tbody>
@@ -143,22 +148,24 @@
 {% endif %}
 
 {% if b.n_timing %}
+<span class="anchor" id="timing"></span>
 {{ m.h('사고파는 시점에 관한 주장', '시장 평균보다 얼마나 더 벌었나 · 거래 한 번당') }}
 <p class="intro">이 독후감에는 사고파는 시점에 관한 줄이 {{ b.n_timing }}줄 있습니다. 줄마다 따로 검사하지 않고 아래 대표 규칙으로 검사했습니다. 사는 날은 주가가 52주 신고가를 넘고 그날 거래량이 앞 50일 평균의 1.5배 이상인 날의 다음 날입니다.</p>
 <div class="scroll wide">
-<table class="grid">
-  <thead><tr><th class="l">파는 규칙</th><th>한국 초과수익</th><th>이긴 비율</th><th>보유</th><th>다섯 기간</th><th>미국 초과수익</th><th>이긴 비율</th><th>보유</th><th>다섯 기간</th></tr></thead>
+<table class="grid vt">
+  <thead><tr><th class="l">파는 규칙</th><th class="l">한국 (2011~2025년 {{ '{:,}'.format(B.timing[0].kr.trades) }}번)</th><th class="l">미국 (2017~2025년 {{ '{:,}'.format(B.timing[0].us.trades) }}번)</th></tr></thead>
   <tbody>
   {% for r in B.timing %}
-    <tr><td class="l"><b>{{ r.label }}</b></td>
-      {% for q in (r.kr, r.us) %}<td>{{ k.val(q.d, q.t) }}</td><td>{{ q.win|int }}%</td><td>{{ q.days }}일</td><td>{{ q.same }}/5</td>{% endfor %}
+    <tr><td class="l"><b class="lab">{{ r.label }}</b></td>
+      {% for q in (r.kr, r.us) %}<td class="l"><div class="mh"><b>{{ '%+.2f'|format(q.d) }}%</b><small>거래당 초과수익 · t {{ '%+.1f'|format(q.t) }} · 이긴 비율 {{ q.win|int }}% · 평균 {{ q.days }}일 보유 · {{ q.same }}/5 같은 방향</small></div>{{ k.f5(q.folds, r.fmax, true) }}</td>{% endfor %}
     </tr>
   {% endfor %}
   </tbody>
 </table>
 </div>
-<p class="note">한국 2011~2025년 {{ '{:,}'.format(B.timing[0].kr.trades) }}번, 미국 2017~2025년 {{ '{:,}'.format(B.timing[0].us.trades) }}번. 초과수익은 같은 기간 전 종목 평균 수익률을 뺀 값이고 거래비용은 넣지 않았습니다.</p>
+<p class="note">초과수익은 같은 기간 전 종목 평균 수익률을 뺀 값이고 거래비용은 넣지 않았습니다. 막대는 기간을 다섯으로 나눈 조각마다의 초과수익입니다.</p>
 
+<span class="anchor" id="patterns"></span>
 {{ m.h('차트 모양', '같은 신고가 돌파(모양을 가리지 않음)보다 60거래일에 얼마나 나았나') }}
 <div class="scroll wide">
 <table class="grid">
