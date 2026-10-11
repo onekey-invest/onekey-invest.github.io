@@ -397,6 +397,7 @@ def build_strategy(s, prices, bench_map, asof, comp_by_id):
         "holdings": holdings,
         "trades": trade_rows,
         "live": live,
+        "bench_line": bench_line,
         "has_backtest": len(bt) >= 2,
         "chart": chart,
         "spark": xl_spark(f"spark-strategy-{s['id']}", navs, UP if (ret or 0) >= 0 else DOWN, end),
@@ -782,10 +783,17 @@ def main():
 
     for key, label, path in CATEGORIES:
         members = [s for s in strategies if s["category"] == key]
+        bench_first = {}   # 벤치마크마다 선 하나: 그 벤치마크를 쓰는 전략 가운데 가장 먼저 시작한 전략의 개시일 = 0
+        for s in members:
+            if s["benchmark"] not in bench_first or s["started"] < bench_first[s["benchmark"]]["started"]:
+                bench_first[s["benchmark"]] = s
         chart = xl_time(f"portfolios-{key}", "pct", [
             {"name": s["name"] + ("" if s["active"] else " (중단)"), "type": "line", "color": s["color"],
              "points": pct_points(s["live"])}
             for s in reversed(members)   # 운용 중인 전략의 선이 위에 오도록 나중에 그린다
+        ] + [   # 벤치마크는 맨 뒤에 둔다(엑셀 차트는 계열 순서대로 색을 기억한다)
+            {"name": name, "type": "line", "color": GREY, "points": pct_points(s["bench_line"])}
+            for name, s in bench_first.items()
         ], w=420, h=230)
         write(path, "portfolios.html", nav="portfolios", sub=key, title=f"가상운용 · {label}",
               label=label, strategies=members, chart=chart)
