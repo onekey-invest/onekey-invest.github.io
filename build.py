@@ -367,6 +367,8 @@ def build_strategy(s, prices, bench_map, asof, comp_by_id):
     b0 = bench.close_at(calendar[0])
     bench_line = [(d, bench.close_at(d) / b0 - 1) for d in calendar]
     bt = [(d, v) for d, v in load_backtest(s["id"]) if d <= calendar[0]]
+    if s.get("chart_backtest") is False:      # 백테스트를 이 그림에 겹치지 않는 전략
+        bt = []
     series = []
     if len(bt) >= 2:
         series.append({"name": "백테스트", "type": "line", "color": INK, "dash": True,
