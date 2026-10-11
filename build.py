@@ -86,6 +86,37 @@ def load_trades(sid):
         ]
 
 
+def vol_annual(navs):
+    """일별 수익률의 표준편차를 한 해(252거래일)로 늘린 값. 수익률이 스무 개가 안 되면 None."""
+    rets = [b / a - 1 for a, b in zip(navs, navs[1:])]
+    if len(rets) < 20:
+        return None
+    mean = sum(rets) / len(rets)
+    return (sum((r - mean) ** 2 for r in rets) / (len(rets) - 1)) ** 0.5 * 252 ** 0.5
+
+
+def load_intraday():
+    """장중 가격(data/intraday.json, tools/update_intraday.py가 적는다). 없으면 None."""
+    path = ROOT / "data" / "intraday.json"
+    if not path.exists():
+        return None
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def live_view(res, navs, initial, bench, bench_name, end):
+    """마지막 종가일보다 뒤의 장중 가격이 있으면 그 가격으로 다시 잰 평가금액. 없거나 낡았으면 None."""
+    it = load_intraday()
+    if not it or not it.get("asof") or date.fromisoformat(it["asof"][:10]) <= end:
+        return None
+    if any(h["asset"] not in it["prices"] for h in res["holdings"]):
+        return None
+    value = res["cash"] + sum(h["qty"] * it["prices"][h["asset"]] for h in res["holdings"])
+    b_now, b_prev = it.get("bench", {}).get(bench_name), bench.close_at(end)
+    return {"value": value, "day": value / navs[-1] - 1, "ret": value / initial - 1,
+            "bench_day": (b_now / b_prev - 1) if b_now and b_prev else None,
+            "time": it["asof"][5:16].replace("T", " "), "source": it.get("source", ""), "open": it.get("status") == "OPEN"}
+
+
 def split_front(path):
     raw = path.read_text(encoding="utf-8")
     if not raw.startswith("---"):
@@ -158,6 +189,7 @@ CATEGORIES = [
     ("domestic", "국내 주식", "portfolios/"),
     ("overseas", "해외 주식", "portfolios/overseas/"),
     ("multi", "멀티에셋", "portfolios/multi/"),
+    ("etf", "ETF", "portfolios/etf/"),
 ]
 INK, GREY, ACCENT = "#1f2a44", "#98a2b3", "#0f766e"
 UP, DOWN = "#e0353b", "#2563eb"
@@ -300,6 +332,7 @@ def build_strategy(s, prices, bench_map, asof, comp_by_id):
         "excess": M.excess(ret, bret),
         "mdd": PF.max_drawdown(navs),
         "sharpe": PF.sharpe(navs),
+        "vol": vol_annual(navs),
         "fees": res["fees"],
         "n_trades": res["n_trades"],
         "holdings": holdings,
@@ -308,6 +341,8 @@ def build_strategy(s, prices, bench_map, asof, comp_by_id):
         "has_backtest": len(bt) >= 2,
         "chart": chart,
         "spark": xl_spark(f"spark-strategy-{s['id']}", navs, UP if (ret or 0) >= 0 else DOWN, end),
+        "live_now": live_view(res, navs, s["initial"], bench, s["benchmark"], end),
+        "live_layout": (load_yaml("site.yaml") or {}).get("intraday_layout", "strip"),
         "rationale": md(s.get("rationale") or ""),
         "backtest": md(s.get("backtest") or ""),
         "log": md(s.get("log") or ""),
@@ -575,6 +610,10 @@ def main():
 
     strategies = []
     for s in load_yaml("strategies.yaml") or []:
+        # 규칙만 먼저 공개하고 개시일의 종가가 아직 없는 전략은 건너뛴다(종가가 들어오면 나타난다)
+        if s["started"] > prices[bench_map[s["benchmark"]]].dates[-1]:
+            print(f"  (개시 전) {s['id']}: 운용 개시일 {s['started']}의 종가가 아직 없어 건너뜀")
+            continue
         strategies.append(build_strategy(s, prices, bench_map, asof, comp_by_id))
     # 운용 중인 전략을 위에, 중단한 전략을 아래에 둔다
     strategies.sort(key=lambda s: (not s["active"], s["started"]))

@@ -20,6 +20,13 @@ samsung: {source: yahoo, symbol: "005930.KS", start: 2024-01-01}
 bgf: {source: yahoo, symbol: "282330.KS", start: 2024-01-01}
 shi: {source: yahoo, symbol: "010140.KS", start: 2024-01-01}
 
+# 가상운용 ETF 전략(etf-ga, etf-na)이 드는 ETF. 야후 종가라 분배금은 들어 있지 않다.
+"KODEX 200": {source: yahoo, symbol: "069500.KS", start: 2026-01-01}
+"TIGER 미국S&P500": {source: yahoo, symbol: "360750.KS", start: 2026-01-01}
+"ACE KRX금현물": {source: yahoo, symbol: "411060.KS", start: 2026-01-01}
+"KODEX 국고채3년": {source: yahoo, symbol: "114260.KS", start: 2026-01-01}
+"KOSEF 국고채10년": {source: yahoo, symbol: "148070.KS", start: 2026-01-01}
+
 # 예시
 # KOSDAQ:  {source: yahoo, symbol: "^KQ11", start: 2025-01-01}
 # SP500:   {source: yahoo, symbol: "^GSPC", start: 2025-01-01}

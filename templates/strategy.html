@@ -13,22 +13,43 @@
     </div>
   </div>
   <div class="strip">
-    <div><span>평가금액</span><b>{{ s.value|num }}</b></div>
-    <div><span>수익률</span><b class="{{ s.ret|sign }}">{{ s.ret|pct }}</b></div>
+    <div><span>초기자금</span><b>{{ s.initial|num }}</b></div>
+    {% if s.live_now and s.live_layout == 'strip' %}
+    <div><span>장중 평가 <small>{{ s.live_now.time }}</small></span><b>{{ s.live_now.value|num }}</b></div>
+    <div><span>오늘</span><b class="{{ s.live_now.day|sign }}">{{ s.live_now.day|pct }}</b></div>
+    {% endif %}
+    <div><span>평가금액{% if s.live_now and s.live_layout == 'strip' %} <small>종가</small>{% endif %}</span><b>{{ s.value|num }}</b></div>
+    <div class="sep"><span>수익률</span><b class="{{ s.ret|sign }}">{{ s.ret|pct }}</b></div>
     <div><span>초과수익</span><b class="{{ s.excess|sign }}">{{ s.excess|pp }}</b></div>
     <div><span>MDD</span><b>{{ s.mdd|pct }}</b></div>
+    <div><span>변동성 <small>연율</small></span><b>{% if s.vol is not none %}{{ '%.1f'|format(s.vol * 100) }}%{% else %}–{% endif %}</b></div>
   </div>
 </div>
 
+{% if s.live_now and s.live_layout == 'band' %}
+<div class="liveband">
+  <span class="tag">{{ '장중' if s.live_now.open else '장 마감 뒤' }}</span>
+  <span>평가금액 <b>{{ s.live_now.value|num }}원</b></span>
+  <span>오늘 <b class="{{ s.live_now.day|sign }}">{{ s.live_now.day|pct }}</b></span>
+  {% if s.live_now.bench_day is not none %}<span>{{ s.benchmark }} 오늘 <b class="{{ s.live_now.bench_day|sign }}">{{ s.live_now.bench_day|pct }}</b></span>{% endif %}
+  <span>개시 뒤 <b class="{{ s.live_now.ret|sign }}">{{ s.live_now.ret|pct }}</b></span>
+  <small>{{ s.live_now.source }} {{ s.live_now.time }} 기준 · 5분마다 갱신 · 성과와 거래는 종가로 계산</small>
+</div>
+{% endif %}
 <div class="two">
   <div>
     {{ m.h('운용 현황', (s.end|ymd) ~ ' 종가 기준', first=true) }}
     <table class="kv">
+      {% if s.live_now and s.live_layout == 'table' %}
+      <tr><th>장중 평가금액 <small>({{ s.live_now.source }} {{ s.live_now.time }})</small></th><td><b>{{ s.live_now.value|num }}원</b></td></tr>
+      <tr><th>오늘 수익률 / {{ s.benchmark }}</th><td>{{ m.ret(s.live_now.day) }}{% if s.live_now.bench_day is not none %} / {{ m.ret(s.live_now.bench_day) }}{% endif %}</td></tr>
+      {% endif %}
       <tr><th>초기자금 / 평가금액</th><td>{{ s.initial|num }}원 / {{ s.value|num }}원</td></tr>
       <tr><th>수익률</th><td>{{ m.ret(s.ret) }}</td></tr>
       <tr><th>{{ s.benchmark }} 동기간 수익률</th><td>{{ m.ret(s.bench_ret) }}</td></tr>
       <tr><th>초과수익</th><td>{{ m.ret(s.excess, 'pp') }}</td></tr>
       <tr><th>MDD</th><td>{{ s.mdd|pct }}</td></tr>
+      <tr><th>변동성</th><td>{% if s.vol is not none %}{{ '%.1f'|format(s.vol * 100) }}% <small>(일별 수익률, 연율)</small>{% else %}– <small>(스무 거래일 뒤부터)</small>{% endif %}</td></tr>
       <tr><th>샤프</th><td>{{ s.sharpe|dec }} <small>(일별 수익률, 무위험 0%)</small></td></tr>
       <tr><th>거래 횟수 / 누적 비용</th><td>{{ s.n_trades }}회 / {{ s.fees|num }}원</td></tr>
       <tr><th>현금 비중</th><td>{{ s.cash_weight|share }}</td></tr>

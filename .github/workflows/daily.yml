@@ -35,6 +35,17 @@ jobs:
         if: github.event_name != 'push'
         run: python tools/update_prices.py
 
+      # 한국은행 기준금리를 받는다. 못 받아도 계속 간다(어제까지의 금리로 판정한다).
+      - name: 기준금리 갱신
+        if: github.event_name != 'push'
+        continue-on-error: true
+        run: python tools/update_base_rate.py
+
+      # 가상운용 ETF 전략: 규칙대로 새 거래가 있으면 적는다
+      - name: ETF 전략 거래 적기
+        if: github.event_name != 'push'
+        run: python tools/etf_strategy.py
+
       - name: 계산 검증
         run: python -m unittest discover tests
 
@@ -46,7 +57,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/prices
+          git add data/prices data/rates data/trades
           git diff --cached --quiet || git commit -m "시세 갱신 $(date -u +%F)"
           git push
 

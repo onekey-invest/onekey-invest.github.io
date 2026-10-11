@@ -1,0 +1,51 @@
+# 평일 장중에 5분마다 가상운용 ETF 전략의 장중 가격을 받아 화면을 다시 만들어 올린다.
+# 시세·거래 파일은 바꾸지 않는다(그것은 저녁의 "매일 갱신과 배포"가 한다). 장중 가격은 저장소에 남기지 않는다.
+# 깃허브의 예약 실행은 몇 분씩 늦거나 건너뛸 수 있다.
+name: 장중 갱신
+
+on:
+  schedule:
+    - cron: "*/5 0-6 * * 1-5"   # 평일 09:00 ~ 15:59 (한국 시간)
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt
+
+      # 못 받으면 장중 칸 없이 종가 화면이 그대로 나간다
+      - name: 장중 가격 받기
+        continue-on-error: true
+        run: python tools/update_intraday.py
+
+      - name: 사이트 만들기
+        run: python build.py
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
