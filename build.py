@@ -95,6 +95,63 @@ def vol_annual(navs):
     return (sum((r - mean) ** 2 for r in rets) / (len(rets) - 1)) ** 0.5 * 252 ** 0.5
 
 
+def load_backtest_bench(sid):
+    """백테스트 파일에 bench 열(같은 기간의 견줄 것)이 있으면 [(날짜, 전략, 견줄 것)]. 없으면 빈 목록."""
+    path = ROOT / "data" / "backtests" / f"{sid}.csv"
+    if not path.exists():
+        return []
+    with open(path, encoding="utf-8") as f:
+        rows = list(csv.DictReader(f))
+    if not rows or "bench" not in rows[0]:
+        return []
+    return [(date.fromisoformat(r["date"]), float(r["value"]), float(r["bench"])) for r in rows]
+
+
+def backtest_view(sid, bench_label):
+    """백테스트 칸에 넣을 그림 둘(누적, 고점 대비 낙폭)과 해마다의 수익률 표."""
+    rows = load_backtest_bench(sid)
+    if len(rows) < 2:
+        return None
+
+    def cum(i):
+        return [(r[0], (r[i] / rows[0][i] - 1) * 100) for r in rows]
+
+    def dd(i):
+        out, peak = [], rows[0][i]
+        for r in rows:
+            peak = max(peak, r[i])
+            out.append((r[0], (r[i] / peak - 1) * 100))
+        return out
+    years = []
+    for y in sorted({r[0].year for r in rows}):
+        prev = [r for r in rows if r[0].year < y]
+        cur = [r for r in rows if r[0].year == y]
+        base = prev[-1] if prev else cur[0]
+        years.append({"year": y, "s": cur[-1][1] / base[1] - 1, "b": cur[-1][2] / base[2] - 1,
+                      "part": (cur[0][0].month > 1 and not prev) or cur[-1][0].month < 12})
+    top = max(abs(v) for yr in years for v in (yr["s"], yr["b"])) or 1
+    for yr in years:
+        yr["sw"], yr["bw"] = abs(yr["s"]) / top * 100, abs(yr["b"]) / top * 100
+    months = {}                       # 달마다 수익률(전략): {해: {달: 수익률}}
+    prev_v = rows[0][1]
+    last = {}
+    for r in rows:
+        last[(r[0].year, r[0].month)] = r[1]
+    for (y, m_), v in sorted(last.items()):
+        months.setdefault(y, {})[m_] = v / prev_v - 1
+        prev_v = v
+    mtop = max(abs(v) for d_ in months.values() for v in d_.values()) or 1
+    month_rows = [{"year": y, "cells": [None if m_ not in d_ else {"v": d_[m_], "a": round(min(abs(d_[m_]) / mtop, 1) * 0.72 + 0.08, 2)} for m_ in range(1, 13)]}
+                  for y, d_ in sorted(months.items())]
+    return {
+        "cum": xl_time(f"backtest-{sid}", "pct", [{"name": bench_label, "type": "line", "color": GREY, "points": cum(2)},
+                                                   {"name": "전략", "type": "line", "color": INK, "main": True, "points": cum(1)}], w=500, h=270),
+        "dd": xl_time(f"backtest-dd-{sid}", "pct", [{"name": bench_label, "type": "line", "color": GREY, "points": dd(2)},
+                                                    {"name": "전략", "type": "line", "color": INK, "main": True, "points": dd(1)}], w=500, h=270),
+        "years": years, "months": month_rows, "bench_label": bench_label,
+    }
+
+
 def load_intraday():
     """장중 가격(data/intraday.json, tools/update_intraday.py가 적는다). 없으면 None."""
     path = ROOT / "data" / "intraday.json"
@@ -343,6 +400,7 @@ def build_strategy(s, prices, bench_map, asof, comp_by_id):
         "spark": xl_spark(f"spark-strategy-{s['id']}", navs, UP if (ret or 0) >= 0 else DOWN, end),
         "live_now": live_view(res, navs, s["initial"], bench, s["benchmark"], end),
         "live_layout": (load_yaml("site.yaml") or {}).get("intraday_layout", "strip"),
+        "bt": backtest_view(s["id"], s.get("backtest_bench", "견줄 것")),
         "rationale": md(s.get("rationale") or ""),
         "backtest": md(s.get("backtest") or ""),
         "log": md(s.get("log") or ""),

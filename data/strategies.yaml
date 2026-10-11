@@ -31,6 +31,7 @@
     - "추세나 변동성을 보고 비중을 바꾸는 장치는 없다"
   fill: 월말에 판정하고 다음 거래일 종가로 체결했다고 가정
   code_url: ""
+  backtest_bench: KODEX 200
   rationale: |
     ### 무엇을 노리나
 
@@ -111,6 +112,7 @@
     - "추세나 변동성을 보고 비중을 바꾸는 장치는 없다"
   fill: 월말에 판정하고 다음 거래일 종가로 체결했다고 가정
   code_url: ""
+  backtest_bench: KODEX 200
   rationale: |
     ### 무엇을 노리나
 

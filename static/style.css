@@ -50,6 +50,14 @@ main.w{min-height:60vh;padding-top:36px;padding-bottom:24px}
 .strip b{display:block;font-size:22px;font-weight:700;letter-spacing:-.02em;line-height:1.3}
 .strip > div > b + span{font-size:12.5px;font-weight:600}
 
+/* 백테스트 칸: 해마다의 수익률 막대 */
+table.yr{margin:6px 0 22px;max-width:760px}
+table.yr td{vertical-align:middle;white-space:nowrap}
+.ybar{display:inline-block;height:10px;border-radius:2px;margin-right:8px;vertical-align:middle;min-width:2px}
+.ybar.up{background:var(--up)} .ybar.down{background:var(--down)} .ybar.grey{background:var(--line)}
+.bt{margin-top:14px}
+table.mheat{margin:0 0 22px;font-size:12.5px} table.mheat td{padding:6px 4px;font-variant-numeric:tabular-nums} table.mheat td[style]{border-radius:3px;color:#111}
+
 /* 가상운용 전략의 장중 평가 띠 */
 .liveband{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 26px;padding:12px 16px;margin:-8px 0 24px;border:1px solid var(--line);border-radius:8px;font-size:13.5px;color:var(--sub)}
 .liveband b{font-size:17px;font-weight:700;color:var(--ink,inherit);margin-left:4px}

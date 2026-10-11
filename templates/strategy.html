@@ -106,7 +106,44 @@
 </div>
 
 <details class="fold" open><summary>전략 근거</summary><div class="prose">{{ s.rationale }}</div></details>
-<details class="fold"><summary>백테스트</summary><div class="prose">{{ s.backtest }}{% if s.code_url %}<p>코드: <a href="{{ s.code_url }}" rel="noopener">{{ s.code_url }}</a></p>{% endif %}</div></details>
+<details class="fold"{% if s.bt %} open{% endif %}><summary>백테스트</summary>
+{% if s.bt %}
+<div class="two even bt">
+  <div>
+    {{ m.h('백테스트 누적수익률', '전략 대 ' ~ s.bt.bench_label, first=true) }}
+    {{ m.chart(s.bt.cum, s.name ~ ' 백테스트 누적수익률', small=true) }}
+  </div>
+  <div>
+    {{ m.h('고점 대비 낙폭', '가장 높았던 값에서 얼마나 내려와 있었나', first=true) }}
+    {{ m.chart(s.bt.dd, s.name ~ ' 백테스트 낙폭', small=true) }}
+  </div>
+</div>
+<table class="grid yr">
+  <thead><tr><th class="c">해</th><th class="l">전략</th><th class="l">{{ s.bt.bench_label }}</th></tr></thead>
+  <tbody>
+  {% for y in s.bt.years %}
+    <tr>
+      <td class="c">{{ y.year }}{% if y.part %}<small> 일부</small>{% endif %}</td>
+      <td class="l"><span class="ybar {{ 'up' if y.s >= 0 else 'down' }}" style="width:{{ '%.1f'|format(y.sw * 0.6) }}%"></span><b class="{{ y.s|sign }}">{{ y.s|pct }}</b></td>
+      <td class="l"><span class="ybar grey" style="width:{{ '%.1f'|format(y.bw * 0.6) }}%"></span>{{ y.b|pct }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+<div class="scroll">
+<table class="grid mheat">
+  <thead><tr><th class="c">달마다 수익률</th>{% for m_ in range(1, 13) %}<th class="c">{{ m_ }}월</th>{% endfor %}</tr></thead>
+  <tbody>
+  {% for r in s.bt.months %}
+    <tr><td class="c">{{ r.year }}</td>
+    {% for c in r.cells %}{% if c %}<td class="c" style="background:rgba({{ '224,53,59' if c.v >= 0 else '37,99,235' }},{{ c.a }})">{{ '%+.1f'|format(c.v * 100) }}</td>{% else %}<td></td>{% endif %}{% endfor %}
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% endif %}
+<div class="prose">{{ s.backtest }}{% if s.code_url %}<p>코드: <a href="{{ s.code_url }}" rel="noopener">{{ s.code_url }}</a></p>{% endif %}</div></details>
 <details class="fold"{% if not s.active %} open{% endif %}><summary>회고 및 변경 이력</summary><div class="prose">{{ s.log }}</div></details>
 
 {% endblock %}
