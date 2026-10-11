@@ -10,9 +10,9 @@
   </div>
   <div class="strip">
     <div><span>검사한 주장</span><b>{{ '{:,}'.format(B.total.claims + B.total.macro + B.total.market) }}</b><span>독후감 {{ '{:,}'.format(B.total.lines) }}줄에서</span></div>
-    <div><span>한국에서 맞더라</span><b>{{ B.total.kr[0] }}</b><span>아니더라 {{ B.total.kr[1] }}</span></div>
-    <div><span>미국에서 맞더라</span><b>{{ B.total.us[0] }}</b><span>아니더라 {{ B.total.us[1] }}</span></div>
-    <div><span>시장·금리 맞더라</span><b>{{ B.total.mac[0] }}</b><span>아니더라 {{ B.total.mac[1] }}</span></div>
+    <div><span>한국에서 지지</span><b>{{ B.total.kr[0] }}</b><span>기각 {{ B.total.kr[1] }}</span></div>
+    <div><span>미국에서 지지</span><b>{{ B.total.us[0] }}</b><span>기각 {{ B.total.us[1] }}</span></div>
+    <div><span>시장·금리 지지</span><b>{{ B.total.mac[0] }}</b><span>기각 {{ B.total.mac[1] }}</span></div>
   </div>
 </div>
 
@@ -23,7 +23,7 @@
       <li>책마다 독후감을 쓰고, 그 책의 핵심 주장을 꺼내 실제 자료로 검사</li>
       <li>종목을 고르는 주장은 매달 말 그 조건으로 종목을 나눠 다음 달 수익률을 비교. 한국 {{ B.period.kr }}, 미국 {{ B.period.us }}</li>
       <li>같은 주장을 한국과 미국에서 따로 검사하고 판정도 따로 표시. 한국에서는 통하고 미국에서는 통하지 않는 주장이 많음</li>
-      <li>맞더라는 책이 말한 방향으로 차이가 뚜렷한 것(|t| 2 이상), 아니더라는 반대 방향으로 뚜렷한 것, 나머지는 뚜렷하지 않음</li>
+      <li>지지는 책이 말한 방향으로 차이가 뚜렷한 것(|t| 2 이상), 기각은 반대 방향으로 뚜렷한 것, 나머지는 판단 보류</li>
       <li>시장·금리에 관한 주장은 지표의 상태를 확인한 뒤 3개월의 변화로 판정</li>
       <li>책 이름을 누르면 독후감, 핵심, 주장별 검사 결과</li>
     </ul>
@@ -39,7 +39,7 @@
   </div>
 </div>
 
-{{ m.h('책 목록', '막대와 숫자는 맞더라 · 아니더라 · 뚜렷하지 않음') }}
+{{ m.h('책 목록', '막대와 숫자는 지지 · 기각 · 판단 보류') }}
 {{ m.filter('book-table', '책, 지은이 검색', []) }}
 <div class="scroll wide">
 <table class="grid" data-sortable id="book-table">
@@ -62,7 +62,7 @@
 </table>
 </div>
 
-{% for cat, title in (('두 시장 모두 맞더라', '한국과 미국 모두에서 맞은 주장'), ('한국에서만 맞더라', '한국에서만 맞은 주장'), ('미국에서만 맞더라', '미국에서만 맞은 주장'), ('시장마다 엇갈림', '시장마다 엇갈린 주장'), ('책과 달랐던 것', '책과 달랐던 주장')) %}
+{% for cat, title in (('두 시장 모두 지지', '한국과 미국 모두에서 지지된 주장'), ('한국에서만 지지', '한국에서만 지지된 주장'), ('미국에서만 지지', '미국에서만 지지된 주장'), ('시장마다 엇갈림', '시장마다 엇갈린 주장'), ('기각', '기각된 주장')) %}
 {% set rows = B.tops[cat] %}
 {% if rows %}
 {{ m.h(title, '차이가 큰 순 · 같은 지표는 한 번만' ~ (' · 위 ' ~ rows|length ~ '개' if rows|length >= 15 else '')) }}

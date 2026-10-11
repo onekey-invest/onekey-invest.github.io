@@ -11,10 +11,10 @@
   <div class="strip">
     <div><span>검사한 주장</span><b>{{ b.n_claims + b.n_macro + b.n_market }}</b></div>
     {% if b.n_claims %}
-    <div><span>한국에서 맞더라</span><b>{{ b.counts.kr[0] }}</b><span>아니더라 {{ b.counts.kr[1] }}</span></div>
-    <div><span>미국에서 맞더라</span><b>{{ b.counts.us[0] }}</b><span>아니더라 {{ b.counts.us[1] }}</span></div>
+    <div><span>한국에서 지지</span><b>{{ b.counts.kr[0] }}</b><span>기각 {{ b.counts.kr[1] }}</span></div>
+    <div><span>미국에서 지지</span><b>{{ b.counts.us[0] }}</b><span>기각 {{ b.counts.us[1] }}</span></div>
     {% endif %}
-    {% if b.n_macro %}<div><span>시장·금리 맞더라</span><b>{{ b.counts.mac[0] }}</b><span>아니더라 {{ b.counts.mac[1] }}</span></div>{% endif %}
+    {% if b.n_macro %}<div><span>시장·금리 지지</span><b>{{ b.counts.mac[0] }}</b><span>기각 {{ b.counts.mac[1] }}</span></div>{% endif %}
   </div>
 </div>
 
@@ -41,18 +41,18 @@
 <div class="two even">
   <div class="prose tight">
     {% if b.n_claims %}
-    {% set both = b.claims|selectattr('cat', 'equalto', '두 시장 모두 맞더라')|list %}
-    {% set kronly = b.claims|selectattr('cat', 'equalto', '한국에서만 맞더라')|list %}
-    {% set usonly = b.claims|selectattr('cat', 'equalto', '미국에서만 맞더라')|list %}
-    {% set wrong = b.claims|selectattr('cat', 'equalto', '책과 달랐던 것')|list %}
+    {% set both = b.claims|selectattr('cat', 'equalto', '두 시장 모두 지지')|list %}
+    {% set kronly = b.claims|selectattr('cat', 'equalto', '한국에서만 지지')|list %}
+    {% set usonly = b.claims|selectattr('cat', 'equalto', '미국에서만 지지')|list %}
+    {% set wrong = b.claims|selectattr('cat', 'equalto', '기각')|list %}
     {% set mixed = b.claims|selectattr('cat', 'equalto', '시장마다 엇갈림')|list %}
     <p>종목을 고르는 주장 {{ b.n_claims }}가지를 한국과 미국에서 따로 검사했다. 한국에서는 {{ k.tally(b.counts.kr) }} 미국에서는 {{ k.tally(b.counts.us) }}</p>
     <ul>
-      {% if both %}<li>두 시장 모두에서 맞은 것: {% for x in both[:4] %}<a href="#{{ x.cid }}">{{ x.label }}</a>{% if not loop.last %}, {% endif %}{% endfor %}{% if both|length > 4 %} 등 {{ both|length }}가지{% endif %}</li>{% else %}<li>두 시장 모두에서 맞은 주장은 없었다</li>{% endif %}
-      {% if kronly %}<li>한국에서만 맞은 것: {% for x in kronly[:4] %}<a href="#{{ x.cid }}">{{ x.label }}</a>{% if not loop.last %}, {% endif %}{% endfor %}{% if kronly|length > 4 %} 등 {{ kronly|length }}가지{% endif %}</li>{% endif %}
-      {% if usonly %}<li>미국에서만 맞은 것: {% for x in usonly[:4] %}<a href="#{{ x.cid }}">{{ x.label }}</a>{% if not loop.last %}, {% endif %}{% endfor %}{% if usonly|length > 4 %} 등 {{ usonly|length }}가지{% endif %}</li>{% endif %}
+      {% if both %}<li>두 시장 모두에서 지지된 것: {% for x in both[:4] %}<a href="#{{ x.cid }}">{{ x.label }}</a>{% if not loop.last %}, {% endif %}{% endfor %}{% if both|length > 4 %} 등 {{ both|length }}가지{% endif %}</li>{% else %}<li>두 시장 모두에서 지지된 주장은 없었다</li>{% endif %}
+      {% if kronly %}<li>한국에서만 지지된 것: {% for x in kronly[:4] %}<a href="#{{ x.cid }}">{{ x.label }}</a>{% if not loop.last %}, {% endif %}{% endfor %}{% if kronly|length > 4 %} 등 {{ kronly|length }}가지{% endif %}</li>{% endif %}
+      {% if usonly %}<li>미국에서만 지지된 것: {% for x in usonly[:4] %}<a href="#{{ x.cid }}">{{ x.label }}</a>{% if not loop.last %}, {% endif %}{% endfor %}{% if usonly|length > 4 %} 등 {{ usonly|length }}가지{% endif %}</li>{% endif %}
       {% if mixed %}<li>시장마다 엇갈린 것: {% for x in mixed[:4] %}<a href="#{{ x.cid }}">{{ x.label }}</a>{% if not loop.last %}, {% endif %}{% endfor %}</li>{% endif %}
-      {% if wrong %}<li>책과 달랐던 것: {% for x in wrong[:4] %}<a href="#{{ x.cid }}">{{ x.label }}</a>{% if not loop.last %}, {% endif %}{% endfor %}{% if wrong|length > 4 %} 등 {{ wrong|length }}가지{% endif %}</li>{% endif %}
+      {% if wrong %}<li>기각: {% for x in wrong[:4] %}<a href="#{{ x.cid }}">{{ x.label }}</a>{% if not loop.last %}, {% endif %}{% endfor %}{% if wrong|length > 4 %} 등 {{ wrong|length }}가지{% endif %}</li>{% endif %}
     </ul>
     {% endif %}
     {% if b.n_macro %}<p>시장·금리에 관한 주장 {{ b.n_macro }}가지는 지표의 상태를 확인한 뒤 3개월을 보면 {{ k.tally(b.counts.mac) }} 같은 때의 움직임으로 보면 {{ k.tally(b.counts.mac_co) }}</p>{% endif %}
@@ -64,15 +64,15 @@
       {% if b.n_claims %}
       <tr><th>종목을 고르는 주장 · 한국</th><td>{{ k.vbar(b.counts.kr) }}</td></tr>
       <tr><th>종목을 고르는 주장 · 미국</th><td>{{ k.vbar(b.counts.us) }}</td></tr>
-      {% if b.robust.kr|sum %}<tr><th>한국에서 맞은 것의 강건성</th><td>단단함 {{ b.robust.kr[0] }} · 보통 {{ b.robust.kr[1] }} · 약함 {{ b.robust.kr[2] }}</td></tr>{% endif %}
-      {% if b.robust.us|sum %}<tr><th>미국에서 맞은 것의 강건성</th><td>단단함 {{ b.robust.us[0] }} · 보통 {{ b.robust.us[1] }} · 약함 {{ b.robust.us[2] }}</td></tr>{% endif %}
+      {% if b.robust.kr|sum %}<tr><th>한국에서 지지된 것의 강건성</th><td>단단함 {{ b.robust.kr[0] }} · 보통 {{ b.robust.kr[1] }} · 약함 {{ b.robust.kr[2] }}</td></tr>{% endif %}
+      {% if b.robust.us|sum %}<tr><th>미국에서 지지된 것의 강건성</th><td>단단함 {{ b.robust.us[0] }} · 보통 {{ b.robust.us[1] }} · 약함 {{ b.robust.us[2] }}</td></tr>{% endif %}
       {% endif %}
       {% if b.n_macro %}<tr><th>시장·금리 · 그 뒤 3개월</th><td>{{ k.vbar(b.counts.mac) }}</td></tr>
       <tr><th>시장·금리 · 같은 때</th><td>{{ k.vbar(b.counts.mac_co) }}</td></tr>{% endif %}
       {% if b.n_market %}<tr><th>지수로 시장 읽기 · 미국</th><td>{{ k.vbar(b.counts.idx_us) }}</td></tr>
       <tr><th>지수로 시장 읽기 · 한국</th><td>{{ k.vbar(b.counts.idx_kr) }}</td></tr>{% endif %}
     </table>
-    <p class="mkt-note">막대와 숫자는 맞더라 · 아니더라 · 뚜렷하지 않음 순서입니다.</p>
+    <p class="mkt-note">막대와 숫자는 지지 · 기각 · 판단 보류 순서입니다.</p>
   </div>
 </div>
 
@@ -192,7 +192,7 @@
       {% if x.src and (loop.first or loop.previtem.src != x.src) %}<tr class="share-kind"><td class="l" colspan="5">같은 책의 다른 정리본</td></tr>{% endif %}
       <tr>
         <td class="c">{{ x.n }}</td><td class="c">{{ x.page }}</td><td class="l">{{ x.text }}</td><td class="l lab">{{ x.cat }}</td>
-        <td class="c">{% if x.res in ('맞더라', '아니더라', '뚜렷하지 않음') %}{{ k.vd(x.res) }}{% elif x.res %}<span class="tag">{{ x.res }}</span>{% else %}<span class="tag x">{{ x.group }}</span>{% endif %}</td>
+        <td class="c">{% if x.res in ('지지', '기각', '판단 보류') %}{{ k.vd(x.res) }}{% elif x.res %}<span class="tag">{{ x.res }}</span>{% else %}<span class="tag x">{{ x.group }}</span>{% endif %}</td>
       </tr>
     {% endfor %}
     </tbody>

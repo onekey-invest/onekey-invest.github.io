@@ -64,10 +64,10 @@
 
 {% if B %}
 {{ m.h('책 검증', '검사 ' ~ B.asof) }}
-<p class="intro">읽은 책 {{ B.total.books }}권의 주장 {{ B.total.claims + B.total.macro + B.total.market }}가지를 한국과 미국 자료로 직접 검사했습니다. 종목을 고르는 주장 {{ B.total.claims }}가지 가운데 한국에서 {{ B.total.kr[0] }}가지, 미국에서 {{ B.total.us[0] }}가지가 맞았습니다.</p>
-{# 대표로 맞은 주장 하나와 책과 달랐던 주장 하나(한국 결과가 있는 것) #}
-{% set right = B.tops['한국에서만 맞더라'][:1] %}
-{% set wrong = (B.tops['책과 달랐던 것']|selectattr('kr')|list)[:1] %}
+<p class="intro">읽은 책 {{ B.total.books }}권의 주장 {{ B.total.claims + B.total.macro + B.total.market }}가지를 한국과 미국 자료로 직접 검사했습니다. 종목을 고르는 주장 {{ B.total.claims }}가지 가운데 한국에서 {{ B.total.kr[0] }}가지, 미국에서 {{ B.total.us[0] }}가지가 지지됐습니다.</p>
+{# 대표로 맞은 주장 하나와 기각된 주장 하나(한국 결과가 있는 것) #}
+{% set right = B.tops['한국에서만 지지'][:1] %}
+{% set wrong = (B.tops['기각']|selectattr('kr')|list)[:1] %}
 <div class="scroll wide">
 <table class="grid vt">
   <thead><tr><th class="l">검사한 것</th><th class="l">한국</th><th class="l">미국</th></tr></thead>
