@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% import "_m.html" as m %}
+{% import "_books.html" as k %}
 {% block main %}
 
 <div class="two even">
@@ -60,5 +61,31 @@
 </table>
 </div>
 <div class="note"><a href="{{ url('notes/') }}">마켓노트 전체 보기</a></div>
+
+{% if B %}
+{{ m.h('책 검증', '검사 ' ~ B.asof) }}
+<p class="intro">읽은 책 {{ B.total.books }}권의 주장 {{ B.total.claims + B.total.macro + B.total.market }}가지를 한국과 미국 자료로 직접 검사했습니다. 종목을 고르는 주장 {{ B.total.claims }}가지 가운데 한국에서 {{ B.total.kr[0] }}가지, 미국에서 {{ B.total.us[0] }}가지가 맞았습니다.</p>
+{# 대표로 맞은 주장 하나와 책과 달랐던 주장 하나(한국 결과가 있는 것) #}
+{% set right = B.tops['한국에서만 맞더라'][:1] %}
+{% set wrong = (B.tops['책과 달랐던 것']|selectattr('kr')|list)[:1] %}
+<div class="scroll wide">
+<table class="grid vt">
+  <thead><tr><th class="l">검사한 것</th><th class="l">한국</th><th class="l">미국</th></tr></thead>
+  <tbody>
+  {% for x in right + wrong %}
+    <tr>
+      <td class="l"><b class="lab">{{ x.label }}</b>
+        <div class="how">{% if x.want %}책은 {{ x.want }}고 봄{% endif %}</div>
+        <div class="src">{{ x.books|join(', ') }}</div>
+        <div class="both">{{ x.both }}</div></td>
+      <td class="l">{{ k.mk(x.kr, x.fmax) }}</td>
+      <td class="l">{{ k.mk(x.us, x.fmax) }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+<div class="note"><a href="{{ url('books/') }}">책 검증 전체 보기</a></div>
+{% endif %}
 
 {% endblock %}

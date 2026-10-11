@@ -651,9 +651,11 @@ def main():
             "bench": 50 + b / top * 50,
         }
 
+    books = load_books()
     write("", "home.html", nav="home", title="홈",
           companies=companies, reports=all_reports[:12], summary=summary, n_reports=len(all_reports),
-          strategies=strategies, featured=featured[:3], notes=notes[:5])
+          strategies=strategies, featured=featured[:3], notes=notes[:5],
+          B=books)
     write("research", "research.html", nav="research", sub="companies", title="커버리지 성적표",
           companies=companies, summary=summary)
     write("research/industries", "industries.html", nav="research", sub="industries", title="산업",
@@ -697,7 +699,6 @@ def main():
               description=n["headline"],
               newer=notes[k - 1] if k > 0 else None,
               older=notes[k + 1] if k + 1 < len(notes) else None)
-    books = load_books()
     if books:
         write("books", "books.html", nav="books", title="책 검증", B=books,
               description="읽은 책의 주장을 실제 자료로 검사한 기록")
