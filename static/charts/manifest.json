@@ -29,6 +29,16 @@
                                    "w":  573,
                                    "h":  440
                                },
+    "industry-shipbuilding-indicators":  {
+                                             "asof":  "2026-06-01",
+                                             "w":  560,
+                                             "h":  307
+                                         },
+    "industry-shipbuilding-market":  {
+                                         "asof":  "",
+                                         "w":  573,
+                                         "h":  440
+                                     },
     "strategy-etf-ga":  {
                             "asof":  "2026-10-08",
                             "w":  667,

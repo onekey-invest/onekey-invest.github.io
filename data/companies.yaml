@@ -235,7 +235,7 @@
   ticker: "010140"
   market: KOSPI
   benchmark: KOSPI
-  industries: []
+  industries: [shipbuilding]
   tags: [조선, LNG운반선, 해양 생산설비]
   points:
     - 수주할 때마다 내는 공시 137건을 계약 단위 장부로 만들었다. LNG운반선 한 척의 계약금액이 2021년 수주 2,321억원에서 2025년 수주 3,622억원이 됐다. 본사에서 짓는 상선의 값은 1년 사이 9% 올랐고 조선해양 경상 영업이익률은 7.8%에서 12.1%가 됐다
