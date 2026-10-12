@@ -67,7 +67,11 @@
       <tr><th>변동성</th><td>{% if s.vol is not none %}{{ '%.1f'|format(s.vol * 100) }}% <small>(일별 수익률, 연율)</small>{% else %}– <small>(스무 거래일 뒤부터)</small>{% endif %}</td></tr>
       <tr><th>샤프</th><td>{{ s.sharpe|dec }} <small>(일별 수익률, 무위험수익률 {{ s.risk_free_label if s.risk_free else '0%' }})</small></td></tr>
       <tr><th>거래 횟수 / 누적 비용</th><td>{{ s.n_trades }}회 / {{ s.fees|num }}원</td></tr>
+      {% if s.auto %}
+      <tr><th>보유 비중</th><td>{% for h in s.holdings %}{{ h.name }} {{ h.weight|share }} · {% endfor %}현금 {{ s.cash_weight|share }}</td></tr>
+      {% else %}
       <tr><th>현금 비중</th><td>{{ s.cash_weight|share }}</td></tr>
+      {% endif %}
     </table>
   </div>
   <div>
