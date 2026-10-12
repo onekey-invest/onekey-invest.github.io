@@ -321,3 +321,8 @@ table{width:100%;border-collapse:collapse}
   .h{margin-top:36px;flex-wrap:wrap}
   .bars .row{grid-template-columns:92px 1fr 58px}
 }
+
+/* 전략 화면: 현재 성과 바로 밑의 백테스트 성과 줄(운용 기록과 헷갈리지 않게 작고 옅게) */
+.strip.bt-strip{margin-top:10px;padding-top:10px;border-top:1px dashed var(--line);justify-content:flex-end}
+.strip.bt-strip b{font-size:16px;font-weight:600}
+.strip.bt-strip .lab b{font-size:13px;font-weight:500;color:var(--sub)}

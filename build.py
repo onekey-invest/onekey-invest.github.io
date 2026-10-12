@@ -148,8 +148,34 @@ def backtest_view(sid, bench_label):
                                                    {"name": "전략", "type": "line", "color": INK, "main": True, "points": cum(1)}], w=500, h=270),
         "dd": xl_time(f"backtest-dd-{sid}", "pct", [{"name": bench_label, "type": "line", "color": GREY, "points": dd(2)},
                                                     {"name": "전략", "type": "line", "color": INK, "main": True, "points": dd(1)}], w=500, h=270),
-        "years": years, "months": month_rows, "bench_label": bench_label,
+        "years": years, "months": month_rows, "bench_label": bench_label, "stats": backtest_stats(rows),
     }
+
+
+RISK_FREE = 0.02   # 샤프지수의 무위험수익률(연 2%로 가정, 시장 구분 없이 고정)
+
+
+def backtest_stats(rows):
+    """백테스트 파일 한 벌의 요약(운용 화면에서 현재 성과 바로 밑에 보인다): 기간, 연환산 수익률, 견줄 것 대비 연 초과, MDD, 변동성(연율), 샤프(무위험 2%)."""
+    days = (rows[-1][0] - rows[0][0]).days
+    if days < 60:
+        return None
+    gaps = sorted((b[0] - a[0]).days for a, b in zip(rows, rows[1:]))
+    ppy = 365.25 / max(gaps[len(gaps) // 2], 1)                # 한 해에 몇 번 적혔나(달마다면 12쯤, 날마다면 250쯤)
+    ppy = 12 if 10 <= ppy <= 14 else (252 if ppy > 150 else ppy)
+
+    def cagr(i):
+        return (rows[-1][i] / rows[0][i]) ** (365.25 / days) - 1
+    rets = [b[1] / a[1] - 1 for a, b in zip(rows, rows[1:])]
+    mean = sum(rets) / len(rets)
+    sd = (sum((r - mean) ** 2 for r in rets) / (len(rets) - 1)) ** 0.5
+    peak, mdd = rows[0][1], 0.0
+    for r in rows:
+        peak = max(peak, r[1])
+        mdd = min(mdd, r[1] / peak - 1)
+    vol = sd * ppy ** 0.5
+    return {"start": rows[0][0], "end": rows[-1][0], "ret": cagr(1), "bench_ret": cagr(2), "excess": cagr(1) - cagr(2), "mdd": mdd, "vol": vol,
+            "sharpe": (mean - ((1 + RISK_FREE) ** (1 / ppy) - 1)) * ppy / vol if vol > 0 else None}
 
 
 def load_intraday():

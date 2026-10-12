@@ -26,6 +26,16 @@
     <div><span>변동성 <small>연율</small></span><b>{% if s.vol is not none %}{{ '%.1f'|format(s.vol * 100) }}%{% else %}–{% endif %}</b></div>
   </div>
   {% endif %}
+  {% if s.bt and s.bt.stats %}
+  <div class="strip bt-strip">
+    <div class="lab"><span>백테스트 <small>운용 기록이 아님</small></span><b>{{ s.bt.stats.start|ymd }} ~ {{ s.bt.stats.end|ymd }}</b></div>
+    <div class="sep"><span>수익률 <small>연환산</small></span><b class="{{ s.bt.stats.ret|sign }}">{{ s.bt.stats.ret|pct }}</b></div>
+    <div><span>초과수익 <small>연, 대 {{ s.bt.bench_label }}</small></span><b class="{{ s.bt.stats.excess|sign }}">{{ s.bt.stats.excess|pp }}</b></div>
+    <div><span>MDD</span><b>{{ s.bt.stats.mdd|pct }}</b></div>
+    <div><span>변동성 <small>연율</small></span><b>{{ '%.1f'|format(s.bt.stats.vol * 100) }}%</b></div>
+    <div><span>샤프 <small>무위험 2%</small></span><b>{% if s.bt.stats.sharpe is not none %}{{ '%.2f'|format(s.bt.stats.sharpe) }}{% else %}–{% endif %}</b></div>
+  </div>
+  {% endif %}
 </div>
 
 {% if s.pre %}
