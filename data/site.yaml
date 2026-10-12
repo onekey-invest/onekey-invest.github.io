@@ -19,5 +19,6 @@ benchmarks:                        # 벤치마크 이름 → 시세 파일(data/
   KOSDAQ: KOSDAQ
   "S&P 500": SP500
   "S&P 500(원화)": SP500KRW
+  "S&P 500(원화 환산)": SP500KRW_FX      # S&P 500 × 원/달러, 2026년 1월부터(tools/bu_us_book.py가 만든다)
 
-asof_exclude: [SP500, SP500KRW]   # 사이트의 시세 기준일을 정할 때 빼는 시세 파일(미국 지수는 하루 늦다)
+asof_exclude: [SP500, SP500KRW, SP500KRW_FX]   # 사이트의 시세 기준일을 정할 때 빼는 시세 파일(미국 지수는 하루 늦다)

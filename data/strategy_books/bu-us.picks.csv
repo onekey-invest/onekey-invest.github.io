@@ -1,0 +1,31 @@
+pick_date,ticker,sector,score,universe,passed
+2026-07-31,KEYS,Other,9,1807,869
+2026-07-31,AAPL,Information Technology,9,1807,869
+2026-07-31,SCCO,Materials,8,1807,869
+2026-07-31,LIVN,Health Care,8,1807,869
+2026-07-31,ADI,Information Technology,8,1807,869
+2026-07-31,AEO,Consumer Discretionary,8,1807,869
+2026-07-31,FIVE,Consumer Staples,8,1807,869
+2026-07-31,EXEL,Health Care,8,1807,869
+2026-07-31,KO,Consumer Staples,8,1807,869
+2026-07-31,SONO,Other,8,1807,869
+2026-07-31,A,Health Care,8,1807,869
+2026-07-31,MTCH,Information Technology,8,1807,869
+2026-07-31,GILD,Health Care,8,1807,869
+2026-07-31,VCEL,Health Care,8,1807,869
+2026-07-31,HEI,Industrials,8,1807,869
+2026-07-31,MU,Information Technology,7,1807,869
+2026-07-31,CIEN,Information Technology,7,1807,869
+2026-07-31,TER,Other,7,1807,869
+2026-07-31,CDNA,Health Care,7,1807,869
+2026-07-31,DELL,Information Technology,7,1807,869
+2026-07-31,MKSI,Other,7,1807,869
+2026-07-31,LRCX,Industrials,7,1807,869
+2026-07-31,NWPX,Materials,7,1807,869
+2026-07-31,AMD,Information Technology,7,1807,869
+2026-07-31,HPE,Information Technology,7,1807,869
+2026-07-31,VLO,Energy,7,1807,869
+2026-07-31,BB,Information Technology,7,1807,869
+2026-07-31,ELMD,Health Care,7,1807,869
+2026-07-31,FLXS,Other,7,1807,869
+2026-07-31,ADEA,Communication Services,7,1807,869
