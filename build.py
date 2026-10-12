@@ -158,6 +158,17 @@ def load_rate(name):
         return sorted((date.fromisoformat(r["date"]), float(r["rate"])) for r in csv.DictReader(f))
 
 
+# 샤프지수의 무위험수익률: 해외 주식 전략은 미국 3개월 국채 금리, 그 밖(국내 주식·멀티에셋·ETF)은 한국은행 기준금리.
+# 전략 항목에 risk_free / risk_free_label을 적으면 그것을 쓴다.
+RF_DEFAULT = {"overseas": ("us_tbill_3m", "미국 3개월 국채 금리")}
+RF_OTHER = ("bok_base_rate", "한국은행 기준금리")
+
+
+def risk_free_of(s):
+    name, label = RF_DEFAULT.get(s["category"], RF_OTHER)
+    return s.get("risk_free") or name, s.get("risk_free_label") or label
+
+
 def daily_rf(name, days):
     """날마다의 무위험수익률(하루치). 그날 또는 그 앞의 가장 가까운 금리를 쓴다(금리 자료가 운용 기간보다 일찍 끝나면 마지막 값을 이어 쓴다)."""
     rate, out, i, cur = load_rate(name), [], 0, None
@@ -495,7 +506,9 @@ def build_strategy(s, prices, bench_map, asof, comp_by_id):
         "bench_ret": bret,
         "excess": M.excess(ret, bret),
         "mdd": PF.max_drawdown(navs),
-        "sharpe": PF.sharpe(navs, rf=daily_rf(s["risk_free"], [d for d, _ in res["nav"]][1:]) if s.get("risk_free") else None),
+        "sharpe": PF.sharpe(navs, rf=daily_rf(risk_free_of(s)[0], [d for d, _ in res["nav"]][1:])),
+        "risk_free": risk_free_of(s)[0],
+        "risk_free_label": risk_free_of(s)[1],
         "vol": vol_annual(navs),
         "fees": res["fees"],
         "n_trades": res["n_trades"],
