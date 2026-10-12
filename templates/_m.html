@@ -162,7 +162,7 @@
       <td class="c">{{ r.date|ymd }}</td>
       <td class="c">{{ kind(r.kind) }}</td>
       {% if subject %}<td class="l"><a href="{{ url(r.subject_path) }}">{{ r.subject }}</a></td>{% endif %}
-      <td class="l"><a href="{{ url(r.path) }}"><b>{{ r.title }}</b></a>{% if r.pdf %} <a class="pdf" href="{{ url('static/reports/' ~ r.pdf) }}">PDF</a>{% endif %}</td>
+      <td class="l"><a href="{{ url(r.path) }}"><b>{{ r.title }}</b></a>{% if r.pdf %} <a class="pdf" href="{{ url('static/reports/' ~ r.pdf) }}">PDF</a>{% endif %}{% if r.docx %} <a class="pdf" href="{{ url('static/reports/' ~ r.docx) }}">Word</a>{% endif %}</td>
       <td class="c">{% if r.rating %}{{ rating(r.rating) }}{% else %}–{% endif %}</td>
       <td>{{ r.target|num if r.target else '–' }}</td>
       <td>{{ r.close|num }}</td>

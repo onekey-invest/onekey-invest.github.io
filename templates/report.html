@@ -32,7 +32,7 @@
       <tr><th>발행일 종가</th><td>{{ r.close|num }}원</td></tr>
       <tr><th>이후 수익률</th><td>{{ m.ret(r.after) }} <small>({{ asof|ymd }})</small></td></tr>
       {% endif %}
-      <tr><th>원문</th><td>{% if r.pdf %}<a class="pdf" href="{{ url('static/reports/' ~ r.pdf) }}">PDF 내려받기</a>{% else %}PDF 없음{% endif %}</td></tr>
+      <tr><th>원문</th><td>{% if r.pdf %}<a class="pdf" href="{{ url('static/reports/' ~ r.pdf) }}">PDF 내려받기</a>{% else %}PDF 없음{% endif %}{% if r.docx %} · <a class="pdf" href="{{ url('static/reports/' ~ r.docx) }}">Word 내려받기</a>{% endif %}</td></tr>
     </table>
     {% if newer or older %}
     {{ m.h('같은 대상의 리포트', '') }}
