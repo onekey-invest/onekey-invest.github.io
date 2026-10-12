@@ -182,9 +182,10 @@ def split_front(path):
     return yaml.safe_load(front), body
 
 
-def load_studies():
+def load_studies(base=""):
     """연구(content/studies/*.md). 머리말: id · title · date · summary · tags. 본문은 마크다운(표 포함)."""
     out = []
+    manifest = load_chart_manifest()
     folder = ROOT / "content" / "studies"
     for path in sorted(folder.glob("*.md")) if folder.exists() else []:
         x, body = split_front(path)
@@ -193,7 +194,19 @@ def load_studies():
         for key in ("id", "title", "date"):
             if not x.get(key):
                 raise ValueError(f"{path.name}: {key} 항목이 없다")
-        x["body"] = md(body)
+        html = str(md(body))
+        # 그림: data/studies/<id>.json 에 그림 자료를 두고, 글에는 [[그림:그림id]] 한 줄을 적는다(그리는 것은 엑셀)
+        spec = ROOT / "data" / "studies" / f"{x['id']}.json"
+        for c in (json.loads(spec.read_text(encoding="utf-8")).get("charts", []) if spec.exists() else []):
+            if c["kind"] == "bar":
+                xl_bar(c["id"], c["cats"], c["series"], c.get("format", "pct"), c.get("asof", ""), c.get("w", 520), c.get("h", 280))
+            else:
+                xl_time(c["id"], c.get("format", "pct"), [{**s_, "points": [(date.fromisoformat(d), v) for d, v in s_["points"]]} for s_ in c["series"]], w=c.get("w", 620), h=c.get("h", 260))
+            m_ = manifest.get(c["id"])
+            fig = (f'<figure class="xl" style="max-width:{c.get("show", 640)}px"><img src="{base}/static/charts/{c["id"]}.svg" width="{m_["w"]}" height="{m_["h"]}" alt="{c.get("alt", "")}" loading="lazy">'
+                   f'<figcaption>{c.get("caption", "")}</figcaption></figure>') if m_ else '<p class="intro">그림을 준비하고 있습니다.</p>'
+            html = html.replace(f'<p>[[그림:{c["id"]}]]</p>', fig)
+        x["body"] = Markup(html)
         x["path"] = f"studies/{x['id']}/"
         out.append(x)
     return sorted(out, key=lambda x: (x["date"], x["id"]), reverse=True)
@@ -336,6 +349,15 @@ def xl_pie(cid, parts, asof=""):
         return None
     XL.append({"id": cid, "kind": "pie", "asof": str(asof or ""), "w": 430, "h": 330,
                "parts": [{"name": p["name"], "pct": p["pct"], "color": c} for p, c in zip(parts, pie_colors(parts))]})
+    return cid
+
+
+def xl_bar(cid, cats, series, fmt="pct", asof="", w=520, h=280):
+    """묶은 세로 막대 한 장. cats = 가로축의 구분(글), series = [{name, color, values[구분마다 값]}]."""
+    if not cats or not series:
+        return None
+    XL.append({"id": cid, "kind": "bar", "format": fmt, "asof": str(asof or ""), "w": w, "h": h, "cats": [str(c) for c in cats],
+               "series": [{"name": x["name"], "color": x["color"], "values": [round(float(v), 4) for v in x["values"]]} for x in series]})
     return cid
 
 
@@ -845,7 +867,7 @@ def main():
     for s in strategies + pending:
         write(s["path"], "strategy.html", nav="portfolios", sub=s["category"], title=s["name"], s=s)
 
-    studies = load_studies()
+    studies = load_studies(base)
     write("studies", "studies.html", nav="studies", title="연구", studies=studies)
     for x in studies:
         write(x["path"], "study.html", nav="studies", title=x["title"], x=x)

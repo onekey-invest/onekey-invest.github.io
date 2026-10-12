@@ -168,6 +168,49 @@ function DrawPie($ws, $c, [bool]$isNew) {
     return $co
 }
 
+# ---- 묶은 세로 막대: 가로축은 구분(글), 계열마다 막대 하나씩
+function DrawBar($ws, $c, [bool]$isNew) {
+    $ws.Range('A:ZZ').ClearContents() | Out-Null
+    $n = $c.cats.Count
+    $ws.Cells.Item(1, 1).Value2 = '구분'
+    $cats = @(); foreach ($x in $c.cats) { $cats += [string]$x }
+    PutColumn $ws 1 2 $cats
+    $k = 0
+    foreach ($s in $c.series) {
+        $k++
+        $ws.Cells.Item(1, $k + 1).Value2 = [string]$s.name
+        $v = @(); foreach ($y in $s.values) { $v += [double]$y }
+        PutColumn $ws ($k + 1) 2 $v
+    }
+    if ($isNew) {
+        $w = 520; $h = 280; if ($c.w) { $w = [double]$c.w }; if ($c.h) { $h = [double]$c.h }
+        $co = $ws.ChartObjects().Add(($k + 2) * 60, 10, $w, $h); $co.Name = 'chart'
+        $ch = $co.Chart; $ch.ChartType = 51      # xlColumnClustered
+    }
+    else { $co = $ws.ChartObjects().Item(1); $ch = $co.Chart }
+    $sc = $ch.SeriesCollection()
+    while ($sc.Count -gt $k) { $sc.Item($sc.Count).Delete() | Out-Null }
+    $j = 0
+    foreach ($s in $c.series) {
+        $j++; $fresh = $false
+        if ($j -gt $sc.Count) { $ser = $sc.NewSeries(); $fresh = $true } else { $ser = $sc.Item($j) }
+        $ser.Name = [string]$s.name
+        $ser.XValues = $ws.Range($ws.Cells.Item(2, 1), $ws.Cells.Item($n + 1, 1))
+        $ser.Values = $ws.Range($ws.Cells.Item(2, $j + 1), $ws.Cells.Item($n + 1, $j + 1))
+        if ($fresh -or $isNew) { $ser.Format.Fill.ForeColor.RGB = (Rgb $s.color); $ser.Format.Line.Visible = 0 }
+    }
+    if ($isNew) {
+        BaseLook $ch
+        $ch.HasLegend = $true; $ch.Legend.Position = -4107
+        $ax = $ch.Axes(1); $ax.Format.Line.ForeColor.RGB = (Rgb '#D0D5DD')
+        $ay = $ch.Axes(2); $ay.HasMajorGridlines = $true
+        $ay.MajorGridlines.Format.Line.ForeColor.RGB = (Rgb '#EAECF0'); $ay.Format.Line.Visible = 0
+        $ay.TickLabels.NumberFormat = $(if ($c.format -eq 'pct') { '0"%"' } else { '#,##0' })
+        try { $ch.ChartGroups(1).GapWidth = 70; $ch.ChartGroups(1).Overlap = -8 } catch { }
+    }
+    return $co
+}
+
 # ---- 표 안의 작은 그림: 한 시트에 모아 둔다. 열 하나가 그림 하나.
 function DrawSpark($ws, $c, [int]$col) {
     $n = $c.values.Count
@@ -231,7 +274,7 @@ try {
             $isNew = ($null -eq $ws)
             if ($isNew) { $ws = $wb.Worksheets.Add([Type]::Missing, $wb.Worksheets.Item($wb.Worksheets.Count)); $ws.Name = $sheetName }
             elseif ($ws.ChartObjects().Count -eq 0) { $isNew = $true }
-            if ($c.kind -eq 'pie') { $co = DrawPie $ws $c $isNew } else { $co = DrawTime $ws $c $isNew }
+            if ($c.kind -eq 'pie') { $co = DrawPie $ws $c $isNew } elseif ($c.kind -eq 'bar') { $co = DrawBar $ws $c $isNew } else { $co = DrawTime $ws $c $isNew }
         }
         $file = Join-Path $Out ($c.id + '.svg')
         if (Test-Path $file) { Remove-Item $file -Force }
