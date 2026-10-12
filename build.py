@@ -152,7 +152,7 @@ def backtest_view(sid, bench_label):
     }
 
 
-RISK_FREE = 0.02   # 샤프지수의 무위험수익률(연 2%로 가정, 시장 구분 없이 고정)
+RISK_FREE = PF.RISK_FREE   # 샤프지수의 무위험수익률(연 2%로 가정, 시장 구분 없이 고정) — 운용 기록과 백테스트가 같은 값을 쓴다
 
 
 def backtest_stats(rows):

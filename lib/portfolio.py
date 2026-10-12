@@ -118,8 +118,11 @@ def max_drawdown(values):
     return worst if peak is not None else None
 
 
-def sharpe(values, min_days=20, periods=252):
-    """일별 수익률의 평균 ÷ 표준편차 × √252. 무위험수익률은 0으로 둔다.
+RISK_FREE = 0.02   # 샤프지수의 무위험수익률: 연 2%로 가정한다(시장 구분 없이 고정)
+
+
+def sharpe(values, min_days=20, periods=252, risk_free=RISK_FREE):
+    """(일별 수익률의 평균 − 무위험수익률의 하루치) ÷ 표준편차 × √252. 무위험수익률은 연 2%로 둔다.
 
     자료가 min_days보다 적거나 변동이 없으면 None.
     """
@@ -130,4 +133,4 @@ def sharpe(values, min_days=20, periods=252):
     var = sum((r - mean) ** 2 for r in rets) / (len(rets) - 1)
     if var <= 0:
         return None
-    return mean / math.sqrt(var) * math.sqrt(periods)
+    return (mean - ((1 + risk_free) ** (1 / periods) - 1)) / math.sqrt(var) * math.sqrt(periods)
