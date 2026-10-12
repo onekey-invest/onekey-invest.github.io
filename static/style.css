@@ -283,6 +283,9 @@ table{width:100%;border-collapse:collapse}
 .prose ul{margin:0 0 12px;padding:0;list-style:none}
 .prose li{position:relative;padding:3px 0 3px 16px}
 .prose li::before{content:"";position:absolute;left:2px;top:15px;width:6px;height:2px;background:var(--accent)}
+.prose ol{margin:0 0 12px;padding-left:22px}
+.prose ol li{padding-left:4px}
+.prose ol li::before{display:none}
 .prose blockquote{margin:0 0 18px;padding:8px 12px;background:#fffbe6;border-radius:6px;color:#6b5d00;font-size:13px}
 .prose blockquote p{margin:0}
 .prose table{margin:4px 0 16px;font-size:13.5px}
