@@ -88,8 +88,9 @@ class StatsTest(unittest.TestCase):
         rets = [b / a - 1 for a, b in zip(values, values[1:])]
         mean = sum(rets) / len(rets)
         sd = (sum((r - mean) ** 2 for r in rets) / (len(rets) - 1)) ** 0.5
-        self.assertAlmostEqual(P.sharpe(values), (mean - (1.02 ** (1 / 252) - 1)) / sd * 252 ** 0.5)   # 무위험 연 2%
-        self.assertAlmostEqual(P.sharpe(values, risk_free=0.0), mean / sd * 252 ** 0.5)
+        self.assertAlmostEqual(P.sharpe(values), mean / sd * 252 ** 0.5)
+        rf = [0.04 / 252] * len(rets)                      # 실제 금리(연 4%)를 날마다 빼면 그만큼 낮아진다
+        self.assertAlmostEqual(P.sharpe(values, rf=rf), (mean - 0.04 / 252) / sd * 252 ** 0.5)
 
     def test_sharpe_flat_is_none(self):
         self.assertIsNone(P.sharpe([100.0] * 30))

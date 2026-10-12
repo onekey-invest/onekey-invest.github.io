@@ -152,11 +152,27 @@ def backtest_view(sid, bench_label):
     }
 
 
-RISK_FREE = PF.RISK_FREE   # 샤프지수의 무위험수익률(연 2%로 가정, 시장 구분 없이 고정) — 운용 기록과 백테스트가 같은 값을 쓴다
+def load_rate(name):
+    """금리 자료(data/rates/<이름>.csv: date, rate — 연 %). [(날짜, 연 %)] 날짜순. 바뀐 날만 적힌 파일도 된다(그 뒤로 같은 값)."""
+    with open(ROOT / "data" / "rates" / f"{name}.csv", encoding="utf-8") as f:
+        return sorted((date.fromisoformat(r["date"]), float(r["rate"])) for r in csv.DictReader(f))
+
+
+def daily_rf(name, days):
+    """날마다의 무위험수익률(하루치). 그날 또는 그 앞의 가장 가까운 금리를 쓴다(금리 자료가 운용 기간보다 일찍 끝나면 마지막 값을 이어 쓴다)."""
+    rate, out, i, cur = load_rate(name), [], 0, None
+    for d in days:
+        while i < len(rate) and rate[i][0] <= d:
+            cur = rate[i][1]
+            i += 1
+        out.append((cur if cur is not None else rate[0][1]) / 100 / 252)
+    return out
 
 
 def backtest_stats(rows):
-    """백테스트 파일 한 벌의 요약(운용 화면에서 현재 성과 바로 밑에 보인다): 기간, 연환산 수익률, 견줄 것 대비 연 초과, MDD, 변동성(연율), 샤프(무위험 2%)."""
+    """백테스트 파일 한 벌의 요약(운용 화면에서 현재 성과 바로 밑에 보인다): 기간, 연환산 수익률, 견줄 것 대비 연 초과, MDD, 변동성(연율).
+
+    샤프는 여기서 계산하지 않는다. 실제 금리로 계산한 값을 전략마다 strategies.yaml의 backtest_sharpe에 적는다(백테스트 기간의 금리 자료가 사이트에 없다)."""
     days = (rows[-1][0] - rows[0][0]).days
     if days < 60:
         return None
@@ -174,8 +190,7 @@ def backtest_stats(rows):
         peak = max(peak, r[1])
         mdd = min(mdd, r[1] / peak - 1)
     vol = sd * ppy ** 0.5
-    return {"start": rows[0][0], "end": rows[-1][0], "ret": cagr(1), "bench_ret": cagr(2), "excess": cagr(1) - cagr(2), "mdd": mdd, "vol": vol,
-            "sharpe": (mean - ((1 + RISK_FREE) ** (1 / ppy) - 1)) * ppy / vol if vol > 0 else None}
+    return {"start": rows[0][0], "end": rows[-1][0], "ret": cagr(1), "bench_ret": cagr(2), "excess": cagr(1) - cagr(2), "mdd": mdd, "vol": vol}
 
 
 def load_intraday():
@@ -480,7 +495,7 @@ def build_strategy(s, prices, bench_map, asof, comp_by_id):
         "bench_ret": bret,
         "excess": M.excess(ret, bret),
         "mdd": PF.max_drawdown(navs),
-        "sharpe": PF.sharpe(navs),
+        "sharpe": PF.sharpe(navs, rf=daily_rf(s["risk_free"], [d for d, _ in res["nav"]][1:]) if s.get("risk_free") else None),
         "vol": vol_annual(navs),
         "fees": res["fees"],
         "n_trades": res["n_trades"],

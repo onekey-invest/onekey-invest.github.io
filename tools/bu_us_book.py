@@ -8,6 +8,7 @@
   data/prices/Bottom-Up 1 US 장부.csv   묶음 전체의 원화 평가값(첫 체결일 = 10,000)
   data/strategy_books/bu-us.json        화면의 '보유 기준' 칸에 쓰는 요약
   data/prices/SP500KRW_FX.csv           견줄 지수: S&P 500 × 원/달러(2026년 1월부터. SP500KRW.csv는 10월부터라 따로 만든다)
+  data/rates/us_tbill_3m.csv            미국 3개월 국채 금리(야후 ^IRX, 연 %). 운용 중 샤프의 무위험수익률로 쓴다(백테스트는 같은 만기의 FRED DGS3MO)
 
 셈
   체결일 = 고르는 날 다음의 첫 거래일. 그날 종가로 30종목을 같은 비중으로 산다(이어서 드는 종목도 다시 같은 비중으로 맞춘다).
@@ -65,6 +66,18 @@ def main():
     missing = [t for t in tickers if not px[t]]
     if len(missing) > 3:
         sys.exit(f"시세를 못 받은 종목이 많다: {missing}")
+    try:                                                     # 무위험수익률: 미국 3개월 국채 금리. 못 받으면 앞서 받은 파일을 그대로 둔다
+        import yfinance as yf
+        irx = yf.Ticker("^IRX").history(start="2026-07-01", auto_adjust=False)
+        rates = [(i.date(), float(r["Close"])) for i, r in irx.iterrows() if r["Close"] == r["Close"]]
+        if len(rates) >= 20:
+            with open(ROOT / "data" / "rates" / "us_tbill_3m.csv", "w", encoding="utf-8", newline="") as f:
+                w = csv.writer(f)
+                w.writerow(["date", "rate"])
+                for d, v in rates:
+                    w.writerow([d.isoformat(), f"{v:.3f}"])
+    except Exception as e:                                   # noqa: BLE001
+        print("미국 3개월 국채 금리를 못 받음:", e)
     fx, sp = read_series("USDKRW"), read_series("SP500")
     with open(ROOT / "data" / "prices" / "SP500KRW_FX.csv", "w", encoding="utf-8", newline="") as f:   # 견줄 지수(원화)
         w = csv.writer(f)
