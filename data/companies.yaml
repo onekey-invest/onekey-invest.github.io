@@ -108,7 +108,7 @@
   ticker: "005940"
   market: KOSPI
   benchmark: KOSPI
-  industries: []
+  industries: [securities]
   tags: [증권, 위탁매매, 배당]
   points:
     - 3분기 시장 거래대금(KRX + NXT)은 하루 52.4조원으로 2분기(90.0조원)보다 42% 줄었다. KOSPI도 석 달 사이 19% 내렸다. 운용투자손익을 주가가 내린 분기의 수익률로 내 3분기 영업이익을 4,199억원으로 본다(컨센서스 5,175억원)
