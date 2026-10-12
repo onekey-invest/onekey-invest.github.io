@@ -333,6 +333,12 @@ def pct_points(points):
     return [(d, v * 100) for d, v in points]
 
 
+def load_strategy_book(sid):
+    """종목이 많아 장부 전체를 자산 하나로 적는 전략의 장부 요약(data/strategy_books/<id>.json). 없으면 None."""
+    path = ROOT / "data" / "strategy_books" / f"{sid}.json"
+    return json.loads(path.read_text(encoding="utf-8")) if path.exists() else None
+
+
 def build_pending(s):
     """규칙을 먼저 공개하고 운용 개시일이 아직 오지 않은 전략. 운용 기록 없이 규칙 · 근거 · 백테스트만 보인다."""
     if s["category"] not in {c[0] for c in CATEGORIES}:
@@ -354,6 +360,9 @@ def build_strategy(s, prices, bench_map, asof, comp_by_id):
         raise ValueError(f"{s['id']}: 없는 category {s['category']}")
     bench = prices[bench_map[s["benchmark"]]]
     end = min(s.get("stopped") or asof, asof)
+    book = load_strategy_book(s["id"])
+    if book:                                   # 장부 전체를 자산 하나로 적는 전략은 그 평가값이 있는 날까지만 본다
+        end = min(end, date.fromisoformat(book["asof"]))
     calendar = [d for d in bench.dates if s["started"] <= d <= end]
     if not calendar:
         raise ValueError(f"{s['id']}: 운용 개시일 이후 거래일이 없다")
@@ -419,6 +428,7 @@ def build_strategy(s, prices, bench_map, asof, comp_by_id):
         "spark": xl_spark(f"spark-strategy-{s['id']}", navs, UP if (ret or 0) >= 0 else DOWN, end),
         "live_now": live_view(res, navs, s["initial"], bench, s["benchmark"], end),
         "live_layout": (load_yaml("site.yaml") or {}).get("intraday_layout", "strip"),
+        "book": load_strategy_book(s["id"]),
         "bt": backtest_view(s["id"], s.get("backtest_bench", "견줄 것")),
         "rationale": md(s.get("rationale") or ""),
         "backtest": md(s.get("backtest") or ""),
@@ -630,7 +640,8 @@ def main():
     bench_map = site["benchmarks"]
 
     company_ids = {c["id"] for c in load_yaml("companies.yaml")}
-    asof = min(s.last_date for name, s in prices.items() if name in company_ids or name in bench_map.values())
+    lagging = set(site.get("asof_exclude") or [])   # 시세가 하루 늦게 들어오는 벤치마크(미국 지수 등)는 사이트의 기준일을 정하는 데서 뺀다
+    asof = min(s.last_date for name, s in prices.items() if (name in company_ids or name in bench_map.values()) and name not in lagging)
 
     industries_raw = load_yaml("industries.yaml")
     ind_by_id = {i["id"]: i for i in industries_raw}

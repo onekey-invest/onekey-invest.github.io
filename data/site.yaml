@@ -18,3 +18,6 @@ benchmarks:                        # 벤치마크 이름 → 시세 파일(data/
   KOSPI: KOSPI
   KOSDAQ: KOSDAQ
   "S&P 500": SP500
+  "S&P 500(원화)": SP500KRW
+
+asof_exclude: [SP500, SP500KRW]   # 사이트의 시세 기준일을 정할 때 빼는 시세 파일(미국 지수는 하루 늦다)

@@ -30,6 +30,9 @@ shi: {source: yahoo, symbol: "010140.KS", start: 2024-01-01}
 # 미국 주식 전략(us-t12 등)의 벤치마크. 가격 지수라 배당은 들어 있지 않다.
 SP500: {source: yahoo, symbol: "^GSPC", start: 2026-01-01}
 
+# 원/달러(미국 주식 전략의 원화 평가에 쓴다)
+USDKRW: {source: yahoo, symbol: "KRW=X", start: 2026-01-01}
+
 # 예시
 # KOSDAQ:  {source: yahoo, symbol: "^KQ11", start: 2025-01-01}
 # SP500:   {source: yahoo, symbol: "^GSPC", start: 2025-01-01}

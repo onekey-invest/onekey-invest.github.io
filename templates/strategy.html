@@ -76,6 +76,32 @@
 </ul>
 
 {% if not s.pre %}
+{% if s.book %}
+{{ m.h('보유 기준', (s.book.asof) ~ ' 종가 기준 · ' ~ s.book.book_month ~ ' 장부') }}
+<div class="two even">
+  <div>
+    <table class="kv">
+      <tr><th>살 수 있는 종목</th><td>{{ s.book.universe|num }}개</td></tr>
+      <tr><th>든 종목</th><td>{{ s.book.n_long|num }}개{% if s.book.n_short %} <small>· 공매도 {{ s.book.n_short|num }}개</small>{% endif %}</td></tr>
+      <tr><th>주식 몫</th><td>{{ '%.0f'|format(s.book.stock_share * 100) }}% <small>(나머지는 현금)</small></td></tr>
+      <tr><th>달러 기준 수익률 / S&amp;P 500</th><td>{{ m.ret(s.book.usd_ret) }} / {{ m.ret(s.book.sp_usd_ret) }}</td></tr>
+      <tr><th>원/달러 <small>(개시일 → 기준일)</small></th><td>{{ s.book.fx0|num }}원 → {{ s.book.fx1|num }}원</td></tr>
+      <tr><th>업종 비중</th><td>{% for k, v in s.book.sectors[:5] %}{{ k }} {{ v }}%{% if not loop.last %} · {% endif %}{% endfor %}</td></tr>
+    </table>
+    <div class="cap">종목 수가 많아 장부 전체를 자산 하나로 평가합니다. 평가금액과 수익률은 원화(환헤지 없음), 달러 기준 수익률은 위 표에 따로 적습니다.</div>
+  </div>
+  <div>
+    <table class="grid">
+      <thead><tr><th class="l">가장 큰 10종목</th><th>비중</th></tr></thead>
+      <tbody>
+      {% for name, w in s.book.top %}<tr><td class="l"><b>{{ name }}</b></td><td>{{ '%.2f'|format(w) }}%</td></tr>{% endfor %}
+      </tbody>
+    </table>
+    {% if s.book.long_examples %}<div class="cap">더 사는 쪽 예: {{ s.book.long_examples|join(', ') }} · 파는 쪽 예: {{ s.book.short_examples|join(', ') }}</div>{% endif %}
+  </div>
+</div>
+{% endif %}
+
 {{ m.h('보유 종목', (s.end|ymd) ~ ' 종가 기준') }}
 <div class="scroll">
 <table class="grid">
