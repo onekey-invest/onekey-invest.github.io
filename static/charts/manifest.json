@@ -49,6 +49,16 @@
                                        "w":  573,
                                        "h":  440
                                    },
+    "industry-auto-indicators":  {
+                                     "asof":  "2026-09-01",
+                                     "w":  560,
+                                     "h":  307
+                                 },
+    "industry-auto-market":  {
+                                 "asof":  "",
+                                 "w":  573,
+                                 "h":  440
+                             },
     "strategy-etf-ga":  {
                             "asof":  "2026-10-08",
                             "w":  667,

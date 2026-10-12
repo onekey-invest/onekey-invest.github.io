@@ -267,7 +267,7 @@
   ticker: "000270"
   market: KOSPI
   benchmark: KOSPI
-  industries: []
+  industries: [auto]
   tags: [자동차, 환율, 배당]
   points:
     - 판매보증충당부채 9.3조원의 50%가 환율에 묶여 있다. 3분기 말 원/달러가 12% 내려 환평가가 5,484억원 이익으로 돈다. 3분기 영업이익 3.1조원(컨센서스 2.5조원)
