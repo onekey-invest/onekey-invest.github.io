@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% import "_m.html" as m %}
+{% block main %}
+
+{{ m.h('연구', studies|length ~ '편', first=true) }}
+<p class="intro">투자 판단에 쓰려고 자료로 직접 확인해 본 주제를 논문 꼴로 적어 둡니다. 무엇을 대상으로 봤는지, 무엇이 통했고 무엇이 통하지 않았는지를 함께 적습니다.</p>
+{% if studies %}
+<div class="scroll">
+<table class="grid">
+  <thead><tr><th class="c" style="width:120px">날짜</th><th class="l">제목</th><th class="l">요약</th><th class="l">주제</th></tr></thead>
+  <tbody>
+  {% for x in studies %}
+    <tr>
+      <td class="c">{{ x.date|ymd }}</td>
+      <td class="l"><a href="{{ url(x.path) }}"><b>{{ x.title }}</b></a></td>
+      <td class="l">{{ x.summary }}</td>
+      <td class="l">{% for t in x.tags or [] %}<span class="tag">{{ t }}</span> {% endfor %}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% endif %}
+
+{% endblock %}

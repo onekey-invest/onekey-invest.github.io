@@ -39,6 +39,7 @@ python -m unittest discover tests
 | `content/reports/*.md` | 리포트 원고. 투자의견과 목표주가는 여기서 읽는다. 종류(kind): 최초, 업데이트, 브리프(정식 보고서를 서너 쪽으로 줄인 기업 브리프), 산업 |
 | `content/notes/날짜.md` | 마켓노트. 하루에 한 파일 |
 | `content/pages/*.md` | 방법론, About |
+| `content/studies/*.md` | 연구: 자료로 확인해 본 주제를 논문 꼴로. 머리말에 `id`, `title`, `date`, `summary`, `tags`, 본문은 마크다운(표 가능). `draft: true`면 공개하지 않는다 |
 | `content/books/*.md` | 책 검증: 책마다 한 파일. 머리말에 책 이름(`title`), 지은이(`author`), 핵심(`key`), 검사 결과와 잇는 정리본 이름(`sources` — 바꾸지 않는다), 본문에 독후감 |
 | `data/books/*.json` | 책 검증: 주장별 검사 결과. `C:\quant\bottomup\code\book_site_export.py <이 폴더>`가 만든다(손으로 고치지 않는다). 책을 더하거나 빼면 다시 돌린다 |
 | `lib/metrics.py` | 커버리지 수익률 계산 |

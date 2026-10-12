@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% import "_m.html" as m %}
+{% block main %}
+
+<div class="stock">
+  <div>
+    <div class="meta"><span class="tag on">연구</span> {{ x.date|ymd }}<i>|</i>작성 {{ site.author }}{% for t in x.tags or [] %}<i>|</i>{{ t }}{% endfor %}</div>
+    <h1 class="rt-title">{{ x.title }}</h1>
+  </div>
+</div>
+
+<div class="prose wide">
+  {% if x.summary %}<p class="lead-box">{{ x.summary }}</p>{% endif %}
+  {{ x.body }}
+</div>
+
+<div class="note"><a href="{{ url('studies/') }}">연구 목록</a></div>
+
+{% endblock %}

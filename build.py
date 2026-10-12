@@ -182,6 +182,23 @@ def split_front(path):
     return yaml.safe_load(front), body
 
 
+def load_studies():
+    """연구(content/studies/*.md). 머리말: id · title · date · summary · tags. 본문은 마크다운(표 포함)."""
+    out = []
+    folder = ROOT / "content" / "studies"
+    for path in sorted(folder.glob("*.md")) if folder.exists() else []:
+        x, body = split_front(path)
+        if x.get("draft") and os.environ.get("SITE_DRAFTS") != "1":
+            continue
+        for key in ("id", "title", "date"):
+            if not x.get(key):
+                raise ValueError(f"{path.name}: {key} 항목이 없다")
+        x["body"] = md(body)
+        x["path"] = f"studies/{x['id']}/"
+        out.append(x)
+    return sorted(out, key=lambda x: (x["date"], x["id"]), reverse=True)
+
+
 def load_notes():
     """마켓노트. 본문은 '## 제목' 단위로 잘라 접는 구획으로 만든다.
 
@@ -828,6 +845,10 @@ def main():
     for s in strategies + pending:
         write(s["path"], "strategy.html", nav="portfolios", sub=s["category"], title=s["name"], s=s)
 
+    studies = load_studies()
+    write("studies", "studies.html", nav="studies", title="연구", studies=studies)
+    for x in studies:
+        write(x["path"], "study.html", nav="studies", title=x["title"], x=x)
     write("notes", "notes.html", nav="notes", title="마켓노트", notes=notes)
     for k, n in enumerate(notes):   # notes는 최신순
         write(n["path"], "note.html", nav="notes", title=f"{n['date']:%Y.%m.%d} 마켓노트", n=n,
