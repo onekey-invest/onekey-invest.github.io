@@ -85,10 +85,13 @@
       <tr><th>든 종목</th><td>{{ s.book.n_long|num }}개{% if s.book.n_short %} <small>· 공매도 {{ s.book.n_short|num }}개</small>{% endif %}</td></tr>
       <tr><th>주식 몫</th><td>{{ '%.0f'|format(s.book.stock_share * 100) }}% <small>(나머지는 현금)</small></td></tr>
       <tr><th>달러 기준 수익률 / S&amp;P 500</th><td>{{ m.ret(s.book.usd_ret) }} / {{ m.ret(s.book.sp_usd_ret) }}</td></tr>
+      {% if s.book.hedge %}<tr><th>환헤지 비율 <small>(이번 달)</small></th><td>{{ '%.0f'|format(s.book.hedge.ratio) }}% <small>(신호 {{ s.book.hedge.n_on }} / 7)</small></td></tr>
+      <tr><th>원화 수익률 <small>(환헤지 없이)</small></th><td>{{ m.ret(s.book.hedge.krw_unhedged_ret) }}</td></tr>{% endif %}
       <tr><th>원/달러 <small>(개시일 → 기준일)</small></th><td>{{ s.book.fx0|num }}원 → {{ s.book.fx1|num }}원</td></tr>
       <tr><th>업종 비중</th><td>{% for k, v in s.book.sectors[:5] %}{{ k }} {{ v }}%{% if not loop.last %} · {% endif %}{% endfor %}</td></tr>
     </table>
-    <div class="cap">종목 수가 많아 장부 전체를 자산 하나로 평가합니다. 평가금액과 수익률은 원화(환헤지 없음), 달러 기준 수익률은 위 표에 따로 적습니다.</div>
+    <div class="cap">종목 수가 많아 장부 전체를 자산 하나로 평가합니다. 평가금액과 수익률은 원화{% if s.book.hedge %}(환헤지 손익 포함){% else %}(환헤지 없음){% endif %}, 달러 기준 수익률은 위 표에 따로 적습니다.</div>
+    {% if s.book.hedge and s.book.hedge.signals %}<div class="cap">환헤지 신호: {% for name, on in s.book.hedge.signals %}{{ name }} {{ '켜짐' if on else '꺼짐' }}{% if not loop.last %} · {% endif %}{% endfor %}</div>{% endif %}
   </div>
   <div>
     <table class="grid">
