@@ -1,0 +1,191 @@
+pick_date,side,code,name,market,sector,mktcap_eok,universe
+2026-06-30,long,458870,씨어스,KOSDAQ,Health Care,14938,693
+2026-06-30,long,092870,엑시콘,KOSDAQ,Industrials,2584,693
+2026-06-30,long,039200,오스코텍,KOSDAQ,Health Care,13869,693
+2026-06-30,long,006910,보성파워텍,KOSDAQ,Industrials,3582,693
+2026-06-30,long,000660,SK하이닉스,KOSPI,Information Technology,18886613,693
+2026-06-30,long,100840,SNT에너지,KOSPI,Industrials,5842,693
+2026-06-30,long,122870,와이지엔터테인먼트,KOSDAQ,Communication Services,7785,693
+2026-06-30,long,218410,RFHIC,KOSDAQ,Information Technology,16782,693
+2026-06-30,long,353200,대덕전자,KOSPI,Information Technology,75904,693
+2026-06-30,long,241520,DSC인베스트먼트,KOSDAQ,Financials,2471,693
+2026-06-30,long,200710,에이디테크놀로지,KOSDAQ,Information Technology,3810,693
+2026-06-30,long,053610,프로텍,KOSDAQ,Industrials,7317,693
+2026-06-30,long,003540,대신증권,KOSPI,Financials,13289,693
+2026-06-30,long,005690,파미셀,KOSPI,Information Technology,7777,693
+2026-06-30,long,005930,삼성전자,KOSPI,Information Technology,19526571,693
+2026-06-30,long,377300,카카오페이,KOSPI,Financials,55525,693
+2026-06-30,long,086520,에코프로,KOSDAQ,Financials,144737,693
+2026-06-30,long,037460,삼지전자,KOSDAQ,Information Technology,5769,693
+2026-06-30,long,071970,HD현대마린엔진,KOSPI,Industrials,19878,693
+2026-06-30,long,052400,코나아이,KOSDAQ,Information Technology,6648,693
+2026-06-30,long,008060,대덕,KOSPI,Financials,5222,693
+2026-06-30,long,089890,코세스,KOSDAQ,Industrials,5183,693
+2026-06-30,long,068270,셀트리온,KOSPI,Health Care,403016,693
+2026-06-30,long,278470,에이피알,KOSPI,Consumer Staples,144324,693
+2026-06-30,long,091580,상신이디피,KOSDAQ,Industrials,2146,693
+2026-06-30,long,036570,NC,KOSPI,Information Technology,55476,693
+2026-06-30,long,006650,대한유화,KOSPI,Materials,7384,693
+2026-06-30,long,003530,한화투자증권,KOSPI,Financials,10459,693
+2026-06-30,long,001200,유진투자증권,KOSPI,Financials,4175,693
+2026-06-30,long,041920,메디아나,KOSDAQ,Health Care,2156,693
+2026-06-30,long,002900,TYM,KOSPI,Industrials,2492,693
+2026-06-30,long,189300,인텔리안테크,KOSDAQ,Information Technology,8343,693
+2026-06-30,long,006800,미래에셋증권,KOSPI,Financials,239215,693
+2026-06-30,long,450080,에코프로머티,KOSPI,Industrials,31676,693
+2026-06-30,long,326030,SK바이오팜,KOSPI,Health Care,67819,693
+2026-06-30,long,095340,ISC,KOSDAQ,Industrials,38473,693
+2026-06-30,long,042660,한화오션,KOSPI,Industrials,307333,693
+2026-06-30,long,007660,이수페타시스,KOSPI,Information Technology,84714,693
+2026-06-30,long,009540,HD한국조선해양,KOSPI,Financials,247706,693
+2026-06-30,long,214450,파마리서치,KOSDAQ,Health Care,37714,693
+2026-06-30,short,087010,펩트론,KOSDAQ,Health Care,42974,343
+2026-06-30,short,112610,씨에스윈드,KOSPI,Industrials,17944,343
+2026-06-30,short,161580,필옵틱스,KOSDAQ,Industrials,8650,343
+2026-06-30,short,048410,현대바이오,KOSDAQ,Materials,7933,343
+2026-06-30,short,222080,SFA넥셀,KOSDAQ,Industrials,6915,343
+2026-06-30,short,003550,LG,KOSPI,Financials,147110,343
+2026-06-30,short,358570,지아이이노베이션,KOSDAQ,Health Care,6638,343
+2026-06-30,short,348370,엔켐,KOSDAQ,Materials,6015,343
+2026-06-30,short,417200,LS머트리얼즈,KOSDAQ,Information Technology,10006,343
+2026-07-31,long,039200,오스코텍,KOSDAQ,Health Care,11497,588
+2026-07-31,long,006910,보성파워텍,KOSDAQ,Industrials,2825,588
+2026-07-31,long,100840,SNT에너지,KOSPI,Industrials,5150,588
+2026-07-31,long,122870,와이지엔터테인먼트,KOSDAQ,Communication Services,7131,588
+2026-07-31,long,218410,RFHIC,KOSDAQ,Information Technology,11348,588
+2026-07-31,long,032350,롯데관광개발,KOSPI,Industrials,9264,588
+2026-07-31,long,053610,프로텍,KOSDAQ,Industrials,5193,588
+2026-07-31,long,003540,대신증권,KOSPI,Financials,12322,588
+2026-07-31,long,005690,파미셀,KOSPI,Information Technology,6078,588
+2026-07-31,long,005930,삼성전자,KOSPI,Information Technology,15346481,588
+2026-07-31,long,377300,카카오페이,KOSPI,Financials,57625,588
+2026-07-31,long,086520,에코프로,KOSDAQ,Financials,107399,588
+2026-07-31,long,037460,삼지전자,KOSDAQ,Information Technology,5312,588
+2026-07-31,long,071970,HD현대마린엔진,KOSPI,Industrials,16774,588
+2026-07-31,long,052400,코나아이,KOSDAQ,Information Technology,5782,588
+2026-07-31,long,008060,대덕,KOSPI,Financials,4321,588
+2026-07-31,long,068270,셀트리온,KOSPI,Health Care,434178,588
+2026-07-31,long,278470,에이피알,KOSPI,Consumer Staples,119802,588
+2026-07-31,long,006650,대한유화,KOSPI,Materials,5558,588
+2026-07-31,long,036570,NC,KOSPI,Information Technology,50521,588
+2026-07-31,long,001200,유진투자증권,KOSPI,Financials,4010,588
+2026-07-31,long,003530,한화투자증권,KOSPI,Financials,8904,588
+2026-07-31,long,002900,TYM,KOSPI,Industrials,2463,588
+2026-07-31,long,189300,인텔리안테크,KOSDAQ,Information Technology,6249,588
+2026-07-31,long,006800,미래에셋증권,KOSPI,Financials,193330,588
+2026-07-31,long,007660,이수페타시스,KOSPI,Information Technology,54690,588
+2026-07-31,long,326030,SK바이오팜,KOSPI,Health Care,61867,588
+2026-07-31,long,042660,한화오션,KOSPI,Industrials,261064,588
+2026-07-31,long,009540,HD한국조선해양,KOSPI,Financials,272123,588
+2026-07-31,long,095340,ISC,KOSDAQ,Industrials,27471,588
+2026-07-31,long,214450,파마리서치,KOSDAQ,Health Care,35169,588
+2026-07-31,long,298040,효성중공업,KOSPI,Industrials,225374,588
+2026-07-31,long,041510,에스엠,KOSDAQ,Communication Services,15660,588
+2026-07-31,long,017960,한국카본,KOSPI,Industrials,11033,588
+2026-07-31,long,060280,큐렉소,KOSDAQ,Consumer Discretionary,3404,588
+2026-07-31,long,215600,신라젠,KOSDAQ,Health Care,2868,588
+2026-07-31,long,247540,에코프로비엠,KOSDAQ,Industrials,101254,588
+2026-07-31,long,003470,유안타증권,KOSPI,Financials,8439,588
+2026-07-31,long,064820,케이프,KOSDAQ,Industrials,2450,588
+2026-07-31,long,376300,디어유,KOSDAQ,Information Technology,4710,588
+2026-07-31,short,087010,펩트론,KOSDAQ,Health Care,29800,340
+2026-07-31,short,161580,필옵틱스,KOSDAQ,Industrials,5626,340
+2026-07-31,short,003550,LG,KOSPI,Financials,152855,340
+2026-07-31,short,358570,지아이이노베이션,KOSDAQ,Health Care,4781,340
+2026-07-31,short,348370,엔켐,KOSDAQ,Materials,3819,340
+2026-07-31,short,101730,위메이드맥스,KOSDAQ,Information Technology,2782,340
+2026-08-31,long,263750,펄어비스,KOSDAQ,Information Technology,19859,582
+2026-08-31,long,005930,삼성전자,KOSPI,Information Technology,15200324,582
+2026-08-31,long,039200,오스코텍,KOSDAQ,Health Care,13409,582
+2026-08-31,long,053610,프로텍,KOSDAQ,Industrials,5463,582
+2026-08-31,long,036570,NC,KOSPI,Information Technology,48366,582
+2026-08-31,long,008060,대덕,KOSPI,Financials,5065,582
+2026-08-31,long,377300,카카오페이,KOSPI,Financials,62834,582
+2026-08-31,long,031330,에스에이엠티,KOSDAQ,Industrials,8100,582
+2026-08-31,long,091580,상신이디피,KOSDAQ,Industrials,3065,582
+2026-08-31,long,232140,와이씨,KOSDAQ,Industrials,8869,582
+2026-08-31,long,033240,자화전자,KOSPI,Information Technology,6536,582
+2026-08-31,long,005950,이수화학,KOSPI,Materials,3205,582
+2026-08-31,long,032350,롯데관광개발,KOSPI,Industrials,10588,582
+2026-08-31,long,037460,삼지전자,KOSDAQ,Information Technology,5026,582
+2026-08-31,long,003540,대신증권,KOSPI,Financials,12918,582
+2026-08-31,long,189300,인텔리안테크,KOSDAQ,Information Technology,6765,582
+2026-08-31,long,071970,HD현대마린엔진,KOSPI,Industrials,17673,582
+2026-08-31,long,006800,미래에셋증권,KOSPI,Financials,188428,582
+2026-08-31,long,068270,셀트리온,KOSPI,Health Care,439414,582
+2026-08-31,long,218410,RFHIC,KOSDAQ,Information Technology,12464,582
+2026-08-31,long,253450,스튜디오드래곤,KOSDAQ,Communication Services,6733,582
+2026-08-31,long,000670,영풍,KOSPI,Materials,7364,582
+2026-08-31,long,052400,코나아이,KOSDAQ,Information Technology,5745,582
+2026-08-31,long,122870,와이지엔터테인먼트,KOSDAQ,Communication Services,7691,582
+2026-08-31,long,086520,에코프로,KOSDAQ,Financials,123964,582
+2026-08-31,long,095340,ISC,KOSDAQ,Industrials,35929,582
+2026-08-31,long,267250,HD현대,KOSPI,Financials,172995,582
+2026-08-31,long,100840,SNT에너지,KOSPI,Industrials,6318,582
+2026-08-31,long,278470,에이피알,KOSPI,Consumer Staples,173900,582
+2026-08-31,long,001200,유진투자증권,KOSPI,Financials,4252,582
+2026-08-31,long,034730,SK,KOSPI,Financials,395140,582
+2026-08-31,long,166090,하나머티리얼즈,KOSDAQ,Information Technology,10245,582
+2026-08-31,long,060280,큐렉소,KOSDAQ,Consumer Discretionary,3627,582
+2026-08-31,long,006650,대한유화,KOSPI,Materials,6253,582
+2026-08-31,long,010950,S-Oil,KOSPI,Energy,168987,582
+2026-08-31,long,005690,파미셀,KOSPI,Information Technology,6666,582
+2026-08-31,long,088350,한화생명,KOSPI,Financials,50114,582
+2026-08-31,long,096530,씨젠,KOSDAQ,Health Care,17548,582
+2026-08-31,long,098460,고영,KOSDAQ,Industrials,19404,582
+2026-08-31,long,454910,두산로보틱스,KOSPI,Industrials,46022,582
+2026-08-31,short,025320,시노펙스,KOSDAQ,Information Technology,3683,341
+2026-08-31,short,099320,쎄트렉아이,KOSDAQ,Industrials,8005,341
+2026-08-31,short,087010,펩트론,KOSDAQ,Health Care,42717,341
+2026-08-31,short,361610,SK아이이테크놀로지,KOSPI,Industrials,13241,341
+2026-08-31,short,358570,지아이이노베이션,KOSDAQ,Health Care,5277,341
+2026-08-31,short,348370,엔켐,KOSDAQ,Materials,4788,341
+2026-08-31,short,204270,제이앤티씨,KOSDAQ,Information Technology,11570,341
+2026-08-31,short,032500,케이엠더블유,KOSDAQ,Information Technology,6417,341
+2026-09-30,long,263750,펄어비스,KOSDAQ,Information Technology,20801,583
+2026-09-30,long,005930,삼성전자,KOSPI,Information Technology,15697258,583
+2026-09-30,long,039200,오스코텍,KOSDAQ,Health Care,13639,583
+2026-09-30,long,053610,프로텍,KOSDAQ,Industrials,7308,583
+2026-09-30,long,100790,미래에셋벤처투자,KOSDAQ,Financials,9009,583
+2026-09-30,long,036570,NC,KOSPI,Information Technology,45027,583
+2026-09-30,long,219130,타이거일렉,KOSDAQ,Information Technology,5797,583
+2026-09-30,long,452430,사피엔반도체,KOSDAQ,Information Technology,3203,583
+2026-09-30,long,008060,대덕,KOSPI,Financials,4731,583
+2026-09-30,long,377300,카카오페이,KOSPI,Financials,53917,583
+2026-09-30,long,031330,에스에이엠티,KOSDAQ,Industrials,8330,583
+2026-09-30,long,091580,상신이디피,KOSDAQ,Industrials,2686,583
+2026-09-30,long,033240,자화전자,KOSPI,Information Technology,5650,583
+2026-09-30,long,232140,와이씨,KOSDAQ,Industrials,11987,583
+2026-09-30,long,005950,이수화학,KOSPI,Materials,2924,583
+2026-09-30,long,032350,롯데관광개발,KOSPI,Industrials,9208,583
+2026-09-30,long,003540,대신증권,KOSPI,Financials,12060,583
+2026-09-30,long,037460,삼지전자,KOSDAQ,Information Technology,5042,583
+2026-09-30,long,096770,SK이노베이션,KOSPI,Energy,251551,583
+2026-09-30,long,189300,인텔리안테크,KOSDAQ,Information Technology,7119,583
+2026-09-30,long,071970,HD현대마린엔진,KOSPI,Industrials,16486,583
+2026-09-30,long,006800,미래에셋증권,KOSPI,Financials,168065,583
+2026-09-30,long,068270,셀트리온,KOSPI,Health Care,413361,583
+2026-09-30,long,000670,영풍,KOSPI,Materials,7594,583
+2026-09-30,long,218410,RFHIC,KOSDAQ,Information Technology,15547,583
+2026-09-30,long,052400,코나아이,KOSDAQ,Information Technology,5483,583
+2026-09-30,long,122870,와이지엔터테인먼트,KOSDAQ,Communication Services,8018,583
+2026-09-30,long,086520,에코프로,KOSDAQ,Financials,109436,583
+2026-09-30,long,067310,하나마이크론,KOSDAQ,Information Technology,31483,583
+2026-09-30,long,095340,ISC,KOSDAQ,Industrials,45256,583
+2026-09-30,long,267250,HD현대,KOSPI,Financials,159961,583
+2026-09-30,long,001200,유진투자증권,KOSPI,Financials,3923,583
+2026-09-30,long,039030,이오테크닉스,KOSDAQ,Industrials,64062,583
+2026-09-30,long,100840,SNT에너지,KOSPI,Industrials,7683,583
+2026-09-30,long,278470,에이피알,KOSPI,Consumer Staples,137024,583
+2026-09-30,long,166090,하나머티리얼즈,KOSDAQ,Information Technology,11867,583
+2026-09-30,long,034730,SK,KOSPI,Financials,426316,583
+2026-09-30,long,010950,S-Oil,KOSPI,Energy,182046,583
+2026-09-30,long,060280,큐렉소,KOSDAQ,Consumer Discretionary,3363,583
+2026-09-30,long,006650,대한유화,KOSPI,Materials,5752,583
+2026-09-30,short,099320,쎄트렉아이,KOSDAQ,Industrials,8257,332
+2026-09-30,short,087010,펩트론,KOSDAQ,Health Care,30686,332
+2026-09-30,short,161580,필옵틱스,KOSDAQ,Industrials,9248,332
+2026-09-30,short,361610,SK아이이테크놀로지,KOSPI,Industrials,14190,332
+2026-09-30,short,348370,엔켐,KOSDAQ,Materials,4503,332
+2026-09-30,short,204270,제이앤티씨,KOSDAQ,Information Technology,12871,332
+2026-09-30,short,032500,케이엠더블유,KOSDAQ,Information Technology,7932,332

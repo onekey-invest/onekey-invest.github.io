@@ -52,6 +52,12 @@ jobs:
         continue-on-error: true
         run: python tools/bu_us_book.py
 
+      # 가상운용 국내 개선 롱숏 두 전략: 든 종목 전체의 평가값을 적는다. 못 받아도 계속 간다(어제 값이 남는다)
+      - name: 국내 개선 롱숏 장부 평가
+        if: github.event_name != 'push'
+        continue-on-error: true
+        run: python tools/kr_x_book.py
+
       - name: 계산 검증
         run: python -m unittest discover tests
 
@@ -63,7 +69,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/prices data/rates data/trades data/strategy_books/bu-us.json
+          git add data/prices data/rates data/trades data/strategy_books/bu-us.json data/strategy_books/kr-x1.json data/strategy_books/kr-x2.json
           git diff --cached --quiet || git commit -m "시세 갱신 $(date -u +%F)"
           git push
 
