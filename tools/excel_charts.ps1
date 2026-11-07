@@ -122,7 +122,7 @@ function DrawTime($ws, $c, [bool]$isNew) {
         $ay.HasMajorGridlines = $true
         $ay.MajorGridlines.Format.Line.ForeColor.RGB = (Rgb '#EAECF0')
         $ay.Format.Line.Visible = 0
-        $ay.TickLabels.NumberFormat = $(if ($c.format -eq 'pct') { '0"%"' } else { '#,##0' })
+        $ay.TickLabels.NumberFormat = $(if ($c.format -eq 'pct') { '0"%"' } elseif ($c.format -eq 'pct1') { '0.0"%"' } elseif ($c.format -eq 'pct2') { '0.00"%"' } else { '#,##0' })
     }
     if ($c.format -eq 'pct') { $ax.CrossesAt = $xmin; $ch.Axes(2).CrossesAt = -1000000 } else { $ax.CrossesAt = $xmin }
     return $co
@@ -205,7 +205,7 @@ function DrawBar($ws, $c, [bool]$isNew) {
         $ax = $ch.Axes(1); $ax.Format.Line.ForeColor.RGB = (Rgb '#D0D5DD')
         $ay = $ch.Axes(2); $ay.HasMajorGridlines = $true
         $ay.MajorGridlines.Format.Line.ForeColor.RGB = (Rgb '#EAECF0'); $ay.Format.Line.Visible = 0
-        $ay.TickLabels.NumberFormat = $(if ($c.format -eq 'pct') { '0"%"' } else { '#,##0' })
+        $ay.TickLabels.NumberFormat = $(if ($c.format -eq 'pct') { '0"%"' } elseif ($c.format -eq 'pct1') { '0.0"%"' } elseif ($c.format -eq 'pct2') { '0.00"%"' } else { '#,##0' })
         try { $ch.ChartGroups(1).GapWidth = 70; $ch.ChartGroups(1).Overlap = -8 } catch { }
         if ($k -eq 1) { $ch.HasLegend = $false }
         try { $ch.HasTitle = $true; $ch.HasTitle = $false } catch { }        # 계열이 하나면 엑셀이 계열 이름을 제목으로 붙인다 — 켰다 꺼서 확실히 없앤다
