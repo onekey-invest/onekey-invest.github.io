@@ -6,6 +6,7 @@
 # kind: yahoo_q_revenue  → 종목들의 분기 매출 합(야후 분기 손익계산서 = 연결 재무제표), scale로 나눔
 #       yahoo_q_margin   → 종목들의 분기 영업이익 합 ÷ 매출 합 × 100
 #       fred_monthly     → FRED 월 자료(키 없이 fredgraph.csv)
+#       dart_casino_monthly → 카지노 세 회사 월 잠정실적 공시(DART RSS + 공개 화면, 키 없이)
 
 auto:
   freq: Q
@@ -27,4 +28,12 @@ food:
     "원/달러": {kind: fred_monthly, series: EXKOUS}
     # 가공식품 물가(통계청), 원재료 값(원화), 라면 수출(관세청): 손으로
 
-# casino(3사 드롭액·카지노 매출·입국자), securities(거래대금·수수료수익·영업이익): 손으로
+casino:
+  freq: M
+  columns:
+    # 세 회사(파라다이스 00171265, GKL 00557508, 롯데관광개발 00231372)의 월 잠정실적 공시 '당기실적'(그 달 공시 값), 백만원 ÷ 100 = 억원
+    "3사 드롭액(억원)": {kind: dart_casino_monthly, corps: ["00171265", "00557508", "00231372"], field: drop, scale: 100}
+    "3사 카지노 매출(억원)": {kind: dart_casino_monthly, corps: ["00171265", "00557508", "00231372"], field: revenue, scale: 100}
+    # "일본+중국 입국자(만 명)": 한국관광공사(손으로)
+
+# securities(거래대금·수수료수익·영업이익): 손으로

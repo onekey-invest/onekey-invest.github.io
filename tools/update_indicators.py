@@ -67,8 +67,67 @@ def fred(series):
     return _fred[series]
 
 
+CASINO_CACHE = IND / "_casino.json"
+_casino = None
+
+
+def casino_parse(text):
+    """월 잠정실적 공시 본문 → (카지노 매출, 드롭액), 백만원. 당기실적(그 달) 값."""
+    import re
+    rev = re.search(r"카지노\s*매출액\s*(\d{1,3}(?:,\d{3})+|\d+)", text)
+    i = max(text.find("드롭액"), text.find("드랍액"))
+    drop = None
+    if i >= 0:
+        j = text.find("====", i)
+        m = re.search(r"(\d{1,3}(?:,\d{3})+)", text[j:]) if j >= 0 else None
+        drop = m.group(1) if m else None
+    if not rev or not drop:
+        return None
+    return float(rev.group(1).replace(",", "")), float(drop.replace(",", ""))
+
+
+def casino_months(corps):
+    """세 회사의 월 잠정실적 공시를 DART RSS(키 없이, 최근 5영업일)에서 찾아 읽고 _casino.json에 쌓는다. {달: {corp: {...}}}"""
+    global _casino
+    if _casino is not None:
+        return _casino
+    import json
+    sys.path.insert(0, str(ROOT / "tools"))
+    from update_disclosures import by_rss, period_of
+    from score_actuals import doc_text
+    cache = json.loads(CASINO_CACHE.read_text(encoding="utf-8")) if CASINO_CACHE.exists() else {}
+    for corp in corps:
+        try:
+            items = by_rss("casino", corp)
+        except Exception as e:
+            print(f"카지노 {corp}: RSS 못 받음 ({type(e).__name__})")
+            continue
+        for it in items:
+            if "영업(잠정)실적" not in it["name"] or it.get("corrected"):
+                continue
+            per = period_of(it["rcept_no"])
+            if not per or per[0][:7] != per[1][:7]:          # 한 달짜리만
+                continue
+            ym = per[0][:7]
+            if corp in cache.get(ym, {}):
+                continue
+            text = doc_text(it["rcept_no"])
+            v = casino_parse(text) if text else None
+            if v:
+                cache.setdefault(ym, {})[corp] = {"rcept_no": it["rcept_no"], "revenue": v[0], "drop": v[1]}
+                print(f"카지노 {corp} {ym}: 매출 {v[0]:,.0f} · 드롭액 {v[1]:,.0f} 백만원")
+    CASINO_CACHE.write_text(json.dumps(cache, ensure_ascii=False, indent=1, sort_keys=True), encoding="utf-8")
+    _casino = cache
+    return cache
+
+
 def value(spec, k):
     kind = spec["kind"]
+    if kind == "dart_casino_monthly":
+        m = casino_months(spec["corps"]).get(k[:7], {})
+        if not all(c in m for c in spec["corps"]):
+            return None
+        return round(sum(m[c][spec["field"]] for c in spec["corps"]) / spec.get("scale", 1), 2)
     if kind == "yahoo_q_revenue":
         v = yahoo_sum(spec["symbols"], k, 0)
         return None if v is None else round(v / spec.get("scale", 1), 2)

@@ -269,14 +269,32 @@ def main(spec_path, wb_path, out):
         cid = c["id"]
         try:
             if c["kind"] == "spark":
-                if not spark or cid not in spark_cols:
+                shapes = chart_shapes(spark) if spark else {}
+                if cid in spark_cols and cid in shapes:
+                    shape = shapes[cid]
+                    draw_spark(smgr, spark, shape.getPropertyValue("Model"), c, spark_cols[cid])
+                elif shapes:
+                    # 원본에 아직 없는 작은 그림(새 기업·새 전략): 있는 작은 그림 하나를 빌려 빈 열의 자료로 그리고 내보낸 뒤 되돌린다(저장하지 않는다)
+                    tpl = sorted(shapes)[0]
+                    shape = shapes[tpl]
+                    model = shape.getPropertyValue("Model")
+                    ser0 = all_series(model)[1][0]
+                    old_color = ser0.getPropertyValue("Color")
+                    col = len(spark_cols) + 1 + len(copied) + 1
+                    draw_spark(smgr, spark, model, c, col)
+                    if c.get("color"):
+                        ser0.setPropertyValue("Color", int(str(c["color"]).lstrip("#"), 16))
+                    path = os.path.join(out, f"{cid}.png")
+                    w, h = export_png(smgr, ctx, shape, path)
+                    manifest[cid] = {"asof": str(c.get("asof", "")), "w": w, "h": h, "file": f"{cid}.png"}
+                    ser0.setPropertyValue("Color", old_color)
+                    # 빌린 그림은 자기 차례가 오면 자기 열로 다시 그린다(앞서 그렸으면 이미 내보냈다)
+                    copied.append(f"{cid} ← {tpl}")
+                    done += 1
+                    continue
+                else:
                     skipped.append(cid)
                     continue
-                shape = chart_shapes(spark).get(cid)
-                if shape is None:
-                    skipped.append(cid)
-                    continue
-                draw_spark(smgr, spark, shape.getPropertyValue("Model"), c, spark_cols[cid])
             else:
                 name = sheet_name(cid)
                 if not sheets.hasByName(name):

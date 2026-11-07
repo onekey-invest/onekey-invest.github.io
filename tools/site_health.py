@@ -160,6 +160,24 @@ def main(argv):
             if line.strip():
                 issues.append(f"채점 대기: {line.split(' https')[0]}")
 
+    # 6-1. 채점표 새 줄: 기업 리포트(브리프 말고)를 냈는데 그 뒤로 채점표 줄이 없고 머리말에 score도 없으면
+    import csv as _csv0
+    sc_path = ROOT / "data" / "scorecard.csv"
+    sc_rows = [r for r in _csv0.DictReader(open(sc_path, encoding="utf-8")) if r.get("company")] if sc_path.exists() else []
+    cids = {c["id"] for c in companies}
+    latest = {}
+    for p in (ROOT / "content" / "reports").glob("*.md"):
+        t = p.read_text(encoding="utf-8")
+        if not t.startswith("---"):
+            continue
+        f = yaml.safe_load(t.split("---", 2)[1]) or {}
+        if f.get("company") in cids and f.get("kind") != "브리프" and f.get("rating"):
+            if str(f["date"]) > latest.get(f["company"], ("",))[0]:
+                latest[f["company"]] = (str(f["date"]), f.get("id"), bool(f.get("score")))
+    for cid, (d, rid, has_score) in sorted(latest.items()):
+        if not has_score and not any(r["company"] == cid and r["published"] >= d for r in sc_rows):
+            issues.append(f"채점표: {cid}의 최신 리포트({rid}, {d})에 채점 줄이 없다 — 리포트 머리말에 score: {{item, mine, consensus, due}}를 적는다")
+
     # 7. 산업 핵심 지표: 열마다 마지막 값이 나와 있어야 할 기간보다 늦으면(분기: 분기 끝 + 75일, 월: 달 끝 + 45일)
     import csv as _csv
     src_path = ROOT / "data" / "indicator_sources.yaml"
