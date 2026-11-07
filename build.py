@@ -346,6 +346,11 @@ def load_scorecard():
         x["published"] = date.fromisoformat(x["published"])
         x["actual_date"] = date.fromisoformat(x["actual_date"]) if x.get("actual_date") else None
         x["vs_cons"] = (x["mine"] / x["consensus"] - 1) if x["consensus"] else None   # 발행 때 내 추정이 컨센서스와 얼마나 달랐나
+        import re as _re
+        q = _re.search(r"(\d{4})년 (\d)분기", x.get("item", ""))      # 채점할 분기의 기간(실적 공시와 맞춰 볼 때 쓴다)
+        if q:
+            y, n = int(q.group(1)), int(q.group(2))
+            x["period"] = [f"{y}-{3 * n - 2:02d}-01", (date(y + (n == 4), (3 * n) % 12 + 1, 1) - __import__("datetime").timedelta(days=1)).isoformat()]
         rows.append(x)
     summary = {k: (float(v) if v not in ("", None) else None) for k, v in zip(labels, values)}
     rows.sort(key=lambda x: (not x["scored"], x["actual_date"] or date.max, x["published"]))
@@ -426,7 +431,18 @@ def disclosures_view(cid, series, bench, asof, score_rows):
         rows.append({**it, "day": day, "ret": r, "bench": b, "excess": M.excess(r, b),
                      "url": f"https://dart.fss.or.kr/dsaf001/main.do?rcpNo={it['rcept_no']}",
                      "score": scored.get(day) if it["kind"] == "실적" else None})
-    return {"asof": d.get("asof"), "rows": rows}
+    # 실적 공시 알림: 채점 전인 추정이 있는데, 그 리포트를 낸 뒤 실적 공시가 새로 나왔으면 "채점 대기"
+    alert = None
+    pending = [x for x in score_rows if not x.get("scored")]
+    if pending:
+        want = pending[0].get("period")
+        after = [x for x in rows if x["kind"] == "실적" and x["day"] > pending[0]["published"] and not x.get("corrected")
+                 and want and x.get("period") == want]        # 채점할 분기와 실적기간이 같은 공시만(월 실적·다른 분기는 뺀다)
+        if after:
+            a = after[-1]             # 그 뒤 가장 먼저 나온 실적 공시(rows는 최신순)
+            alert = {"day": a["day"], "time": a.get("time"), "name": a["name"], "url": a["url"], "item": pending[0]["item"], "n": len(after)}
+            pending[0]["alert"] = alert
+    return {"asof": d.get("asof"), "rows": rows, "alert": alert}
 
 
 def link_first(html, name, href):
@@ -909,6 +925,7 @@ def main():
         built = build_company(c, reports, prices, bench_map, asof, ledger.get(c["id"]))
         built["score"] = [x for x in (score or {}).get("rows", []) if x["company"] == c["id"]]
         built["disc"] = disclosures_view(c["id"], *built.pop("series_bench"), asof, built["score"])
+        built["alert"] = (built["disc"] or {}).get("alert")
         built["industry_objs"] = [ind_by_id[i] for i in c.get("industries", [])]
         companies.append(built)
     comp_by_id = {c["id"]: c for c in companies}
@@ -1106,6 +1123,12 @@ def main():
         row = dict(r)
         seen[key] = row
         home_reports.append(row)
+    alerts = [c for c in companies if c.get("alert")]
+    if score:
+        score["alerts"] = alerts
+    # 할 일 목록(깃허브 매일 실행이 이 파일을 읽어 알림을 연다)
+    todo_lines = [f"{c['name']} {c['alert']['item']}: {c['alert']['day']:%Y-%m-%d} {c['alert']['name']} {c['alert']['url']}" for c in alerts]
+    (DIST / "score_todo.txt").write_text("\n".join(todo_lines) + ("\n" if todo_lines else ""), encoding="utf-8")
     write("", "home.html", nav="home", title="홈",
           companies=companies, reports=home_reports[:10], summary=summary, n_reports=len(all_reports),
           strategies=strategies, featured=featured[:3], notes=notes[:5],

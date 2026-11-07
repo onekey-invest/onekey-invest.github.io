@@ -197,7 +197,7 @@
       <td class="c">{{ x.published|ymd }}</td>
       <td><b>{{ x.mine|num }}</b></td>
       <td>{{ x.consensus|num }}</td>
-      <td>{% if x.scored %}<b>{{ x.actual|num }}</b><br><small>{{ x.actual_date|ymd }} 발표</small>{% else %}<small>{{ x.due }}</small>{% endif %}</td>
+      <td>{% if x.scored %}<b>{{ x.actual|num }}</b><br><small>{{ x.actual_date|ymd }} 발표</small>{% elif x.alert %}<span class="verdict wait" style="color:var(--accent)">공시 나옴</span><br><small><a href="{{ x.alert.url }}" rel="noopener">{{ x.alert.day|ymd }}</a> · 채점 준비 중</small>{% else %}<small>{{ x.due }}</small>{% endif %}</td>
       <td class="l">{% if x.scored %}
         <div><i class="errbar m" style="width:{{ '%.0f'|format([x.err_mine * 160, 2]|max) }}px"></i>{{ '%.1f'|format(x.err_mine * 100) }}%</div>
         <div><i class="errbar c" style="width:{{ '%.0f'|format([x.err_cons * 160, 2]|max) }}px"></i>{{ '%.1f'|format(x.err_cons * 100) }}%</div>

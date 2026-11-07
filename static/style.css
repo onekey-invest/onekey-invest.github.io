@@ -390,3 +390,4 @@ table{width:100%;border-collapse:collapse}
 .browse b{font-size:14.5px}
 .browse small{margin-top:2px}
 @media (max-width:860px){.toc{flex-wrap:nowrap;overflow-x:auto;white-space:nowrap;margin-top:-6px}}
+.nextbox.alert{border-color:var(--accent);background:var(--accent-soft)}

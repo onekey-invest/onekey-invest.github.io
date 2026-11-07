@@ -35,10 +35,16 @@
 </nav>
 {% set nxt = (c.score|rejectattr('scored')|list)[:1] %}
 {% set last_scored = (c.score|selectattr('scored')|list)[:1] %}
-{% if nxt or last_scored %}
+{% if c.alert %}
+<div class="nextbox alert">
+  <span class="lab">실적 공시 나옴</span><span><b>{{ c.alert.day|ymd }}</b>{% if c.alert.time %} {{ c.alert.time }}{% endif %} · <a href="{{ c.alert.url }}" rel="noopener">{{ c.alert.name }}</a></span>
+  <span>{{ c.alert.item }} 채점 준비 중</span>
+</div>
+{% endif %}
+{% if (nxt and not c.alert) or last_scored %}
 <div class="nextbox">
   {% for x in last_scored %}<span class="lab">채점</span><span>{{ x.item }}: 내 추정 <b>{{ x.mine|num }}</b> · 컨센서스 {{ x.consensus|num }} · 실제 <b>{{ x.actual|num }}</b>억원</span>{{ m.verdict(x.verdict) }}{% endfor %}
-  {% for x in nxt %}<span class="lab">다음 채점</span><span>{{ x.item }} · {{ x.due }}</span><span>내 추정 <b>{{ x.mine|num }}</b>억원 · 컨센서스 {{ x.consensus|num }}억원</span>{% endfor %}
+  {% for x in nxt if not c.alert %}<span class="lab">다음 채점</span><span>{{ x.item }} · {{ x.due }}</span><span>내 추정 <b>{{ x.mine|num }}</b>억원 · 컨센서스 {{ x.consensus|num }}억원</span>{% endfor %}
   <a class="lnk" href="{{ url('research/scorecard/') }}">채점표 전체</a>
 </div>
 {% endif %}

@@ -38,6 +38,7 @@
 {% endif %}
 
 {{ m.h('앞으로 채점될 것', '발표되면 이 표에서 위로 옮겨 채점') }}
+{% if score.alerts %}<div class="nextbox alert"><span class="lab">채점 대기 {{ score.alerts|length }}건</span><span>{% for c in score.alerts %}<a href="{{ url(c.path) }}">{{ c.name }}</a> {{ c.alert.day|ymd }}{% if not loop.last %} · {% endif %}{% endfor %}에 실적 공시가 나왔습니다. 실제 값을 공시 원문과 대조해 채점합니다.</span></div>{% endif %}
 {{ m.score_table(score.pending, comp_by_id) }}
 
 <div class="note"><a href="{{ url('data/scorecard.csv') }}" download>채점표 CSV 내려받기</a></div>

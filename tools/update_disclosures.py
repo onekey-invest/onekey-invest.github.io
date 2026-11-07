@@ -94,6 +94,33 @@ def row(day, name, rcept_no, hhmm=""):
     return x
 
 
+def period_of(rcept_no):
+    """실적 공시 본문 머리의 '실적기간 당기실적 시작 ~ 끝'을 DART 공개 화면에서 읽는다(키 없이). 못 읽으면 None."""
+    import html as _html
+    try:
+        m = fetch(f"https://dart.fss.or.kr/dsaf001/main.do?rcpNo={rcept_no}").decode("utf-8", "ignore")
+        v = re.search(r'viewDoc\("(\d+)",\s*"(\d+)",\s*"(\d+)",\s*"(\d+)",\s*"(\d+)",\s*"([^"]+)"', m)
+        if not v:
+            return None
+        r, d, e, o, l, dtd = v.groups()
+        doc = fetch(f"https://dart.fss.or.kr/report/viewer.do?rcpNo={r}&dcmNo={d}&eleId={e}&offset={o}&length={l}&dtd={dtd}").decode("euc-kr", "ignore")
+        doc = re.sub(r"(?is)<(style|script).*?</>", " ", doc)
+        t = re.sub(r"\s+", " ", _html.unescape(re.sub(r"<[^>]+>", " ", doc)))
+        p = re.search(r"당기실적\s*(\d{4}-\d{2}-\d{2})\s*~\s*(\d{4}-\d{2}-\d{2})", t)
+        return [p.group(1), p.group(2)] if p else None
+    except Exception:
+        return None
+
+
+def fill_periods(d, days=150):
+    """최근 실적 공시에 실적기간을 붙인다(이미 붙은 것은 건너뛴다). 분기 실적인지 월 실적인지 가르는 데 쓴다."""
+    cut = (date.today() - timedelta(days=days)).isoformat()
+    for x in d["items"]:
+        if x["kind"] == "실적" and "period" not in x and x["date"] >= cut:
+            x["period"] = period_of(x["rcept_no"])
+            time.sleep(0.4)
+
+
 def by_rss(cid, corp):
     root = ElementTree.fromstring(fetch(RSS.format(corp)))
     out = []
@@ -160,8 +187,10 @@ def main(argv):
             # 같은 접수번호가 이미 있으면 시각 등 새로 안 것만 더한다
             old = {x["rcept_no"]: x for x in d["items"]}
             for x in new:
-                old[x["rcept_no"]] = {**x, **{k: v for k, v in old.get(x["rcept_no"], {}).items() if k == "time" and "time" not in x}}
+                prev = old.get(x["rcept_no"], {})
+                old[x["rcept_no"]] = {**x, **{k: v for k, v in prev.items() if (k == "time" and "time" not in x) or k == "period"}}
             d["items"] = list(old.values())
+            fill_periods(d)
             n = save(c["id"], d, "OpenDART 공시목록" if use_key else "DART 회사별 RSS")
             print(f"{c['id']}: 새로 받은 {len(new)}건, 목록 {n}건")
         except Exception as e:      # 한 회사가 실패해도 나머지는 받는다

@@ -11,7 +11,7 @@
       <tr><th>작성</th><td>{{ site.author }}</td></tr>
       <tr><th>커버 종목 / 리포트</th><td>{{ summary.n }}종목 / {{ n_reports }}건</td></tr>
       <tr><th>투자의견 분포</th><td>{% for k, v in summary.ratings.items() %}{{ k }} {{ v }}{% if not loop.last %} · {% endif %}{% endfor %}</td></tr>
-      {% if score %}<tr><th>추정 채점</th><td><a class="lnk" href="{{ url('research/scorecard/') }}">{{ score.summary['채점한 추정']|int }}건 채점</a> <small>컨센서스보다 가까움 {{ score.summary['컨센서스보다 가까움']|int }} · 비슷 {{ score.summary['비슷']|int }} · 채점 전 {{ score.summary['채점 전']|int }}</small></td></tr>{% endif %}
+      {% if score %}<tr><th>추정 채점</th><td><a class="lnk" href="{{ url('research/scorecard/') }}">{{ score.summary['채점한 추정']|int }}건 채점</a> <small>컨센서스보다 가까움 {{ score.summary['컨센서스보다 가까움']|int }} · 비슷 {{ score.summary['비슷']|int }} · 채점 전 {{ score.summary['채점 전']|int }}</small>{% if score.alerts %}<br><small style="color:var(--accent);font-weight:600">실적 공시 나옴·채점 대기: {% for c in score.alerts %}{{ c.name }}{% if not loop.last %}, {% endif %}{% endfor %}</small>{% endif %}</td></tr>{% endif %}
       <tr><th>마켓노트</th><td><a class="lnk" href="{{ url('notes/') }}">{{ n_notes }}편</a> <small>최근 {% if notes %}{{ notes[0].date|ymd }}{% endif %}</small></td></tr>
     </table>
   </div>
