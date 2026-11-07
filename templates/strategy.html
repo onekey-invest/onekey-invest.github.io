@@ -108,6 +108,7 @@
     </table>
     {% if s.book.kr %}<div class="cap">종목 수가 많아 장부 전체를 자산 하나로 평가합니다. 배당은 넣지 않았습니다. 숏으로 판 돈에는 기준금리에서 주식 빌리는 값(연 3% 가정)을 뺀 이자를 붙입니다.</div>{% else %}
     <div class="cap">종목 수가 많아 장부 전체를 자산 하나로 평가합니다. 평가금액과 수익률은 원화{% if s.book.hedge %}(환헤지 손익 포함){% else %}(환헤지 없음){% endif %}, 달러 기준 수익률은 위 표에 따로 적습니다.</div>{% endif %}
+    {% if s.book.price_note %}<div class="cap">{{ s.book.price_note }}.</div>{% endif %}
     {% if s.book.hedge and s.book.hedge.signals %}<div class="cap">환헤지 신호: {% for name, on in s.book.hedge.signals %}{{ name }} {{ '켜짐' if on else '꺼짐' }}{% if not loop.last %} · {% endif %}{% endfor %}</div>{% endif %}
   </div>
   <div>

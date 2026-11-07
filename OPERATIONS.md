@@ -15,13 +15,29 @@
 | 공시·주가 반응·채점 대기 알림 | 기업 화면 | `data/disclosures/`(DART RSS, 키 없이) | 평일 18:30 자동 | 총괄 |
 | 그림 | 모든 그림 | 그림 원본 `charts_src/site_charts.xlsx`(= `09_사이트그림/사이트_그림.xlsx`) → 서버 LibreOffice | 매 배포 자동. 모양은 본인이 엑셀에서 | 총괄. **`static/charts`에 그림을 손으로 커밋하지 않는다** |
 | 마켓노트 | /notes/ | `content/notes/` ← 클라우드 루틴 "Morning Market 매일 발행" | 평일 08:35 자동, 09:30 누락 점검 | 총괄 |
-| 가상운용 · ETF 성장형·안정형 | /portfolios/etf/ | `tools/etf_strategy.py` | 평일 18:30 자동 | ETF 운용 세션 |
-| 가상운용 · 국내 개선 롱숏 둘 | /portfolios/ | `tools/kr_x_book.py` + 달마다 `kr-x.picks.csv` | 평가는 자동, 종목은 달마다 손으로 | 국내 운용 세션 |
-| 가상운용 · Bottom-Up 1·US | /portfolios/overseas/ | `tools/bu_us_book.py` + 3개월마다 `bu-us.picks.csv` | 평가는 자동, 종목은 손으로 | Bottom-Up 세션 |
+| 가상운용 · ETF 성장형·안정형 | /portfolios/etf/ | `tools/etf_strategy.py` | 평일 18:30 자동 | 운용 총괄(ETF 세션) → 사이트 담당이 올림(1-1절) |
+| 가상운용 · 국내 개선 롱숏 둘 | /portfolios/ | `tools/kr_x_book.py` + 달마다 `kr-x.picks.csv` | 평가는 자동, 종목은 달마다 | 운용 총괄(논문 기반 세션) → 사이트 담당이 올림(1-1절) |
+| 가상운용 · Bottom-Up 1·US | /portfolios/overseas/ | `tools/bu_us_book.py` + 3개월마다 `bu-us.picks.csv` | 평가는 자동, 종목은 3개월마다 | 운용 총괄·리서치 총괄(Bottom-Up 세션) → 사이트 담당이 올림(1-1절) |
 | 가상운용 · 미국 공시 넷 | /portfolios/overseas/ | `C:\quant\versions\ver5\code\live_update.py → live_book.py → live_daily.py` | **손으로만(자동 아님)**. 2026-10-08에서 멈춰 있음 | ver5 세션 |
 | 책 검증 | /books/ | `data/books/*.json` ← `C:\quant\bottomup\code\book_site_export.py` | 책을 더할 때 | Bottom-Up 세션 |
 | 연구 | /studies/ | `content/studies/`, `data/studies/` | 연구가 끝날 때 | 연구한 세션 |
 | 홈·안내·용어·소개·화면 틀 | /, /start/, /glossary/, /about/ | `templates/`, `static/`, `content/pages/`, `data/site.yaml` | 필요할 때 | 총괄(소개의 개인 정보는 본인) |
+
+## 1-1. 가상운용: 운용 총괄이 돌려서 넘기고, 사이트 담당이 받아 올린다 (2026-11-07 본인)
+
+본인 지시(같은 날, 차례대로): "종목도 … 언제할지 다 정해두고서, 규칙이 정해지면 다 너가 관리해야지" → "혹은 운용총괄이 하고서, 너랑 소통하게 하거나", "운용이 그날 수익률이나 뭐 그외 다 정리하고서 너한테 넘기게 하거나", **"운용총괄이 하고서 너랑 소통하는게 베스트일듯"**.
+
+- **운용 총괄**(그 밑 전략 세션): 규칙을 정하고, 정해진 날에 돌린다(달마다·3개월마다 종목·장부, 그날 수익률 정리, 대조). 결과를 정리해 사이트 담당에게 넘긴다.
+- **사이트 담당**: 넘겨받은 것을 사이트에 올리고(OPERATIONS 3절 기준), 매일 점검으로 멈춘 곳을 찾아 운용 총괄에게 알린다. 날마다 평가 도구(깃허브 매일 실행, PC 없이)는 사이트 저장소에서 돌리되, 계산 규칙은 운용 쪽 것을 그대로 쓴다.
+- **넘기는 꼴**: 결과 파일을 정해진 자리(아래 표)에 두고, 팀 보드 또는 사이트 담당에게 "무엇을, 어디에, 언제 것"을 한 줄로 보낸다. 규칙 넘김 꾸러미는 `금융권 준비_사이트\규칙넘김\<전략id>.md`(공개 안 함).
+- 장부·종목이 제때 안 오면 그 전략은 그 전 거래일에서 멈춘다(앞 장부로 이어 가지 않는다). 사이트 점검이 알린다.
+
+| 전략 | 날마다 평가(PC 없이, 깃허브) | 종목·장부를 새로 정하는 때 → 넘기는 자리 | 지금 |
+|---|---|---|---|
+| ETF 성장형·안정형 | `tools/etf_strategy.py` | 규칙 안에서 자동 | 자동(꾸러미 `etf-ga_etf-na.md`) |
+| 국내 개선 롱숏 둘 | `tools/kr_x_book.py` | 달마다 월말 → `data/strategy_books/kr-x.picks.csv`에 덧붙임 | 10-30 고른 것이 안 와서 10-30에서 멈춤 |
+| Bottom-Up 1·US | `tools/bu_us_book.py` | 3개월마다(1·4·7·10월 말) → `bu-us.picks.csv`에 덧붙임 | 10-31 고른 것이 안 와서 10-30에서 멈춤 |
+| 미국 공시 넷 | `tools/us_book.py`(준비 끝, 장부가 오면 연결) | 매달 미국 첫 거래일 → `data/strategy_books/us/BOOK_<달>.csv`·`HEDGE_<달>.json`, 대조 `CHECK.json` | 11월 장부 만드는 중, 사용자 승인 대기(PC 예약 작업·장부 공개·명령 돌리기) |
 
 ## 2. 매일 도는 것
 

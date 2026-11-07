@@ -80,6 +80,19 @@ def targets(rows, w_long, w_kodex):
     return w
 
 
+def missing_book_stop(pick_dates, days, months):
+    """다음에 골랐어야 할 날(마지막으로 고른 날의 달에서 months달 뒤의 그 달 마지막 날)의 체결일이 지났는데 그 장부가 없으면,
+    그 체결일 전 거래일에서 평가를 멈춘다(앞 장부로 이어 가지 않는다. 운용 쪽 조건 2026-11-07). 멈출 날 = 그 체결일. 없으면 None."""
+    import calendar as _cal
+    p = max(pick_dates)
+    y, m = p.year, p.month + months
+    while m > 12:
+        y, m = y + 1, m - 12
+    due = date(y, m, _cal.monthrange(y, m)[1])
+    nxt = [d for d in days if d > due]
+    return nxt[0] if nxt else None
+
+
 def main():
     with open(ROOT / "data" / "strategy_books" / "kr-x.picks.csv", encoding="utf-8") as f:
         rows = list(csv.DictReader(f))
@@ -100,6 +113,10 @@ def main():
             trade_day[nxt[0]] = p
     start = min(trade_day)
     cal = [d for d in days if d >= start]
+    stop = missing_book_stop(list(picks), days, 1)          # 달마다 고른다(월말)
+    if stop:
+        cal = [d for d in cal if d < stop]
+        print(f"다음 달 종목(월말에 고른 것)이 없어 {cal[-1]}에서 멈춤 — 새 picks가 오면 다시 계산해 이어 붙인다")
     for sid, (book, w_long, w_kodex) in BOOKS.items():
         nav, w, out, pending_cost, cur_pick = 10000.0, {}, [], 0.0, None
         prev = None

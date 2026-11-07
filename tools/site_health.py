@@ -113,6 +113,12 @@ def main(argv):
         if stale:
             a, d = stale[0]
             issues.append(f"가상운용: {s['name']}({s['id']})의 평가가 {d}에서 멈춤 — 자산 '{a}'. 이 전략을 만든 쪽의 갱신 작업을 돌려야 한다")
+    # 2-1. 미국 공시 전략: 사이트 평가(야후)와 운용 쪽 ver5 지수(Alpaca)의 누적 차이(운용 쪽이 달마다 적는 CHECK.json)
+    chk = ROOT / "data" / "strategy_books" / "us" / "CHECK.json"
+    if chk.exists():
+        c = json.loads(chk.read_text(encoding="utf-8"))
+        if float(c.get("max_diff", 0)) > 0.001:
+            issues.append(f"가상운용: 미국 공시 전략의 사이트 평가와 운용 쪽 지수의 누적 차이 {float(c['max_diff']) * 100:.2f}% (0.1% 넘음, {c.get('date')}) — 종가 출처 차이를 본다")
     # 3. 마켓노트: 평일 09:30 뒤면 오늘 노트가 있어야
     notes = sorted(p.stem for p in (ROOT / "content" / "notes").glob("*.md"))
     last_note = date.fromisoformat(notes[-1]) if notes else None
