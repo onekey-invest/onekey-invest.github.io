@@ -1,0 +1,506 @@
+{
+ "신호 달": "2026-09",
+ "드는 달": "2026-10",
+ "파일": "results/live/BOOK_2026-10.csv",
+ "sha256": "21bb05d9d7a672a37778654f73ef8c5344902ccac51746b7986a83334da9fd03",
+ "살 수 있는 종목": 2582,
+ "닮음 값이 있는 종목": 2342,
+ "가장 최근 분기 보고서의 제출일": "2026-09-29",
+ "상황 층": {
+  "켜짐": false,
+  "물가 수준": "높음",
+  "원재료 물가": null,
+  "정책금리 방향": null
+ },
+ "추세 층": {
+  "켜짐": false,
+  "지수가 10개월 평균보다(%)": 5.4,
+  "덧붙임": "시장 지수의 2026-08, 2026-09 값은 프렌치 자료가 아직 없어 우리 기준의 수익률로 이었다"
+ },
+ "주식 몫": {
+  "T12": 1.0,
+  "T12D": 1.0,
+  "T16": 1.0,
+  "T16D": 1.0
+ },
+ "T12": {
+  "종목 수": 914,
+  "고른 종목": 826,
+  "기준과 다른 비중(%)": 26.3,
+  "업종 비중(%)": {
+   "Information Technology": 34.1,
+   "Financials": 14.4,
+   "Health Care": 9.6,
+   "Consumer Discretionary": 8.7,
+   "Other": 8.5,
+   "Industrials": 7.7,
+   "Consumer Staples": 4.1,
+   "Materials": 3.4,
+   "Utilities": 3.1,
+   "Energy": 2.6,
+   "Communication Services": 2.0,
+   "Real Estate": 1.9
+  },
+  "가장 큰 15": [
+   [
+    "NVDA",
+    3.0,
+    "Information Technology"
+   ],
+   [
+    "AAPL",
+    3.0,
+    "Information Technology"
+   ],
+   [
+    "GOOGL",
+    3.0,
+    "Information Technology"
+   ],
+   [
+    "MSFT",
+    3.0,
+    "Information Technology"
+   ],
+   [
+    "AMZN",
+    3.0,
+    "Consumer Discretionary"
+   ],
+   [
+    "META",
+    2.51,
+    "Information Technology"
+   ],
+   [
+    "HSBC",
+    2.3,
+    "Financials"
+   ],
+   [
+    "AVGO",
+    2.25,
+    "Information Technology"
+   ],
+   [
+    "TSLA",
+    1.89,
+    "Consumer Discretionary"
+   ],
+   [
+    "MU",
+    1.62,
+    "Information Technology"
+   ],
+   [
+    "LLY",
+    1.47,
+    "Health Care"
+   ],
+   [
+    "BRK.A",
+    1.44,
+    "Financials"
+   ],
+   [
+    "AMD",
+    1.34,
+    "Information Technology"
+   ],
+   [
+    "SPCX",
+    1.19,
+    "Other"
+   ],
+   [
+    "JPM",
+    1.18,
+    "Financials"
+   ]
+  ],
+  "기준보다 가장 더 든 15(%p)": [
+   [
+    "TRV",
+    1.07,
+    "Financials"
+   ],
+   [
+    "USB",
+    1.04,
+    "Financials"
+   ],
+   [
+    "WFC",
+    0.84,
+    "Financials"
+   ],
+   [
+    "CL",
+    0.41,
+    "Materials"
+   ],
+   [
+    "ECL",
+    0.4,
+    "Materials"
+   ],
+   [
+    "RCL",
+    0.29,
+    "Industrials"
+   ],
+   [
+    "ITW",
+    0.29,
+    "Industrials"
+   ],
+   [
+    "CP",
+    0.29,
+    "Industrials"
+   ],
+   [
+    "CSX",
+    0.27,
+    "Industrials"
+   ],
+   [
+    "MCO",
+    0.27,
+    "Other"
+   ],
+   [
+    "GD",
+    0.27,
+    "Industrials"
+   ],
+   [
+    "INTU",
+    0.27,
+    "Information Technology"
+   ],
+   [
+    "DASH",
+    0.26,
+    "Other"
+   ],
+   [
+    "PWR",
+    0.26,
+    "Industrials"
+   ],
+   [
+    "GM",
+    0.24,
+    "Consumer Discretionary"
+   ]
+  ],
+  "기준보다 가장 덜 든 15(%p)": [
+   [
+    "GEV",
+    -0.34,
+    "Other"
+   ],
+   [
+    "C",
+    -0.31,
+    "Financials"
+   ],
+   [
+    "IBM",
+    -0.28,
+    "Information Technology"
+   ],
+   [
+    "AXP",
+    -0.28,
+    "Financials"
+   ],
+   [
+    "ASX",
+    -0.27,
+    "Information Technology"
+   ],
+   [
+    "ADI",
+    -0.26,
+    "Information Technology"
+   ],
+   [
+    "CRM",
+    -0.25,
+    "Information Technology"
+   ],
+   [
+    "DIS",
+    -0.24,
+    "Consumer Discretionary"
+   ],
+   [
+    "DE",
+    -0.24,
+    "Industrials"
+   ],
+   [
+    "SCCO",
+    -0.23,
+    "Materials"
+   ],
+   [
+    "SCHW",
+    -0.23,
+    "Financials"
+   ],
+   [
+    "ETN",
+    -0.22,
+    "Industrials"
+   ],
+   [
+    "BLK",
+    -0.22,
+    "Financials"
+   ],
+   [
+    "MCD",
+    -0.22,
+    "Consumer Discretionary"
+   ],
+   [
+    "UNP",
+    -0.22,
+    "Industrials"
+   ]
+  ]
+ },
+ "T16": {
+  "사는 쪽 종목 수": 432,
+  "파는 쪽 종목 수": 446,
+  "사는 쪽 한 종목(%)": 0.069,
+  "파는 쪽 한 종목(%)": 0.067,
+  "사는 쪽 예 15": [
+   [
+    "RSG",
+    "Utilities",
+    0.883
+   ],
+   [
+    "IMO",
+    "Energy",
+    0.865
+   ],
+   [
+    "GWW",
+    "Industrials",
+    0.898
+   ],
+   [
+    "PCAR",
+    "Consumer Discretionary",
+    0.904
+   ],
+   [
+    "MPLX",
+    "Energy",
+    0.89
+   ],
+   [
+    "AFL",
+    "Financials",
+    0.922
+   ],
+   [
+    "GRMN",
+    "Information Technology",
+    0.921
+   ],
+   [
+    "NUE",
+    "Materials",
+    0.929
+   ],
+   [
+    "A",
+    "Health Care",
+    0.923
+   ],
+   [
+    "WAB",
+    "Industrials",
+    0.885
+   ],
+   [
+    "WDAY",
+    "Information Technology",
+    0.908
+   ],
+   [
+    "CVNA",
+    "Consumer Discretionary",
+    0.897
+   ],
+   [
+    "VEEV",
+    "Information Technology",
+    0.925
+   ],
+   [
+    "AZO",
+    "Consumer Discretionary",
+    0.903
+   ],
+   [
+    "XYZ",
+    "Information Technology",
+    0.916
+   ]
+  ],
+  "파는 쪽 예 15": [
+   [
+    "BSX",
+    "Health Care",
+    0.753
+   ],
+   [
+    "AJG",
+    "Financials",
+    0.79
+   ],
+   [
+    "COHR",
+    "Health Care",
+    0.71
+   ],
+   [
+    "O",
+    "Real Estate",
+    0.687
+   ],
+   [
+    "CIEN",
+    "Information Technology",
+    0.727
+   ],
+   [
+    "COIN",
+    "Financials",
+    0.433
+   ],
+   [
+    "LHX",
+    "Information Technology",
+    0.738
+   ],
+   [
+    "WAT",
+    "Health Care",
+    0.742
+   ],
+   [
+    "RKLB",
+    "Industrials",
+    0.775
+   ],
+   [
+    "KDP",
+    "Consumer Staples",
+    0.459
+   ],
+   [
+    "LYV",
+    "Consumer Discretionary",
+    0.792
+   ],
+   [
+    "ADM",
+    "Consumer Staples",
+    0.768
+   ],
+   [
+    "OKTA",
+    "Information Technology",
+    0.489
+   ],
+   [
+    "YUM",
+    "Consumer Discretionary",
+    0.783
+   ],
+   [
+    "ROP",
+    "Other",
+    0.641
+   ]
+  ],
+  "순 비중 합": 1.0,
+  "총 비중(사는 것 + 파는 것)": 1.525
+ },
+ "기준": {
+  "업종 비중(%)": {
+   "Information Technology": 34.1,
+   "Financials": 14.4,
+   "Health Care": 9.6,
+   "Consumer Discretionary": 8.7,
+   "Other": 8.5,
+   "Industrials": 7.7,
+   "Consumer Staples": 4.1,
+   "Materials": 3.4,
+   "Utilities": 3.1,
+   "Energy": 2.6,
+   "Communication Services": 2.0,
+   "Real Estate": 1.9
+  },
+  "가장 큰 10": [
+   [
+    "NVDA",
+    3.0,
+    "Information Technology"
+   ],
+   [
+    "AAPL",
+    3.0,
+    "Information Technology"
+   ],
+   [
+    "GOOGL",
+    3.0,
+    "Information Technology"
+   ],
+   [
+    "MSFT",
+    3.0,
+    "Information Technology"
+   ],
+   [
+    "AMZN",
+    3.0,
+    "Consumer Discretionary"
+   ],
+   [
+    "META",
+    2.51,
+    "Information Technology"
+   ],
+   [
+    "HSBC",
+    2.3,
+    "Financials"
+   ],
+   [
+    "AVGO",
+    2.25,
+    "Information Technology"
+   ],
+   [
+    "TSLA",
+    1.89,
+    "Consumer Discretionary"
+   ],
+   [
+    "MU",
+    1.62,
+    "Information Technology"
+   ]
+  ]
+ }
+}

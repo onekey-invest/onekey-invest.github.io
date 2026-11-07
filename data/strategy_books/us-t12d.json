@@ -1,6 +1,7 @@
 {
- "asof": "2026-10-08",
+ "asof": "2026-10-30",
  "book_month": "2026-10",
+ "price_note": "평가 종가: 야후, 백테스트·장부 선정: Alpaca",
  "sha": "21bb05d9d7a672a3",
  "n_long": 914,
  "n_short": 0,
@@ -12,11 +13,11 @@
    3.0
   ],
   [
-   "GOOGL",
+   "AAPL",
    3.0
   ],
   [
-   "AAPL",
+   "GOOGL",
    3.0
   ],
   [
@@ -98,10 +99,10 @@
    1.9
   ]
  ],
- "usd_ret": 0.013687,
- "sp_usd_ret": 0.012902,
+ "usd_ret": -0.001692,
+ "sp_usd_ret": -0.011267,
  "fx0": 1356.84,
- "fx1": 1339.08,
+ "fx1": 1337.98,
  "layers": {
   "상황": false,
   "추세": false
@@ -139,8 +140,8 @@
     false
    ]
   ],
-  "krw_unhedged_ret": 0.000419,
-  "krw_ret": 0.006039
+  "krw_unhedged_ret": -0.015569,
+  "krw_ret": -0.009813
  },
  "short_examples": [],
  "long_examples": []
