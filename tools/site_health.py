@@ -82,6 +82,11 @@ def area_of(files):
     return got or ["그 밖"]
 
 
+# 가상운용 장부를 맡은 세션(운용 총괄의 갈아타기 일정표, 2026-11-07)
+OWNER = {"us-t12": "트랙1-2(ver5)", "us-t12d": "트랙1-2(ver5)", "us-t16": "트랙1-2(ver5)", "us-t16d": "트랙1-2(ver5)",
+         "kr-x1": "논문 기반(ver8)", "kr-x2": "논문 기반(ver8)", "bu-us": "BOTTOM-UP", "etf-ga": "사이트 매일 실행", "etf-na": "사이트 매일 실행"}
+
+
 def main(argv):
     days = int(argv[argv.index("--days") + 1]) if "--days" in argv else 7
     now = datetime.now(KST)
@@ -112,7 +117,7 @@ def main(argv):
         stale = [(a, d) for a, d in ends if d is None or bdays_between(d, want) > LAG]
         if stale:
             a, d = stale[0]
-            issues.append(f"가상운용: {s['name']}({s['id']})의 평가가 {d}에서 멈춤 — 자산 '{a}'. 이 전략을 만든 쪽의 갱신 작업을 돌려야 한다")
+            issues.append(f"가상운용: {s['name']}({s['id']})의 평가가 {d}에서 멈춤 — 자산 '{a}'. 맡은 세션: {OWNER.get(s['id'], '운용 총괄')}(지켜보는 쪽 운용 총괄, 규칙넘김/01_갈아타기_일정표.md)")
     # 2-1. 미국 공시 전략: 사이트 평가(야후)와 운용 쪽 ver5 지수(Alpaca)의 누적 차이(운용 쪽이 달마다 적는 CHECK.json)
     chk = ROOT / "data" / "strategy_books" / "us" / "CHECK.json"
     if chk.exists():
