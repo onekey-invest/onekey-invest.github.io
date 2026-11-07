@@ -199,6 +199,7 @@ function DrawBar($ws, $c, [bool]$isNew) {
         $ser.Values = $ws.Range($ws.Cells.Item(2, $j + 1), $ws.Cells.Item($n + 1, $j + 1))
         if ($fresh -or $isNew) { $ser.Format.Fill.ForeColor.RGB = (Rgb $s.color); $ser.Format.Line.Visible = 0 }
     }
+    try { $ch.Axes(1).TickLabelPosition = -4134 } catch { }      # 가로축 이름을 그림 맨 아래로(음수 막대와 겹치지 않게)
     if ($isNew) {
         BaseLook $ch
         $ch.HasLegend = $true; $ch.Legend.Position = -4107
