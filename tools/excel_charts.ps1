@@ -226,11 +226,13 @@ function DrawSpark($ws, $c, [int]$col) {
     foreach ($o in $ws.ChartObjects()) { if ($o.Name -eq $c.id) { $co = $o } }
     $isNew = ($null -eq $co)
     if ($isNew) {
-        $co = $ws.ChartObjects().Add(40 + 130 * ($col - 1), 320, 120, 34); $co.Name = [string]$c.id
+        $co = $ws.ChartObjects().Add([double](40 + 130 * (($col - 1) % 8)), 320 + 45 * [double][int][math]::Truncate([double]($col - 1) / 8), 120, 34); $co.Name = [string]$c.id
         $ch = $co.Chart; $ch.ChartType = 4
         $ser = $ch.SeriesCollection().NewSeries()
     }
     else { $ch = $co.Chart; $ser = $ch.SeriesCollection().Item(1) }
+    # 작은 그림은 8개씩 줄을 바꿔 놓는다. 한 줄로 오른쪽 멀리(약 1,400pt 넘게) 놓이면 엑셀이 빈 그림(0바이트)을 내보낸다
+    $co.Left = [double](40 + 130 * (($col - 1) % 8)); $co.Top = 320 + 45 * [double][int][math]::Truncate([double]($col - 1) / 8)
     $ser.Values = $ws.Range($ws.Cells.Item(2, $col), $ws.Cells.Item($n + 1, $col))
     if ($isNew) {
         BaseLook $ch
@@ -283,6 +285,7 @@ try {
         $file = Join-Path $Out ($c.id + '.svg')
         if (Test-Path $file) { Remove-Item $file -Force }
         [void]$co.Chart.Export($file)
+        if (-not (Test-Path $file) -or (Get-Item $file).Length -eq 0) { throw ("빈 그림이 나왔다: " + $c.id) }   # 빈 그림을 올리지 않는다
         $manifest[[string]$c.id] = [ordered]@{ asof = [string]$c.asof; w = [math]::Round($co.Width * 96 / 72); h = [math]::Round($co.Height * 96 / 72) }
         $list.Cells.Item($row, 1).Value2 = [string]$c.id; $list.Cells.Item($row, 2).Value2 = $sheetName; $list.Cells.Item($row, 3).Value2 = [string]$c.kind
         $list.Cells.Item($row, 4).Value2 = [string]$c.asof; $list.Cells.Item($row, 5).Value2 = (Get-Date).ToString('yyyy-MM-dd HH:mm')

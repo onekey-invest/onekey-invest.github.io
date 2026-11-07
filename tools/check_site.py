@@ -1,6 +1,6 @@
 """만든 사이트(dist/)를 올리기 전에 점검한다. 하나라도 걸리면 오류로 끝난다(깃허브 실행이 멈추고 저장소 주인에게 메일이 간다).
 
-1. 사이트 안 링크·그림 주소가 모두 열리는가
+1. 사이트 안 링크·그림 주소가 모두 열리는가(그림·PDF가 빈 파일이 아닌가)
 2. 권유처럼 읽히는 말이 없는가(유사투자자문 경계). 고지 문장에 쓰는 "투자 권유가 아닙니다" 같은 부정형은 뺀다
 3. 화면마다 설명문(description)이 있는가
 4. 공개하면 안 되는 내부 폴더 이름이 새지 않았는가
@@ -45,6 +45,8 @@ def main():
                 p = p / "index.html"
             if not p.exists():
                 problems.append(f"깨진 링크: {rel} → {u}")
+            elif p.suffix.lower() in (".svg", ".png", ".jpg", ".pdf") and p.stat().st_size == 0:
+                problems.append(f"빈 파일: {rel} → {u}")
         text = re.sub(r"<[^>]+>", " ", body)
         for pat in PUSH:
             for m in re.finditer(pat, text):
