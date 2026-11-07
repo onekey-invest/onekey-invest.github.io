@@ -35,7 +35,6 @@
       {% for w in n.week or [] %}<li>{{ w }}</li>{% else %}<li>등록된 일정 없음</li>{% endfor %}
     </ul>
     <table class="kv">
-      <tr><th>관련 종목·산업</th><td>{{ m.note_links(n) }}</td></tr>
       <tr><th>태그</th><td>{% for t in n.tags or [] %}<span class="tag">{{ t }}</span> {% else %}–{% endfor %}</td></tr>
     </table>
   </div>

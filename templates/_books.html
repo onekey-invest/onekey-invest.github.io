@@ -7,7 +7,7 @@
 {% macro val(d, t, unit='%') %}{% if d is not none %}<span class="{{ 'up' if d > 0 else 'down' if d < 0 else '' }}">{{ '%+.2f'|format(d) }}{{ unit }}</span>{% if t is not none %} <small>t {{ '%+.1f'|format(t) }}</small>{% endif %}{% else %}–{% endif %}{% endmacro %}
 
 {# 판정 막대: 지지 · 기각 · 판단 보류 #}
-{% macro vbar(c) %}{% set s = c[0] + c[1] + c[2] %}{% if s %}<div class="vbar"><span class="ok" style="width:{{ '%.1f'|format(c[0] / s * 100) }}%"></span><span class="no" style="width:{{ '%.1f'|format(c[1] / s * 100) }}%"></span><span class="un" style="width:{{ '%.1f'|format(c[2] / s * 100) }}%"></span></div><small>{{ c[0] }} · {{ c[1] }} · {{ c[2] }}</small>{% else %}<small>–</small>{% endif %}{% endmacro %}
+{% macro vbar(c, nums=true) %}{% set s = c[0] + c[1] + c[2] %}{% if s %}<div class="vbar"><span class="ok" style="width:{{ '%.1f'|format(c[0] / s * 100) }}%"></span><span class="no" style="width:{{ '%.1f'|format(c[1] / s * 100) }}%"></span><span class="un" style="width:{{ '%.1f'|format(c[2] / s * 100) }}%"></span></div>{% if nums %}<small>{{ c[0] }} · {{ c[1] }} · {{ c[2] }}</small>{% endif %}{% else %}<small>–</small>{% endif %}{% endmacro %}
 
 {# 판정 수를 문장으로: "9가지가 지지됐고 10가지는 판단을 보류했다." #}
 {% macro tally(c) %}{% if c[0] %}{{ c[0] }}가지가 지지됐고{% else %}지지된 것이 없었고{% endif %}{% if c[1] %} {{ c[1] }}가지는 기각됐으며{% endif %} {% if c[2] %}{{ c[2] }}가지는 판단을 보류했다.{% else %}보류한 것은 없었다.{% endif %}{% endmacro %}

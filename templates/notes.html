@@ -48,13 +48,12 @@
 {{ m.filter('notes-table', '날짜, 내용, 태그 검색', none) }}
 <div class="scroll">
 <table class="grid" id="notes-table">
-  <thead><tr><th class="c" style="width:120px">날짜</th><th class="l">오늘의 한 줄</th><th class="l">관련 종목·산업</th><th class="l">태그</th></tr></thead>
+  <thead><tr><th class="c" style="width:120px">날짜</th><th class="l">오늘의 한 줄</th><th class="l">태그</th></tr></thead>
   <tbody>
   {% for x in notes %}
     <tr>
       <td class="c">{{ x.date|ymd }}</td>
       <td class="l"><a href="{{ url(x.path) }}"><b>{{ x.headline }}</b></a></td>
-      <td class="l">{{ m.note_links(x) }}</td>
       <td class="l">{% for t in x.tags or [] %}<span class="tag">{{ t }}</span> {% endfor %}</td>
     </tr>
   {% endfor %}

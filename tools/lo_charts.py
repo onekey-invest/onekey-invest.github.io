@@ -285,6 +285,8 @@ def main(spec_path, wb_path, out):
     doc.close(True)            # 저장하지 않는다
     with open(man_path, "w", encoding="utf-8") as f:
         json.dump(manifest, f, ensure_ascii=False, indent=1)
+    with open(os.path.join(out, "_draw.json"), "w", encoding="utf-8") as f:     # 사이트 점검(site_health.py)이 읽는다
+        json.dump({"done": done, "skipped": skipped, "failed": failed}, f, ensure_ascii=False, indent=1)
     print(f"그림 {done}개 그림 · 원본에 시트가 없어 건너뜀 {len(skipped)}개 {skipped} · 실패 {len(failed)}개")
     for x in failed:
         print("  실패", x)

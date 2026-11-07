@@ -72,19 +72,44 @@
 {{ m.report_table(reports) }}
 <div class="note"><a href="{{ url('research/reports/') }}">리포트 전체 보기</a></div>
 
-{{ m.h('가상운용 전략', (asof|ymd) ~ ' 종가 기준') }}
-{{ m.strategy_table(strategies) }}
+{% if home_strat %}
+{{ m.h('가상운용 전략 한눈에', home_strat.rows|length ~ '개 · ' ~ (home_strat.end|ymd) ~ ' 종가 기준') }}
+{{ m.chart(home_strat.chart, '모든 가상운용 전략과 KOSPI·S&P 500의 누적수익률') }}
+<div class="cap">전략마다 운용을 시작한 날을 0%로 잡은 누적수익률. 표의 수익률·KOSPI·S&amp;P 500은 각 전략의 운용 기간으로 잰다. 회색 실선은 KOSPI, 회색 점선은 S&P 500(원화 환산)으로 가장 먼저 시작한 전략의 개시일({{ home_strat.start|ymd }})부터.</div>
+<div class="scroll" style="margin-top:14px">
+<table class="grid stratall">
+  <thead><tr>
+    <th class="l">전략</th><th class="c">구분</th><th class="c">운용 기간</th><th>수익률</th>
+    <th>KOSPI<br><small>같은 기간</small></th><th>S&amp;P 500<br><small>같은 기간·원화</small></th><th>MDD</th><th>샤프</th>
+  </tr></thead>
+  <tbody>
+  {% for s in home_strat.rows %}
+    <tr class="cat-{{ s.category }}">
+      <td class="l"><i class="sw" style="background:{{ s.home_color }}"></i><a href="{{ url(s.path) }}"><b>{{ s.name }}</b></a></td>
+      <td class="c"><span class="tag">{{ s.cat_label }}</span></td>
+      <td class="c">{{ s.started|ymd }} ~ {% if s.end != home_strat.end %}<b class="stale">{{ s.end|ymd }}</b>{% else %}{{ s.end|ymd }}{% endif %}</td>
+      <td><b>{{ m.ret(s.ret) }}</b></td>
+      <td>{{ m.ret(s.kospi) }}</td>
+      <td>{{ m.ret(s.spx) }}</td>
+      <td>{{ s.mdd|pct }}</td>
+      <td>{{ s.sharpe|dec }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
 <div class="note"><a href="{{ url('portfolios/') }}">가상운용 전체 보기</a></div>
+{% endif %}
 
 {{ m.h('최근 마켓노트', '') }}
 <div class="scroll">
 <table class="grid">
-  <thead><tr><th class="c" style="width:120px">날짜</th><th class="l">오늘의 한 줄</th><th class="l">관련 종목·산업</th></tr></thead>
+  <thead><tr><th class="c" style="width:120px">날짜</th><th class="l">오늘의 한 줄</th></tr></thead>
   <tbody>
   {% for n in notes %}
-    <tr><td class="c">{{ n.date|ymd }}</td><td class="l"><a href="{{ url(n.path) }}"><b>{{ n.headline }}</b></a></td><td class="l">{{ m.note_links(n) }}</td></tr>
+    <tr><td class="c">{{ n.date|ymd }}</td><td class="l"><a href="{{ url(n.path) }}"><b>{{ n.headline }}</b></a></td></tr>
   {% else %}
-    <tr><td class="c" colspan="3">아직 노트가 없습니다.</td></tr>
+    <tr><td class="c" colspan="2">아직 노트가 없습니다.</td></tr>
   {% endfor %}
   </tbody>
 </table>
@@ -96,22 +121,19 @@
 <p class="intro">읽은 책 {{ B.total.books }}권의 주장 {{ B.total.claims + B.total.macro + B.total.market }}가지를 한국과 미국 자료로 직접 검사했습니다. 종목을 고르는 주장 {{ B.total.claims }}가지 가운데 한국에서 {{ B.total.kr[0] }}가지, 미국에서 {{ B.total.us[0] }}가지가 지지됐습니다.</p>
 {% set right = B.tops['한국에서만 지지'][:1] %}
 {% set wrong = (B.tops['기각']|selectattr('kr')|list)[:1] %}
-<div class="scroll wide">
-<table class="grid vt">
-  <thead><tr><th class="l">검사한 것</th><th class="l">한국</th><th class="l">미국</th></tr></thead>
-  <tbody>
+<div class="claimcards">
   {% for x in right + wrong %}
-    <tr>
-      <td class="l"><b class="lab">{{ x.label }}</b>
-        <div class="how">{% if x.want %}책은 {{ x.want }}고 봄{% endif %}</div>
-        <div class="src">{{ x.books|join(', ') }}</div>
-        <div class="both">{{ x.both }}</div></td>
-      <td class="l">{{ k.mk(x.kr, x.fmax) }}</td>
-      <td class="l">{{ k.mk(x.us, x.fmax) }}</td>
-    </tr>
+  <div class="claimcard">
+    <div class="cc-head"><b>{{ x.label }}</b>{% if x.want %}<span class="cc-want">책은 {{ x.want }}고 봄</span>{% endif %}</div>
+    {% if x.both %}<p class="cc-both">{{ x.both }}</p>{% endif %}
+    <div class="cc-mk">
+      {% for name, q in (('한국', x.kr), ('미국', x.us)) %}
+      <div><span class="cc-m">{{ name }}</span>{% if q %}{{ k.vd(q.v) }}{% if q.d is not none %} <b class="{{ 'up' if q.d > 0 else 'down' if q.d < 0 else '' }}">{{ '%+.2f'|format(q.d) }}%</b><small> 한 달</small>{% endif %}{% else %}<small>자료 없음</small>{% endif %}</div>
+      {% endfor %}
+    </div>
+    <div class="cc-src">이렇게 말한 책: {{ x.books|join(', ') }}</div>
+  </div>
   {% endfor %}
-  </tbody>
-</table>
 </div>
 <div class="note"><a href="{{ url('books/') }}">책 검증 전체 보기</a></div>
 {% endif %}

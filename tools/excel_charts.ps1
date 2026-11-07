@@ -284,7 +284,10 @@ try {
         }
         $file = Join-Path $Out ($c.id + '.svg')
         if (Test-Path $file) { Remove-Item $file -Force }
+        $oldLeft = $co.Left
+        if ($co.Left -gt 1000) { $co.Left = [double]10 }     # 오른쪽 멀리(약 1,400pt 넘게) 놓인 차트는 엑셀이 빈 그림을 낸다. 내보낼 때만 왼쪽으로
         [void]$co.Chart.Export($file)
+        $co.Left = $oldLeft
         if (-not (Test-Path $file) -or (Get-Item $file).Length -eq 0) { throw ("빈 그림이 나왔다: " + $c.id) }   # 빈 그림을 올리지 않는다
         $manifest[[string]$c.id] = [ordered]@{ asof = [string]$c.asof; w = [math]::Round($co.Width * 96 / 72); h = [math]::Round($co.Height * 96 / 72) }
         $list.Cells.Item($row, 1).Value2 = [string]$c.id; $list.Cells.Item($row, 2).Value2 = $sheetName; $list.Cells.Item($row, 3).Value2 = [string]$c.kind

@@ -4,3 +4,5 @@ __pycache__/
 .env
 # 장중 가격(화면에만 쓰고 저장소에 남기지 않는다)
 data/intraday.json
+# 사이트 점검 결과(공개하지 않음)
+.health/

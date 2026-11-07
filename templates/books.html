@@ -23,7 +23,7 @@
       <li>책마다 독후감을 쓰고, 그 책의 핵심 주장을 꺼내 실제 자료로 검사</li>
       <li>종목을 고르는 주장은 매달 말 그 조건으로 종목을 나눠 다음 달 수익률을 비교. 한국 {{ B.period.kr }}, 미국 {{ B.period.us }}</li>
       <li>같은 주장을 한국과 미국에서 따로 검사하고 판정도 따로 표시. 한국에서는 통하고 미국에서는 통하지 않는 주장이 많음</li>
-      <li>지지는 책이 말한 방향으로 차이가 뚜렷한 것(|t| 2 이상), 기각은 반대 방향으로 뚜렷한 것, 나머지는 판단 보류</li>
+      <li><b>지지</b>는 책이 말한 쪽으로 차이가 뚜렷한 것(우연으로 보기 어려운 크기, t값 2 이상), <b>기각</b>은 반대쪽으로 뚜렷한 것, 나머지는 <b>보류</b></li>
       <li>시장·금리에 관한 주장은 지표의 상태를 확인한 뒤 3개월의 변화로 판정</li>
       <li>책 이름을 누르면 독후감, 핵심, 주장별 검사 결과</li>
     </ul>
@@ -39,23 +39,28 @@
   </div>
 </div>
 
-{{ m.h('책 목록', '막대와 숫자는 지지 · 기각 · 판단 보류') }}
+{{ m.h('책 목록', '칸마다: 지지된 주장 수 / 검사한 주장 수') }}
+<div class="legend" style="margin:0 0 10px;border:0;padding:0"><span><span class="lg p"></span><b>지지</b> 책 말대로 차이가 뚜렷함</span><span><span class="lg n"></span><b>기각</b> 반대로 뚜렷함</span><span><span class="lg" style="background:#cdd3dc"></span><b>보류</b> 뚜렷하지 않음</span></div>
 {{ m.filter('book-table', '책, 지은이 검색', []) }}
 <div class="scroll wide">
-<table class="grid" data-sortable id="book-table">
+<table class="grid booklist" data-sortable id="book-table">
   <thead><tr>
-    <th class="l" data-type="text">책</th><th class="l" data-type="text">지은이</th><th data-type="num">검사한 주장</th>
-    <th class="l" data-type="none">종목 고르기 · 한국</th><th class="l" data-type="none">종목 고르기 · 미국</th><th class="l" data-type="none">시장·금리</th>
+    <th class="l" data-type="text">책</th><th data-type="num">검사한 주장</th>
+    <th class="l" data-type="num">종목 고르기 · 한국</th><th class="l" data-type="num">종목 고르기 · 미국</th><th class="l" data-type="num">시장·금리</th>
   </tr></thead>
   <tbody>
   {% for b in B.list %}
     <tr>
-      <td class="l"><a href="{{ url(b.path) }}"><b>{{ b.title }}</b></a></td>
-      <td class="l">{{ b.author or '–' }}</td>
+      <td class="l"><a href="{{ url(b.path) }}"><b>{{ b.title }}</b></a><br><small>{{ b.author or '' }}</small></td>
       <td data-v="{{ b.n_claims + b.n_macro + b.n_market }}"><b>{{ b.n_claims + b.n_macro + b.n_market }}</b></td>
-      <td class="l">{{ k.vbar(b.counts.kr) }}</td>
-      <td class="l">{{ k.vbar(b.counts.us) }}</td>
-      <td class="l">{{ k.vbar(b.counts.mac) }}</td>
+      {% for c in (b.counts.kr, b.counts.us, b.counts.mac) %}
+      {% set n = c[0] + c[1] + c[2] %}
+      <td class="l" data-v="{{ c[0] }}">{% if n %}
+        <div class="bk"><b class="{{ 'ok' if c[0] else '' }}">지지 {{ c[0] }}</b><span>/ {{ n }}</span></div>
+        {{ k.vbar(c, nums=false) }}
+        <small>기각 {{ c[1] }} · 보류 {{ c[2] }}</small>
+      {% else %}<small>검사 없음</small>{% endif %}</td>
+      {% endfor %}
     </tr>
   {% endfor %}
   </tbody>
@@ -65,24 +70,32 @@
 {% for cat, title in (('두 시장 모두 지지', '한국과 미국 모두에서 지지된 주장'), ('한국에서만 지지', '한국에서만 지지된 주장'), ('미국에서만 지지', '미국에서만 지지된 주장'), ('시장마다 엇갈림', '시장마다 엇갈린 주장'), ('기각', '기각된 주장')) %}
 {% set rows = B.tops[cat] %}
 {% if rows %}
-{{ m.h(title, '차이가 큰 순 · 같은 지표는 한 번만' ~ (' · 위 ' ~ rows|length ~ '개' if rows|length >= 15 else '')) }}
-<div class="scroll wide">
-<table class="grid vt">
-  <thead><tr><th class="l">검사한 것</th><th class="l">한국</th><th class="l">미국</th></tr></thead>
-  <tbody>
+{{ m.h(title, rows|length ~ '가지 · 차이가 큰 순') }}
+<div class="claimcards">
   {% for x in rows %}
-    <tr>
-      <td class="l"><b class="lab">{{ x.label }}</b>
-        <div class="how">{% if x.want %}책은 {{ x.want }}고 봄{% endif %}</div>
-        <div class="src">이렇게 말한 책: {{ x.books|join(', ') }}</div>
-        <div class="both">{{ x.both }}</div></td>
-      <td class="l">{{ k.mk(x.kr, x.fmax) }}</td>
-      <td class="l">{{ k.mk(x.us, x.fmax) }}</td>
-    </tr>
+  {% if loop.index == 7 %}</div><details class="fold claimmore"><summary>나머지 {{ rows|length - 6 }}가지 더 보기</summary><div class="claimcards">{% endif %}
+  <div class="claimcard">
+    <div class="cc-head">
+      <b>{{ x.label }}</b>
+      {% if x.want %}<span class="cc-want">책은 {{ x.want }}고 봄</span>{% endif %}
+    </div>
+    {% if x.both %}<p class="cc-both">{{ x.both }}</p>{% endif %}
+    <div class="cc-mk">
+      {% for name, q in (('한국', x.kr), ('미국', x.us)) %}
+      <div><span class="cc-m">{{ name }}</span>{% if q %}{{ k.vd(q.v) }}{% if q.d is not none %} <b class="{{ 'up' if q.d > 0 else 'down' if q.d < 0 else '' }}">{{ '%+.2f'|format(q.d) }}%</b><small> 한 달</small>{% endif %}{% else %}<small>자료 없음</small>{% endif %}</div>
+      {% endfor %}
+    </div>
+    <div class="cc-src">이렇게 말한 책: {{ x.books|join(', ') }}</div>
+    <details class="cc-more"><summary>검사 자세히</summary>
+      <div class="cc-detail">
+        <div><span class="cc-m">한국</span>{{ k.mk(x.kr, x.fmax) }}</div>
+        <div><span class="cc-m">미국</span>{{ k.mk(x.us, x.fmax) }}</div>
+      </div>
+    </details>
+  </div>
+  {% if loop.last and loop.length >= 7 %}</div></details>{% endif %}
   {% endfor %}
-  </tbody>
-</table>
-</div>
+{% if rows|length < 7 %}</div>{% endif %}
 {% endif %}
 {% endfor %}
 

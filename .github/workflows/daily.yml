@@ -108,6 +108,22 @@ jobs:
             fi
           done < dist/score_todo.txt
 
+      # 사이트 점검(총괄): 구역마다 멈춘 곳이 있으면 "사이트 점검" 할 일 하나를 열거나 고쳐 쓰고, 다 풀리면 닫는다(OPERATIONS.md 4절)
+      - name: 사이트 점검
+        if: github.event_name != 'push'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python tools/site_health.py > /dev/null
+          n=$(cat .health/health_count.txt)
+          num=$(gh issue list --state open --search "사이트 점검 in:title" --json number,title -q '.[] | select(.title=="사이트 점검") | .number' | head -1)
+          if [ "$n" -gt 0 ]; then
+            if [ -n "$num" ]; then gh issue edit "$num" --body-file .health/health.md; else gh issue create --title "사이트 점검" --body-file .health/health.md; fi
+          elif [ -n "$num" ]; then
+            gh issue close "$num" --comment "다 풀렸다 $(TZ=Asia/Seoul date +%F)"
+          fi
+
       # 깨진 링크·권유처럼 읽히는 말·내부 이름이 있으면 여기서 멈춘다(그날은 배포하지 않는다)
       - name: 올리기 전 점검
         run: python tools/check_site.py

@@ -997,6 +997,39 @@ def main():
             n_on += 1
         else:
             s["color"] = OFF_COLOR
+    # 홈: 모든 전략을 한 그림에(운용 개시일 = 0%), 벤치마크는 KOSPI와 S&P 500(원화 환산)을 같이
+    CAT_LABEL = {k: lab for k, lab, _ in CATEGORIES}
+    HOME_COLORS = {"domestic": ["#1f2a44", "#4a6fa5"], "overseas": ["#0f766e", "#2d8f85", "#5fa8a0", "#0b5c56", "#86c5bb"],
+                   "etf": ["#c2410c", "#e39a5b"], "multi": ["#7c5cc4"]}
+    active = [s for s in strategies if s["active"]]
+    used_n = {}
+    for s in active:
+        pal = HOME_COLORS.get(s["category"], ["#475467"])
+        s["home_color"] = pal[used_n.get(s["category"], 0) % len(pal)]
+        used_n[s["category"]] = used_n.get(s["category"], 0) + 1
+    home_strat = None
+    if active:
+        start0 = min(s["started"] for s in active)
+        end0 = max(s["end"] for s in active)
+        benches = [("KOSPI", "KOSPI", "#98a2b3", False), ("S&P 500(원화 환산)", "SP500KRW_FX", "#98a2b3", True)]
+        series = []
+        for label, key, col, dash in benches:
+            b = prices.get(key)
+            if not b:
+                continue
+            w = b.between(b.at(start0)[0] if b.at(start0) else start0, end0)
+            if len(w) >= 2:
+                series.append({"name": label, "type": "line", "color": col, "dash": dash,
+                               "points": [(d, (v / w.closes[0] - 1) * 100) for d, v in zip(w.dates, w.closes)]})
+        for s in sorted(active, key=lambda s: (s["category"], s["started"])):
+            series.append({"name": s["name"], "type": "line", "color": s["home_color"], "points": pct_points(s["live"])})
+        rows = []
+        for s in sorted(active, key=lambda s: ([k for k, _, _ in CATEGORIES].index(s["category"]), s["started"])):
+            kp, sp = prices.get("KOSPI"), prices.get("SP500KRW_FX")
+            rows.append({**s, "cat_label": CAT_LABEL.get(s["category"], s["category"]),
+                         "kospi": M.period_return(kp, s["started"], s["end"]) if kp else None,
+                         "spx": M.period_return(sp, s["started"], s["end"]) if sp else None})
+        home_strat = {"chart": xl_time("home-strategies", "pct", series, w=720, h=320), "rows": rows, "start": start0, "end": end0}
     for c in companies:
         c["held_by"] = [
             {"name": s["name"], "path": s["path"], "weight": h["weight"]}
@@ -1133,7 +1166,7 @@ def main():
     write("", "home.html", nav="home", title="홈",
           companies=companies, reports=home_reports[:10], summary=summary, n_reports=len(all_reports),
           strategies=strategies, featured=featured[:3], notes=notes[:5],
-          B=books, score=score, n_notes=len(notes), first_note=notes[-1]["date"] if notes else None)
+          B=books, score=score, n_notes=len(notes), home_strat=home_strat, first_note=notes[-1]["date"] if notes else None)
     # 의견 장부: 모든 기업의 의견·목표주가 변경을 한 표에(최근 것부터)
     ledger_rows = sorted(
         ({**h, "company": c} for c in companies for h in c["history"]),

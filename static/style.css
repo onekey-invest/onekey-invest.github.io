@@ -406,3 +406,37 @@ table{width:100%;border-collapse:collapse}
 .kpis b{display:block;font-size:26px;font-weight:800;letter-spacing:-.03em;line-height:1.2;color:var(--ink)}
 .kpis span{display:block;margin-top:4px;font-size:13.5px;line-height:1.45;color:var(--sub)}
 @media (max-width:640px){.kpis{flex-wrap:wrap}.kpis > div{flex:1 1 45%}}
+
+/* 홈: 모든 전략 한눈에 */
+.stratall td .sw{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:8px;vertical-align:-1px}
+.stratall tr.cat-domestic td{background:#f2f5fb}
+.stratall tr.cat-overseas td{background:#eef7f5}
+.stratall tr.cat-etf td{background:#fdf4ec}
+.stratall tr.cat-multi td{background:#f4f1fb}
+.stratall tbody tr:hover td{filter:brightness(.97)}
+
+/* 책 검증: 목록과 주장 카드 */
+.booklist td{vertical-align:middle}
+.booklist .bk{display:flex;align-items:baseline;gap:4px;font-size:13.5px}
+.booklist .bk b{font-weight:700;color:var(--sub)}
+.booklist .bk b.ok{color:var(--accent)}
+.booklist .bk span{color:var(--dim);font-size:12px}
+.booklist .vbar{margin:4px 0 2px}
+.claimcards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.claimcard{border:1px solid var(--line);border-radius:10px;padding:16px 18px;background:#fff}
+.cc-head b{display:block;font-size:15.5px;letter-spacing:-.02em;line-height:1.4}
+.cc-want{display:block;margin-top:3px;font-size:12.5px;color:var(--sub)}
+.cc-both{margin:10px 0;padding:8px 12px;background:var(--bg-soft);border-radius:6px;font-size:13.5px;font-weight:600;line-height:1.55}
+.cc-mk{display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;margin:8px 0}
+.cc-mk > div{display:flex;align-items:baseline;gap:6px;flex-wrap:wrap;font-size:14px}
+.cc-mk b{font-size:16px}
+.cc-m{font-size:12px;color:var(--dim);font-weight:700;min-width:26px}
+.cc-src{font-size:12px;color:var(--dim);line-height:1.55;margin-top:6px}
+.cc-more{margin-top:8px}
+.cc-more summary{cursor:pointer;font-size:12.5px;color:var(--accent);font-weight:600;list-style:none}
+.cc-more summary::-webkit-details-marker{display:none}
+.cc-detail{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px}
+.claimmore{margin-top:14px}
+.claimmore > .claimcards{padding:6px 0 16px}
+@media (max-width:860px){.claimcards,.cc-detail{grid-template-columns:minmax(0,1fr)}}
+.stratall b.stale{color:var(--down)}
