@@ -108,11 +108,11 @@
 
 {% if c.disc and c.disc.rows %}
 <div id="sec-disc" class="anchor"></div>
-{{ m.h('주요 공시와 주가 반응', '최근 1년 · OpenDART · 반응은 공시 앞 거래일 종가 → 다음 거래일 종가') }}
+{{ m.h('주요 공시와 주가 반응', '최근 1년 · DART · 반응은 공시 앞 거래일 종가부터, 15:30 전 공시는 그날·뒤면 다음 거래일 종가까지') }}
 {% macro disc_rows(rows) %}
   {% for x in rows %}
     <tr>
-      <td class="c">{{ x.day|ymd }}</td>
+      <td class="c">{{ x.day|ymd }}{% if x.time %}<br><small>{{ x.time }}</small>{% endif %}</td>
       <td class="c"><span class="tag">{{ x.kind }}</span></td>
       <td class="l"><a href="{{ x.url }}" rel="noopener">{{ x.name }}</a>
         {% if x.score %}<br><small>채점: 내 추정 {{ x.score.mine|num }} · 컨센서스 {{ x.score.consensus|num }} · 실제 {{ x.score.actual|num }}억원</small> {{ m.verdict(x.score.verdict) }}{% endif %}</td>

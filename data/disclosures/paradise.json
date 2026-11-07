@@ -1,13 +1,14 @@
 {
  "asof": "2026-11-07",
- "source": "OpenDART 공시목록",
+ "source": "DART 회사별 RSS",
  "items": [
   {
    "date": "2026-11-03",
    "name": "연결재무제표기준영업(잠정)실적(공정공시)",
    "kind": "실적",
    "rcept_no": "20261103800461",
-   "corrected": false
+   "corrected": false,
+   "time": "16:09"
   },
   {
    "date": "2026-10-02",

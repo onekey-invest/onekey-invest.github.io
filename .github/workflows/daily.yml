@@ -58,13 +58,11 @@ jobs:
         continue-on-error: true
         run: python tools/kr_x_book.py
 
-      # 주요 공시(OpenDART). 인증키는 저장소 Secrets의 OPENDART_API_KEY. 못 받아도 계속 간다(어제 목록이 남는다)
+      # 주요 공시: DART 회사별 RSS(키가 필요 없다. 최근 5영업일치를 기존 목록에 덧붙인다). 못 받아도 계속 간다(어제 목록이 남는다)
       - name: 공시 갱신
         if: github.event_name != 'push'
         continue-on-error: true
-        env:
-          OPENDART_API_KEY: ${{ secrets.OPENDART_API_KEY }}
-        run: python tools/update_disclosures.py
+        run: python tools/update_disclosures.py --rss
 
       - name: 계산 검증
         run: python -m unittest discover tests

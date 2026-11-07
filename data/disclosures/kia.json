@@ -1,13 +1,14 @@
 {
  "asof": "2026-11-07",
- "source": "OpenDART 공시목록",
+ "source": "DART 회사별 RSS",
  "items": [
   {
    "date": "2026-11-02",
    "name": "영업(잠정)실적(공정공시)",
    "kind": "실적",
    "rcept_no": "20261102800493",
-   "corrected": false
+   "corrected": false,
+   "time": "15:13"
   },
   {
    "date": "2026-10-30",

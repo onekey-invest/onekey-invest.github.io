@@ -415,7 +415,9 @@ def disclosures_view(cid, series, bench, asof, score_rows):
     for it in d["items"]:
         day = date.fromisoformat(it["date"])
         pre = series.at(day - timedelta(days=1))
-        post_i = next((i for i, x in enumerate(series.dates) if x > day), None)
+        # 공시 시각을 알면 15:30 전 공시는 그날 종가까지, 뒤면 다음 거래일 종가까지. 모르면 다음 거래일까지(둘 다 덮는다)
+        same_day = bool(it.get("time")) and it["time"] < "15:30"
+        post_i = next((i for i, x in enumerate(series.dates) if (x >= day if same_day else x > day)), None)
         r = b = None
         if pre and post_i is not None and series.dates[post_i] <= asof:
             post_day = series.dates[post_i]

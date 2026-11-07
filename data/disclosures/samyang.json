@@ -1,41 +1,46 @@
 {
  "asof": "2026-11-07",
- "source": "OpenDART 공시목록",
+ "source": "DART 회사별 RSS",
  "items": [
   {
    "date": "2026-11-06",
    "name": "기업설명회(IR)개최(안내공시)",
    "kind": "IR",
    "rcept_no": "20261106800648",
-   "corrected": false
+   "corrected": false,
+   "time": "15:41"
   },
   {
    "date": "2026-11-06",
    "name": "연결재무제표기준영업(잠정)실적(공정공시)",
    "kind": "실적",
    "rcept_no": "20261106800605",
-   "corrected": false
+   "corrected": false,
+   "time": "15:38"
   },
   {
    "date": "2026-11-06",
    "name": "주식소각결정",
    "kind": "주주환원",
    "rcept_no": "20261106800567",
-   "corrected": false
+   "corrected": false,
+   "time": "15:30"
   },
   {
    "date": "2026-11-02",
    "name": "기업설명회(IR)개최(안내공시)",
    "kind": "IR",
    "rcept_no": "20261102800768",
-   "corrected": false
+   "corrected": false,
+   "time": "16:52"
   },
   {
    "date": "2026-11-02",
    "name": "기업설명회(IR)개최(안내공시)",
    "kind": "IR",
    "rcept_no": "20261102800763",
-   "corrected": false
+   "corrected": false,
+   "time": "16:49"
   },
   {
    "date": "2026-08-18",
