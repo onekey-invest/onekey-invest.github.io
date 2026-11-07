@@ -69,7 +69,7 @@ def fetch_closes(symbols, start, end):
     for k in range(0, len(syms), 300):
         chunk = syms[k:k + 300]
         df = yf.download([ymap[s] for s in chunk], start=start.strftime("%Y-%m-%d"), end=(end + pd.Timedelta(days=1)).strftime("%Y-%m-%d"),
-                         auto_adjust=False, progress=False, threads=True, group_by="column")
+                         auto_adjust=True, progress=False, threads=True, group_by="column")
         close = df["Close"] if isinstance(df.columns, pd.MultiIndex) else df[["Close"]].rename(columns={"Close": ymap[chunk[0]]})
         for s in chunk:
             if ymap[s] in close.columns:
@@ -168,7 +168,7 @@ def main(argv=None):
         top = mine.sort_values("비중", ascending=False).head(10)
         secw = cm["T12"]["업종 비중(%)"] if pan.startswith("T12") else cm["기준"]["업종 비중(%)"]
         last = krw.index[-1]
-        j = {"asof": str(last.date()), "book_month": cur, "price_note": "평가 종가: 야후, 백테스트·장부 선정: Alpaca", "sha": cm["sha256"][:16], "n_long": int((mine["비중"] > 0).sum()),
+        j = {"asof": str(last.date()), "book_month": cur, "price_note": "평가 종가: 야후 수정종가(배당 반영), 백테스트·장부 선정: Alpaca", "sha": cm["sha256"][:16], "n_long": int((mine["비중"] > 0).sum()),
              "n_short": int((mine["비중"] < 0).sum()), "universe": cm["살 수 있는 종목"], "stock_share": cm["주식 몫"].get(pan, 1.0),
              "top": [[r_["종목"], round(float(r_["비중"]) * 100, 2)] for _, r_ in top.iterrows()],
              "sectors": [[KSEC.get(k, k), v_] for k, v_ in list(secw.items())[:12]],

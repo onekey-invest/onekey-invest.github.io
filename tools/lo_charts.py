@@ -226,6 +226,27 @@ def export_png(smgr, ctx, shape, path):
     return w, h
 
 
+def n_series(c):
+    if c["kind"] == "time":
+        return len(c["series"])
+    if c["kind"] == "bar":
+        return len(c["series"])
+    return 1
+
+
+def template_for(c, spec, sheets):
+    """원본에 있는 같은 꼴(time·bar·pie)의 그림 시트 가운데 계열 수가 넉넉한 것(가장 적은 것)을 고른다."""
+    need = n_series(c)
+    cands = []
+    for o in spec:
+        if o["kind"] != c["kind"] or o["id"] == c["id"]:
+            continue
+        nm = sheet_name(o["id"])
+        if sheets.hasByName(nm) and n_series(o) >= need:
+            cands.append((n_series(o), nm))
+    return min(cands)[1] if cands else None
+
+
 def main(spec_path, wb_path, out):
     spec = json.load(open(spec_path, encoding="utf-8"))["charts"]
     os.makedirs(out, exist_ok=True)
@@ -243,7 +264,7 @@ def main(spec_path, wb_path, out):
         while spark.getCellByPosition(j - 1, 0).getString():
             spark_cols[spark.getCellByPosition(j - 1, 0).getString()] = j
             j += 1
-    done, skipped, failed = 0, [], []
+    done, skipped, failed, copied = 0, [], [], []
     for c in spec:
         cid = c["id"]
         try:
@@ -259,8 +280,14 @@ def main(spec_path, wb_path, out):
             else:
                 name = sheet_name(cid)
                 if not sheets.hasByName(name):
-                    skipped.append(cid)
-                    continue
+                    # 원본에 시트가 아직 없으면(새 그림) 같은 꼴의 그림 시트를 이 실행 안에서만 베껴 그린다(원본은 저장하지 않는다).
+                    # 본인이 모양을 따로 고치려면 PC 예약 작업이 원본 엑셀에 시트를 만든 뒤 엑셀에서 고친다.
+                    tpl = template_for(c, spec, sheets)
+                    if not tpl:
+                        skipped.append(cid)
+                        continue
+                    sheets.copyByName(tpl, name, sheets.getCount())
+                    copied.append(f"{cid} ← {tpl}")
                 sheet = sheets.getByName(name)
                 shapes = chart_shapes(sheet)
                 if not shapes:
@@ -286,7 +313,8 @@ def main(spec_path, wb_path, out):
     with open(man_path, "w", encoding="utf-8") as f:
         json.dump(manifest, f, ensure_ascii=False, indent=1)
     with open(os.path.join(out, "_draw.json"), "w", encoding="utf-8") as f:     # 사이트 점검(site_health.py)이 읽는다
-        json.dump({"done": done, "skipped": skipped, "failed": failed}, f, ensure_ascii=False, indent=1)
+        json.dump({"done": done, "skipped": skipped, "failed": failed, "copied": copied}, f, ensure_ascii=False, indent=1)
+    print(f"원본에 시트가 없어 같은 꼴을 베껴 그림 {len(copied)}개 {copied}")
     print(f"그림 {done}개 그림 · 원본에 시트가 없어 건너뜀 {len(skipped)}개 {skipped} · 실패 {len(failed)}개")
     for x in failed:
         print("  실패", x)

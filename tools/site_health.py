@@ -160,6 +160,31 @@ def main(argv):
             if line.strip():
                 issues.append(f"채점 대기: {line.split(' https')[0]}")
 
+    # 7. 산업 핵심 지표: 열마다 마지막 값이 나와 있어야 할 기간보다 늦으면(분기: 분기 끝 + 75일, 월: 달 끝 + 45일)
+    import csv as _csv
+    src_path = ROOT / "data" / "indicator_sources.yaml"
+    auto_cols = (yaml.safe_load(src_path.read_text(encoding="utf-8")) or {}) if src_path.exists() else {}
+    for p in sorted((ROOT / "data" / "indicators").glob("*.csv")):
+        rows = list(_csv.reader(open(p, encoding="utf-8")))
+        if len(rows) < 3:
+            continue
+        head, body = rows[0], rows[1:]
+        d0, d1 = date.fromisoformat(body[-2][0]), date.fromisoformat(body[-1][0])
+        months = 3 if (d1.year - d0.year) * 12 + d1.month - d0.month >= 3 else 1
+        lag = 75 if months == 3 else 45
+        for j, col in enumerate(head[1:], start=1):
+            last = max((r[0] for r in body if len(r) > j and r[j] not in ("", None)), default=None)
+            if not last:
+                continue
+            ld = date.fromisoformat(last)
+            nm = date(ld.year + (ld.month // 12), ld.month % 12 + 1, 1)          # 그 기간이 끝난 다음 날
+            ny, nmm = (nm.year, nm.month + months - 1)
+            ny, nmm = ny + (nmm - 1) // 12, (nmm - 1) % 12 + 1
+            next_end = date(ny + (nmm // 12), nmm % 12 + 1, 1)                     # 다음 기간이 끝난 다음 날
+            if (now.date() - next_end).days > lag:
+                how = "자동(출처가 아직 안 냄)" if col in ((auto_cols.get(p.stem) or {}).get("columns") or {}) else "손으로 채우는 열 — 산업 모델 담당"
+                issues.append(f"산업 지표: {p.stem} '{col}'이 {last}에서 멈춤 ({how})")
+
     commits = recent_commits(days)
     lines = [f"# 사이트 점검 {now:%Y-%m-%d %H:%M} (한국 시간)", "",
              f"## 걸린 것 {len(issues)}건", ""] + ([f"- {x}" for x in issues] or ["- 없음"]) + \

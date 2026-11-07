@@ -1,7 +1,7 @@
 {
  "asof": "2026-11-06",
  "book_month": "2026-11",
- "price_note": "평가 종가: 야후, 백테스트·장부 선정: Alpaca",
+ "price_note": "평가 종가: 야후 수정종가(배당 반영), 백테스트·장부 선정: Alpaca",
  "sha": "e320882481927302",
  "n_long": 2104,
  "n_short": 433,
@@ -99,7 +99,7 @@
    1.9
   ]
  ],
- "usd_ret": -0.011135,
+ "usd_ret": -0.010631,
  "sp_usd_ret": -0.037774,
  "fx0": 1356.84,
  "fx1": 1356.34,
@@ -140,8 +140,8 @@
     true
    ]
   ],
-  "krw_unhedged_ret": -0.0115,
-  "krw_ret": -0.011479
+  "krw_unhedged_ret": -0.010995,
+  "krw_ret": -0.010974
  },
  "short_examples": [
   "HON",

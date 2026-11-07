@@ -65,6 +65,22 @@ FETCHERS = {
 }
 
 
+def add_missing_companies(sources: dict, companies_path: Path) -> list[str]:
+    """companies.yaml에 있는데 sources.yaml에 없는 커버 기업을 자동으로 더한다(기아가 빠져 사이트 기준일이 멈춘 일, 2026-10).
+    KOSPI는 .KS, KOSDAQ은 .KQ로 받는다. sources.yaml에 적힌 것이 늘 우선이다."""
+    if not companies_path.exists():
+        return []
+    added = []
+    for c in yaml.safe_load(companies_path.read_text(encoding="utf-8")) or []:
+        cid, tk = c.get("id"), str(c.get("ticker") or "").strip()
+        if not cid or cid in sources or not tk.isdigit():
+            continue
+        suffix = ".KQ" if str(c.get("market", "")).upper().startswith("KOSDAQ") else ".KS"
+        sources[cid] = {"source": "yahoo", "symbol": f"{tk.zfill(6)}{suffix}", "start": date(2024, 1, 1)}
+        added.append(cid)
+    return added
+
+
 def write_csv(path: Path, rows, decimals: int):
     path.parent.mkdir(parents=True, exist_ok=True)
     with open(path, "w", newline="", encoding="utf-8") as f:
@@ -85,6 +101,10 @@ def main(argv=None):
     until = date.fromisoformat(args.until) if args.until else default_until()
     with open(args.config, encoding="utf-8") as f:
         sources = yaml.safe_load(f) or {}
+    if args.config == str(ROOT / "data" / "sources.yaml"):
+        added = add_missing_companies(sources, ROOT / "data" / "companies.yaml")
+        if added:
+            print(f"sources.yaml에 없는 커버 기업을 더해 받는다: {', '.join(added)} (sources.yaml에 한 줄 적어 두면 좋다)")
     if args.only:
         missing = [n for n in args.only if n not in sources]
         if missing:

@@ -9,17 +9,18 @@
 | 구역 | 화면 | 자료·원천 | 갱신 | 담당 |
 |---|---|---|---|---|
 | 리포트·기업·산업(내용) | /reports/, /companies/, /industries/ | `content/reports/`, `data/companies.yaml`, `data/industries.yaml` | 새 실적·통계가 나올 때 손으로 | 리서치 세션(`05_분석프로세스`) |
-| 시세·수익률·상승여력·괴리율 | 모든 화면 | `data/prices/`(`data/sources.yaml`의 목록) | 평일 18:30 자동 | 총괄. 커버 기업을 더하면 `sources.yaml`에 한 줄 |
-| 추정 채점표 | /research/scorecard/ | `data/scorecard.csv` ← 채점표 엑셀(`03_사이트/가상사이트_2026-11-06/채점표/`) | 실적 공시가 나오면(알림이 뜸) | 총괄이 실제 값을 넣고, 리서치 세션은 추적판에 적는다 |
-| 의견 장부 | /research/ledger/, 기업 화면 이력 | `data/ledger.csv` | 리포트를 올릴 때 한 줄 덧붙임(지난 줄은 고치지 않음) | 리포트를 올리는 세션 |
+| 시세·수익률·상승여력·괴리율 | 모든 화면 | `data/prices/`(`data/sources.yaml`의 목록) | 평일 18:30 자동. `companies.yaml`에 새 기업이 생기면 `sources.yaml`에 없어도 자동으로 받는다 | 총괄 |
+| 추정 채점표 | /research/scorecard/ | `data/scorecard.csv` ← 채점표 원본 엑셀 `scorecard_src/scorecard.xlsx`(계산은 그 안의 수식, 서버 LibreOffice가 다시 계산) | **평일 18:30 자동**: 채점할 분기의 연결 잠정실적 공시가 나오면 DART 공개 화면에서 영업이익을 읽어 '실제'에 적는다(`tools/score_actuals.py`). 새 분기 줄은 리포트 머리말 `score: {item, mine, consensus, due}`가 있으면 자동으로 더한다 | 총괄. 리포트를 올리는 세션은 머리말에 `score`를 적는다 |
+| 의견 장부 | /research/ledger/, 기업 화면 이력 | `data/ledger.csv` | **자동**: 리포트 머리말의 의견·목표주가가 장부에 없으면 한 줄 덧붙인다(`tools/ledger_append.py`, 지난 줄은 고치지 않음) | 총괄 |
 | 공시·주가 반응·채점 대기 알림 | 기업 화면 | `data/disclosures/`(DART RSS, 키 없이) | 평일 18:30 자동 | 총괄 |
-| 그림 | 모든 그림 | 그림 원본 `charts_src/site_charts.xlsx`(= `09_사이트그림/사이트_그림.xlsx`) → 서버 LibreOffice | 매 배포 자동. 모양은 본인이 엑셀에서 | 총괄. **`static/charts`에 그림을 손으로 커밋하지 않는다** |
+| 그림 | 모든 그림 | 그림 원본 `charts_src/site_charts.xlsx`(= `09_사이트그림/사이트_그림.xlsx`) → 서버 LibreOffice | 매 배포 자동. 원본에 시트가 아직 없는 새 그림은 같은 꼴 시트를 베껴 그린다. 모양은 본인이 엑셀에서 | 총괄. **`static/charts`에 그림을 손으로 커밋하지 않는다** |
 | 마켓노트 | /notes/ | `content/notes/` ← 클라우드 루틴 "Morning Market 매일 발행" | 평일 08:35 자동, 09:30 누락 점검 | 총괄 |
 | 가상운용 · ETF 성장형·안정형 | /portfolios/etf/ | `tools/etf_strategy.py` | 평일 18:30 자동 | 운용 총괄(ETF 세션) → 사이트 담당이 올림(1-1절) |
 | 가상운용 · 국내 개선 롱숏 둘 | /portfolios/ | `tools/kr_x_book.py` + 달마다 `kr-x.picks.csv` | 평가는 자동, 종목은 달마다 | 운용 총괄(논문 기반 세션) → 사이트 담당이 올림(1-1절) |
 | 가상운용 · Bottom-Up 1·US | /portfolios/overseas/ | `tools/bu_us_book.py` + 3개월마다 `bu-us.picks.csv` | 평가는 자동, 종목은 3개월마다 | 운용 총괄·리서치 총괄(Bottom-Up 세션) → 사이트 담당이 올림(1-1절) |
-| 가상운용 · 미국 공시 넷 | /portfolios/overseas/ | `C:\quant\versions\ver5\code\live_update.py → live_book.py → live_daily.py` | **손으로만(자동 아님)**. 2026-10-08에서 멈춰 있음 | ver5 세션 |
+| 가상운용 · 미국 공시 넷 | /portfolios/overseas/ | `tools/us_book.py` + 달마다 장부(운용 쪽은 ver5 `live_book.py`로 만든다) | 평가는 자동(`tools/us_book.py`, 야후 수정종가), 장부는 달마다 `data/strategy_books/us/BOOK_<달>` | 운용 총괄(ver5 세션) → 사이트 담당이 올림(1-1절) |
 | 책 검증 | /books/ | `data/books/*.json` ← `C:\quant\bottomup\code\book_site_export.py` | 책을 더할 때 | Bottom-Up 세션 |
+| 산업 핵심 지표 | /industries/ | `data/indicators/*.csv` ← `data/indicator_sources.yaml` | **자동**(야후 분기 재무·FRED, 빈 칸과 새 기간만): 자동차·조선의 매출·이익률, 음식료 원/달러. 나머지 열은 손으로(사이트 점검이 늦은 열을 알림) | 총괄 · 손으로 채우는 열은 산업 모델 세션 |
 | 연구 | /studies/ | `content/studies/`, `data/studies/` | 연구가 끝날 때 | 연구한 세션 |
 | 홈·안내·용어·소개·화면 틀 | /, /start/, /glossary/, /about/ | `templates/`, `static/`, `content/pages/`, `data/site.yaml` | 필요할 때 | 총괄(소개의 개인 정보는 본인) |
 
@@ -35,9 +36,9 @@
 | 전략 | 날마다 평가(PC 없이, 깃허브) | 종목·장부를 새로 정하는 때 → 넘기는 자리 | 지금 |
 |---|---|---|---|
 | ETF 성장형·안정형 | `tools/etf_strategy.py` | 규칙 안에서 자동 | 자동(꾸러미 `etf-ga_etf-na.md`) |
-| 국내 개선 롱숏 둘 | `tools/kr_x_book.py` | 달마다 월말 → `data/strategy_books/kr-x.picks.csv`에 덧붙임 | 10-30 고른 것이 안 와서 10-30에서 멈춤 |
+| 국내 개선 롱숏 둘 | `tools/kr_x_book.py` | 달마다 월말 → `data/strategy_books/kr-x.picks.csv`에 덧붙임 | 10-30 고른 것으로 11-06까지 |
 | Bottom-Up 1·US | `tools/bu_us_book.py` | 3개월마다(1·4·7·10월 말) → `bu-us.picks.csv`에 덧붙임 | 10-31 고른 것이 안 와서 10-30에서 멈춤 |
-| 미국 공시 넷 | `tools/us_book.py`(준비 끝, 장부가 오면 연결) | 매달 미국 첫 거래일 → `data/strategy_books/us/BOOK_<달>.csv`·`HEDGE_<달>.json`, 대조 `CHECK.json` | 11월 장부 만드는 중, 사용자 승인 대기(PC 예약 작업·장부 공개·명령 돌리기) |
+| 미국 공시 넷 | `tools/us_book.py`(야후 수정종가, 배당 반영) | 매달 미국 첫 거래일 → `data/strategy_books/us/BOOK_<달>.csv`·`HEDGE_<달>.json`, 대조 `CHECK.json` | 11월 장부로 11-06까지(ver5와 차이 0.023% 안) |
 
 ## 2. 매일 도는 것
 
@@ -48,6 +49,16 @@
 | 평일 09:00~16:00, 5분마다 | ETF 전략 장중 가격 | `intraday.yml` |
 | 평일 18:30 | 시세·금리·전략 장부·공시 → 시험 → 그림(서버) → 화면 → 점검 → 배포 → **사이트 점검** | `daily.yml` |
 | 평일 21:00 | 그림 원본이 바뀌었으면 저장소로 올림, 새 그림 시트 만들기 | 이 PC 예약 작업 `09_사이트그림/daily_charts.ps1`(PC가 꺼져 있으면 건너뜀) |
+
+### 2-1. 아직 사람이 하는 것 (2026-11-07 기준, 나머지는 위 표대로 자동)
+
+| 무엇 | 왜 자동이 아닌가 | 누가 | 멈추면 |
+|---|---|---|---|
+| 가상운용 종목·장부 고르기(국내 롱숏 달마다, Bottom-Up 3개월마다, 미국 공시 달마다) | 고르는 계산이 PC의 공용 데이터(C:\DATA)·전략 코드에 있다 | 운용 총괄 | 그 전 거래일에서 멈추고 사이트 점검이 알린다 |
+| 리포트·기업·산업 글 | 분석 | 리서치 세션 | — |
+| 산업 지표의 손 열(카지노 드롭액·입국자, 음식료 물가·원재료·라면 수출, 증권 거래대금·수수료, 조선 선박 수출액, 자동차 원/달러) | 출처가 키가 필요하거나(통계청·관세청) 회사 자료라서 | 산업 모델 세션 | 사이트 점검이 늦은 열을 알린다 |
+| 새 그림의 모양 | 본인이 엑셀에서 고친다(없으면 같은 꼴을 베껴 자동으로 그린다) | 본인 | — |
+| 마켓노트 | Claude 클라우드 루틴이 자동으로 쓴다 | (자동) | 09:30 누락 점검 메일 |
 
 ## 3. 올리기 기준 (모든 세션)
 

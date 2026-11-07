@@ -1,0 +1,30 @@
+# 산업 핵심 지표(data/indicators/<산업>.csv)를 매일 자동으로 채우는 출처. tools/update_indicators.py가 읽는다.
+# 규칙: 빈 칸과 새 기간만 채운다. 이미 있는 값(산업 모델에서 넣은 값)은 고치지 않는다.
+#       처음 만든 출처와 같은 출처만 쓴다(대조: 2026년 2분기 값이 모델과 같음, 2026-11-07).
+# 여기 없는 열은 산업 모델을 돌리는 세션이 손으로 채운다(사이트 점검이 늦은 열을 알린다).
+#
+# kind: yahoo_q_revenue  → 종목들의 분기 매출 합(야후 분기 손익계산서 = 연결 재무제표), scale로 나눔
+#       yahoo_q_margin   → 종목들의 분기 영업이익 합 ÷ 매출 합 × 100
+#       fred_monthly     → FRED 월 자료(키 없이 fredgraph.csv)
+
+auto:
+  freq: Q
+  columns:
+    "두 곳 매출(조원)": {kind: yahoo_q_revenue, symbols: ["005380.KS", "000270.KS"], scale: 1.0e12}
+    "두 곳 영업이익률(%)": {kind: yahoo_q_margin, symbols: ["005380.KS", "000270.KS"]}
+    # "원/달러 평균(원)": 기아 실적자료의 분기 평균 환율(손으로)
+
+shipbuilding:
+  freq: Q
+  columns:
+    "세 묶음 매출(조원)": {kind: yahoo_q_revenue, symbols: ["009540.KS", "042660.KS", "010140.KS"], scale: 1.0e12}
+    "세 묶음 영업이익률(%)": {kind: yahoo_q_margin, symbols: ["009540.KS", "042660.KS", "010140.KS"]}
+    # "선박 수출액(억 달러)": 관세청(손으로)
+
+food:
+  freq: M
+  columns:
+    "원/달러": {kind: fred_monthly, series: EXKOUS}
+    # 가공식품 물가(통계청), 원재료 값(원화), 라면 수출(관세청): 손으로
+
+# casino(3사 드롭액·카지노 매출·입국자), securities(거래대금·수수료수익·영업이익): 손으로

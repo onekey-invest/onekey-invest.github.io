@@ -73,6 +73,23 @@ jobs:
         continue-on-error: true
         run: python tools/update_disclosures.py --rss
 
+      # 추정 채점표: 채점할 분기의 연결 잠정실적 공시가 나왔으면 DART 공개 화면에서 영업이익을 읽어 원본 엑셀의 '실제' 칸에 적는다(키 없이)
+      - name: 채점표 실제 값 채우기
+        if: github.event_name != 'push'
+        continue-on-error: true
+        run: python tools/score_actuals.py
+
+      # 산업 핵심 지표: data/indicator_sources.yaml의 열(야후 분기 재무·FRED)을 빈 칸과 새 기간만 채운다. 이미 있는 값은 안 고친다
+      - name: 산업 지표 채우기
+        if: github.event_name != 'push'
+        continue-on-error: true
+        run: python tools/update_indicators.py
+
+      # 의견 장부: 리포트 머리말의 의견·목표주가가 장부에 없으면 한 줄 덧붙인다(지난 줄은 고치지 않는다)
+      - name: 의견 장부 덧붙이기
+        continue-on-error: true
+        run: python tools/ledger_append.py
+
       - name: 계산 검증
         run: python -m unittest discover tests
 
@@ -91,6 +108,14 @@ jobs:
           python build.py --charts /tmp/spec.json > /dev/null
           soffice --headless --invisible --norestore --accept="socket,host=localhost,port=2002;urp;" &
           /usr/bin/python3 tools/lo_charts.py /tmp/spec.json charts_src/site_charts.xlsx static/charts
+
+      # 채점표: 원본 엑셀(scorecard_src/scorecard.xlsx)의 수식을 LibreOffice가 다시 계산해 data/scorecard.csv로 낸다. 못 하면 어제 값이 남는다
+      - name: 채점표 다시 계산
+        continue-on-error: true
+        run: |
+          which soffice > /dev/null || { sudo apt-get update -qq; sudo apt-get install -y -qq libreoffice-calc python3-uno > /dev/null; }
+          soffice --headless --invisible --norestore -env:UserInstallation=file:///tmp/lo_score --accept="socket,host=localhost,port=2003;urp;" &
+          /usr/bin/python3 tools/lo_scorecard.py scorecard_src/scorecard.xlsx data/scorecard.csv 2003
 
       - name: 그린 그림 올리기(charts 가지)
         if: steps.draw.outcome == 'success'
@@ -141,8 +166,9 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/prices data/rates data/trades data/disclosures data/strategy_books/bu-us.json data/strategy_books/kr-x1.json data/strategy_books/kr-x2.json data/strategy_books/us-t12.json data/strategy_books/us-t12d.json data/strategy_books/us-t16.json data/strategy_books/us-t16d.json data/strategy_books/us
+          git add data/prices data/rates data/trades data/disclosures data/strategy_books/bu-us.json data/strategy_books/kr-x1.json data/strategy_books/kr-x2.json data/strategy_books/us-t12.json data/strategy_books/us-t12d.json data/strategy_books/us-t16.json data/strategy_books/us-t16d.json data/strategy_books/us data/ledger.csv data/scorecard.csv scorecard_src data/indicators
           git diff --cached --quiet || git commit -m "시세 갱신 $(date -u +%F)"
+          git pull --rebase -q || true
           git push
 
       - uses: actions/upload-pages-artifact@v3
