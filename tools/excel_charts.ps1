@@ -197,8 +197,9 @@ function DrawBar($ws, $c, [bool]$isNew) {
         $ser.Name = [string]$s.name
         $ser.XValues = $ws.Range($ws.Cells.Item(2, 1), $ws.Cells.Item($n + 1, 1))
         $ser.Values = $ws.Range($ws.Cells.Item(2, $j + 1), $ws.Cells.Item($n + 1, $j + 1))
-        if ($fresh -or $isNew) { $ser.Format.Fill.ForeColor.RGB = (Rgb $s.color); $ser.Format.Line.Visible = 0 }
+        $ser.Format.Fill.ForeColor.RGB = (Rgb $s.color); $ser.Format.Line.Visible = 0      # 색은 늘 그림 자료대로(자료의 색을 바꾸면 그림도 바뀐다)
     }
+    if ($ch.HasLegend) { try { $ch.Legend.Format.Line.Visible = -1; $ch.Legend.Format.Line.ForeColor.RGB = (Rgb '#D0D5DD'); $ch.Legend.Format.Line.Weight = 0.75 } catch { } }   # 범례 상자: 옅은 테두리(기준집 11-07)
     try { $ch.Axes(1).TickLabelPosition = -4134 } catch { }      # 가로축 이름을 그림 맨 아래로(음수 막대와 겹치지 않게)
     if ($isNew) {
         BaseLook $ch

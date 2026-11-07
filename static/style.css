@@ -391,3 +391,18 @@ table{width:100%;border-collapse:collapse}
 .browse small{margin-top:2px}
 @media (max-width:860px){.toc{flex-wrap:nowrap;overflow-x:auto;white-space:nowrap;margin-top:-6px}}
 .nextbox.alert{border-color:var(--accent);background:var(--accent-soft)}
+
+/* 연구 글(기준집 2026-11-07: 본문 17px · 줄 간격 1.75 · 한 줄 40자 안팎 · 낱말 단위 줄바꿈 · 숫자 카드 1×4) */
+.prose.study{font-size:17px;line-height:1.75;max-width:760px;word-break:keep-all;overflow-wrap:anywhere}
+.prose.study h2{font-size:21px;margin:44px 0 12px;text-wrap:balance}
+.prose.study p{margin:0 0 16px}
+.prose.study li::before{top:17px}
+.prose.study table{font-size:15px}
+.prose.study td,.prose.study th{padding:8px 10px}
+.prose.study figure.xl{margin:18px 0 26px}
+.prose.study figcaption{font-size:14px}
+.kpis{display:flex;gap:12px;margin:0 0 26px}
+.kpis > div{flex:1;min-width:0;background:var(--bg-soft);border-radius:10px;padding:14px 16px}
+.kpis b{display:block;font-size:26px;font-weight:800;letter-spacing:-.03em;line-height:1.2;color:var(--ink)}
+.kpis span{display:block;margin-top:4px;font-size:13.5px;line-height:1.45;color:var(--sub)}
+@media (max-width:640px){.kpis{flex-wrap:wrap}.kpis > div{flex:1 1 45%}}
