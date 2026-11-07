@@ -28,6 +28,10 @@ jobs:
           cache: pip
       - run: pip install -r requirements.txt
 
+      # 서버가 그린 그림(charts 가지)을 쓴다
+      - name: 그림 받기
+        run: bash tools/get_charts.sh
+
       # 못 받으면 장중 칸 없이 종가 화면이 그대로 나간다
       - name: 장중 가격 받기
         continue-on-error: true

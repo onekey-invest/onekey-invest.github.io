@@ -258,7 +258,7 @@ def load_studies(base=""):
             else:
                 xl_time(c["id"], c.get("format", "pct"), [{**s_, "points": [(date.fromisoformat(d), v) for d, v in s_["points"]]} for s_ in c["series"]], w=c.get("w", 620), h=c.get("h", 260))
             m_ = manifest.get(c["id"])
-            fig = (f'<figure class="xl" style="max-width:{c.get("show", 640)}px"><img src="{base}/static/charts/{c["id"]}.svg" width="{m_["w"]}" height="{m_["h"]}" alt="{c.get("alt", "")}" loading="lazy">'
+            fig = (f'<figure class="xl" style="max-width:{c.get("show", 640)}px"><img src="{base}/static/charts/{m_.get("file") or (c["id"] + ".svg")}" width="{m_["w"]}" height="{m_["h"]}" alt="{c.get("alt", "")}" loading="lazy">'
                    f'<figcaption>{c.get("caption", "")}</figcaption></figure>') if m_ else '<p class="intro">그림을 준비하고 있습니다.</p>'
             html = html.replace(f'<p>[[그림:{c["id"]}]]</p>', fig)
         x["body"] = Markup(html)
@@ -740,7 +740,8 @@ def build_company(c, reports, prices, bench_map, asof, states=None):
         # 직전 종가 한 점에서 시작하고, 그날 종가가 들어오면 발행일부터 다시 그려진다.
         window = series.between(series.at(asof)[0], asof)
         bwin = bench.between(bench.at(asof)[0], asof)
-    marker_days = [(window.at(d)[0], t) for d, t in markers if window.at(d)]
+    # 변경 점은 목표주가 선이 꺾이는 날(의견을 낸 날)에 찍는다. 휴장일에 냈어도 앞 거래일로 당기지 않는다
+    marker_days = [(min(max(d, window.dates[0]), asof), t) for d, t in markers if window.at(d)]
     # 목표주가 선: 날짜를 시세가 있는 구간 안으로 맞추고, 같은 날짜가 겹치면 나중 값만 둔다
     tp_by_day = {min(max(d, window.dates[0]), asof): t for d, t in targets}
     tp_by_day[asof] = targets[-1][1]

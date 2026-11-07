@@ -68,6 +68,28 @@ jobs:
       - name: 계산 검증
         run: python -m unittest discover tests
 
+      # 그림: 저장소의 그림 원본 엑셀(charts_src/site_charts.xlsx)을 LibreOffice가 열어 새 자료로 그린다. PC가 꺼져 있어도 된다.
+      # 모양은 그 엑셀 파일을 따른다(본인이 PC의 엑셀에서 고쳐 저장하면 PC 예약 작업이 파일을 올린다). 못 그리면 전날 그림이 남는다
+      - name: 전날 그림 받기
+        run: bash tools/get_charts.sh
+
+      - name: 그림 그리기(LibreOffice)
+        continue-on-error: true
+        id: draw
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq libreoffice-calc python3-uno fonts-nanum > /dev/null
+          mkdir -p ~/.config/fontconfig && cp .github/fontconfig/fonts.conf ~/.config/fontconfig/fonts.conf && fc-cache -f > /dev/null
+          python build.py --charts /tmp/spec.json > /dev/null
+          soffice --headless --invisible --norestore --accept="socket,host=localhost,port=2002;urp;" &
+          /usr/bin/python3 tools/lo_charts.py /tmp/spec.json charts_src/site_charts.xlsx static/charts
+
+      - name: 그린 그림 올리기(charts 가지)
+        if: steps.draw.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: bash tools/publish_charts.sh
+
       - name: 사이트 만들기
         run: python build.py
 

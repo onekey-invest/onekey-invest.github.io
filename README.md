@@ -44,7 +44,9 @@ python -m unittest discover tests
 | `data/books/*.json` | 책 검증: 주장별 검사 결과. `C:\quant\bottomup\code\book_site_export.py <이 폴더>`가 만든다(손으로 고치지 않는다). 책을 더하거나 빼면 다시 돌린다 |
 | `lib/metrics.py` | 커버리지 수익률 계산 |
 | `lib/portfolio.py` | 가상운용 평가금액·MDD·샤프 계산 |
-| `tools/excel_charts.ps1` | 화면의 그림을 엑셀로 그려 `static/charts/`에 내보낸다(아래 "그림" 참고) |
+| `charts_src/site_charts.xlsx` | 그림 원본(엑셀). 모양은 여기서 고친다. PC의 예약 작업이 본인이 고친 파일을 올린다 |
+| `tools/lo_charts.py` | 깃허브 서버의 LibreOffice가 그림 원본을 열어 새 자료로 그림(PNG)을 그린다. 매일 실행이 돌리고, 그린 그림은 `charts` 가지에 둔다(`tools/get_charts.sh`로 받는다) |
+| `tools/excel_charts.ps1` | PC의 엑셀로 그림을 그리거나 새 그림 시트를 만든다(예비) |
 | `static/charts/` | 엑셀이 내보낸 그림(SVG)과 목록(`manifest.json`) |
 | `templates/` | 화면 틀 |
 | `static/` | 스타일, 표 정렬·검색 스크립트. 리포트 PDF는 `static/reports/`에 둔다 |

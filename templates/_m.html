@@ -16,12 +16,12 @@
 <span class="tag{% if v == '최초' %} f{% endif %}">{{ v }}</span>
 {%- endmacro %}
 
-{# 그림. 엑셀이 그려 static/charts/에 내보낸 것을 넣는다(tools/excel_charts.ps1). 아직 내보내지 않은 그림은 자리를 비워 둔다 #}
+{# 그림. 그림 원본 엑셀(charts_src/site_charts.xlsx)의 차트를 깃허브 서버의 LibreOffice가 그려(tools/lo_charts.py) static/charts/에 둔 것. 파일 이름은 manifest의 file #}
 {% macro chart(id, alt='', small=false) %}
 {% set c = charts.get(id) if id else none %}
 <figure class="xl{% if small %} small{% endif %}">
   {% if c %}
-  <img src="{{ url('static/charts/' ~ id ~ '.svg') }}" width="{{ c.w }}" height="{{ c.h }}" alt="{{ alt }}" loading="lazy">
+  <img src="{{ url('static/charts/' ~ (c.file or (id ~ '.svg'))) }}" width="{{ c.w }}" height="{{ c.h }}" alt="{{ alt }}" loading="lazy">
   {% if c.asof %}<figcaption>그림 기준 {{ c.asof }}</figcaption>{% endif %}
   {% else %}
   <p class="intro">그림을 준비하고 있습니다.</p>
@@ -30,7 +30,7 @@
 {% endmacro %}
 
 {# 표 안의 작은 그림(엑셀이 그린 것) #}
-{% macro spark(id) %}{% if id and charts.get(id) %}<img class="spark" src="{{ url('static/charts/' ~ id ~ '.svg') }}" width="96" height="27" alt="">{% endif %}{% endmacro %}
+{% macro spark(id) %}{% if id and charts.get(id) %}<img class="spark" src="{{ url('static/charts/' ~ (charts[id].file or (id ~ '.svg'))) }}" width="96" height="27" alt="">{% endif %}{% endmacro %}
 
 {# 표 위의 검색 상자. options가 있으면 고르는 칸도 함께 나온다 #}
 {% macro filter(table_id, placeholder, options) %}
