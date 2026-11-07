@@ -54,9 +54,17 @@ def kind_of(name):
     return None
 
 
-def fetch(url):
-    with urllib.request.urlopen(urllib.request.Request(url, headers=UA), timeout=60) as r:
-        return r.read()
+def fetch(url, tries=4):
+    """DART가 가끔 깃허브 서버의 연결을 끊는다(2026-11-07 한 번 모두 URLError). 쉬었다가 다시 받는다."""
+    import time
+    for k in range(tries):
+        try:
+            with urllib.request.urlopen(urllib.request.Request(url, headers=UA), timeout=60) as r:
+                return r.read()
+        except Exception:
+            if k == tries - 1:
+                raise
+            time.sleep(5 * (k + 1))
 
 
 def api(path, **params):
