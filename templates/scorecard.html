@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% import "_m.html" as m %}
+{% block main %}
+{% set S = score.summary %}
+
+<div class="stock">
+  <div>
+    <div class="meta">리서치<i>|</i>{{ score.scored|length }}건 채점 · {{ score.pending|length }}건 채점 전</div>
+    <h1 class="rt-title">추정 채점표</h1>
+    <p class="intro" style="margin:10px 0 0;max-width:720px">리포트에 적은 실적 추정을 회사가 발표한 실제 값, 그리고 리포트를 낸 날의 컨센서스와 나란히 놓고 채점합니다. 추정은 낸 뒤 고치지 않고, 빗나간 것도 그대로 둡니다.</p>
+  </div>
+</div>
+
+<div class="scorebox">
+  <div><span>채점한 추정</span><b>{{ S['채점한 추정']|int }}건</b><small>1회차 · 2026년 3분기</small></div>
+  <div><span>컨센서스보다 가까움</span><b>{{ S['컨센서스보다 가까움']|int }}건</b><small>비슷 {{ S['비슷']|int }} · 컨센서스가 더 가까움 {{ S['컨센서스가 더 가까움']|int }}</small></div>
+  <div><span>방향을 맞힘</span><b>{{ S['방향 맞음']|int }} / {{ S['방향 판정한 수']|int }}</b><small>실제가 컨센서스의 어느 쪽에 나올지</small></div>
+  <div><span>평균 오차</span><b>{{ '%.1f'|format(S['내 평균 오차'] * 100) }}%</b><small>같은 건의 컨센서스 {{ '%.1f'|format(S['컨센서스 평균 오차'] * 100) }}%</small></div>
+</div>
+
+{{ m.h('채점한 추정', '단위: 억원 · 실제는 회사의 잠정 실적 공시(연결)') }}
+{{ m.score_table(score.scored, comp_by_id) }}
+{% if score.chart %}
+<div class="two" style="margin-top:22px">
+  <div>
+    {{ m.chart(score.chart, '기업별 내 추정 오차와 컨센서스 오차') }}
+    <div class="cap">오차 = |추정 ÷ 실제 − 1|. 막대가 짧을수록 실제에 가까웠다.</div>
+  </div>
+  <div>
+    {{ m.h('이번 회차', '2026년 3분기', first=true) }}
+    <ul class="dash">
+    {% for x in score.scored %}
+      <li><b>{{ x.name }}</b>: 내 추정 {{ x.mine|num }} · 컨센서스 {{ x.consensus|num }} · 실제 {{ x.actual|num }}억원. {{ m.verdict(x.verdict) }}{% if x.direction %}, 방향 {{ x.direction }}{% endif %}</li>
+    {% endfor %}
+    </ul>
+  </div>
+</div>
+{% endif %}
+
+{{ m.h('앞으로 채점될 것', '발표되면 이 표에서 위로 옮겨 채점') }}
+{{ m.score_table(score.pending, comp_by_id) }}
+
+<div class="note"><a href="{{ url('data/scorecard.csv') }}" download>채점표 CSV 내려받기</a></div>
+
+{{ m.h('읽는 법', '') }}
+<ul class="dash">
+  <li>오차는 |추정 ÷ 실제 − 1|. 내 추정과 컨센서스를 같은 실제 값에 대 봅니다</li>
+  <li>판정: 두 오차의 차이가 5%p 안이면 "비슷", 그보다 내 오차가 작으면 "컨센서스보다 가까움"</li>
+  <li>방향: 내 추정이 컨센서스보다 높았는지 낮았는지가 실제와 같은 쪽이었는지</li>
+  <li>내 추정은 사이트에 실린 리포트의 값, 컨센서스는 그 리포트를 낸 날 리포트에 적은 값입니다</li>
+  <li>계산은 채점표 엑셀 통합 문서의 수식으로 하고, 이 화면은 그 값을 옮겨 보여 줍니다</li>
+</ul>
+
+{% endblock %}

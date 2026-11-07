@@ -306,13 +306,17 @@ table{width:100%;border-collapse:collapse}
   .top .w{height:auto;flex-wrap:wrap;gap:0 16px;padding-top:10px}
   .gnb{order:3;width:100%;overflow-x:auto;margin:6px -4px 0}
   .gnb a{padding:10px 10px;font-size:14px}
-  .top .r a:nth-child(n+3){display:none}
-  .two,.two.top,.two.even,.two.wl,.rep,.cards,.mktwrap{grid-template-columns:1fr;gap:28px}
+  .top .r a:nth-child(2),.top .r a:nth-child(n+4){display:none}   /* 좁은 화면: 검색·About만 */
+  .two,.two.top,.two.even,.two.wl,.rep,.cards,.mktwrap{grid-template-columns:minmax(0,1fr);gap:28px}   /* 1fr로 두면 넓은 표가 칸을 밀어 화면이 잘린다 */
+  .prose table{display:block;overflow-x:auto;max-width:100%}
+  .prose img,.prose figure,.prose svg{max-width:100%;height:auto}
   .stock h1{font-size:25px}
   .stock h1.rt-title{font-size:21px}
   .strip{width:100%;gap:0;justify-content:space-between}
   .strip{flex-wrap:wrap;gap:14px 22px;justify-content:flex-start} .strip > div{flex:0 0 auto;text-align:left} .strip div.sep{border-left:0;padding-left:0}   /* 좁은 화면: 칸을 왼쪽부터 채우고 넘치면 줄을 바꾼다 */
   .strip b{font-size:18px}
+  .sub .w{overflow-x:auto} .sub a{white-space:nowrap;flex:none}   /* 하위 메뉴는 가로로 민다 */
+  .strip > div{max-width:100%;min-width:0} .strip b{overflow-wrap:anywhere}   /* 글이 긴 칸(산업의 사이클 위치 등)이 화면 밖으로 나가지 않게 */
   .scroll{overflow-x:auto;margin:0 -16px;padding:0 16px}
   .scroll table{min-width:700px}
   .scroll table.mkt{min-width:0}
@@ -326,3 +330,63 @@ table{width:100%;border-collapse:collapse}
 .strip.bt-strip{margin-top:10px;padding-top:10px;border-top:1px dashed var(--line);justify-content:flex-end}
 .strip.bt-strip b{font-size:16px;font-weight:600}
 .strip.bt-strip .lab b{font-size:13px;font-weight:500;color:var(--sub)}
+
+/* 바닥글 바로가기 */
+.footlinks{display:flex;flex-wrap:wrap;gap:4px 18px;margin-bottom:10px;font-size:13px}
+.footlinks a{color:var(--sub);font-weight:600}
+.footlinks a:hover{color:var(--accent)}
+
+/* 홈: 독자별 입구, 대표 작업 */
+.doors{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:26px 0 8px}
+.door{display:block;border:1px solid var(--line);border-radius:10px;padding:16px 18px;background:#fff}
+.door:hover{border-color:var(--ink-2);color:inherit}
+.door span{display:block;font-size:12px;color:var(--dim);font-weight:600}
+.door b{display:block;font-size:16px;letter-spacing:-.02em;margin:3px 0 6px}
+.door p{margin:0;font-size:13px;color:var(--sub);line-height:1.6}
+.works{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.work{border-top:2px solid var(--ink-2);padding:14px 2px 4px}
+.work h3{margin:0 0 10px;font-size:15.5px;letter-spacing:-.02em;line-height:1.45}
+.work dl{margin:0;display:grid;grid-template-columns:40px 1fr;row-gap:6px;font-size:13px;line-height:1.6}
+.work dt{color:var(--accent);font-weight:700}
+.work dd{margin:0;color:var(--sub)}
+.work dd b{color:var(--ink)}
+.work a.more{display:inline-block;margin-top:10px;font-size:12.5px;color:var(--accent);font-weight:600}
+
+/* 추정 채점 */
+.verdict{font-weight:700;white-space:nowrap}
+.verdict.win{color:var(--accent)}
+.verdict.even{color:var(--sub)}
+.verdict.loss{color:var(--ink-2)}
+.verdict.wait{color:var(--dim);font-weight:600}
+.scorebox{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.scorebox div{padding:14px 16px;border-right:1px solid var(--line-soft)}
+.scorebox div:last-child{border-right:0}
+.scorebox span{display:block;font-size:12px;color:var(--sub)}
+.scorebox b{display:block;font-size:22px;font-weight:700;letter-spacing:-.02em;line-height:1.35}
+.scorebox small{display:block;margin-top:2px}
+.errbar{display:inline-block;height:8px;border-radius:2px;vertical-align:middle;margin-right:6px;min-width:2px}
+.errbar.m{background:var(--accent)} .errbar.c{background:#b0b7c3}
+.nextbox{border:1px solid var(--line);border-radius:10px;padding:12px 16px;margin:0 0 6px;font-size:13.5px;color:var(--sub);display:flex;flex-wrap:wrap;gap:4px 22px;align-items:baseline}
+.nextbox b{color:var(--ink)}
+.nextbox .lab{font-weight:700;color:var(--accent)}
+.disclose{margin-top:40px;padding-top:16px;border-top:1px solid var(--line);font-size:12.5px;color:var(--sub);line-height:1.75;max-width:720px}
+.disclose h3{font-size:13.5px;margin:0 0 6px;color:var(--ink)}
+.disclose p{margin:0 0 6px}
+@media (max-width:860px){
+  .doors,.works{grid-template-columns:minmax(0,1fr)}
+  .scorebox{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .scorebox div:nth-child(2){border-right:0}
+  .scorebox div:nth-child(-n+2){border-bottom:1px solid var(--line-soft)}
+}
+
+/* 기업 화면: 화면 안 목차, 아래 둘러보기 */
+.toc{display:flex;flex-wrap:wrap;gap:4px 16px;margin:-12px 0 18px;font-size:13px}
+.toc a{color:var(--sub);font-weight:600}
+.toc a:hover{color:var(--accent)}
+.browse{display:flex;flex-wrap:wrap;gap:10px}
+.browse a{display:flex;flex-direction:column;min-width:140px;padding:10px 14px;border:1px solid var(--line);border-radius:8px}
+.browse a:hover{border-color:var(--ink-2);color:inherit}
+.browse span{font-size:11.5px;color:var(--dim);font-weight:600}
+.browse b{font-size:14.5px}
+.browse small{margin-top:2px}
+@media (max-width:860px){.toc{flex-wrap:nowrap;overflow-x:auto;white-space:nowrap;margin-top:-6px}}

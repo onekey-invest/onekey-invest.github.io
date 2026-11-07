@@ -52,7 +52,7 @@ def load_prices():
 
 
 def md(text):
-    return Markup(markdown.markdown(text, extensions=["tables"]))
+    return Markup(markdown.markdown(text, extensions=["tables", "attr_list"]))
 
 
 def load_reports():
@@ -67,7 +67,10 @@ def load_reports():
         if r.get("company") and not (r.get("rating") and r.get("target")):
             raise ValueError(f"{path.name}: 기업 리포트에는 rating과 target이 필요하다")
         r["body"] = md(body)
-        r["path"] = f"reports/{r['id']}/"
+        import re as _re
+        clean = _re.sub(r"-v\d+(?=-)", "", r["id"])      # 주소에 판 번호(v3·v4)를 드러내지 않는다
+        r["path"] = f"reports/{clean}/"
+        r["old_path"] = f"reports/{r['id']}/" if clean != r["id"] else None
         reports.append(r)
     ids = [r["id"] for r in reports]
     if len(ids) != len(set(ids)):
@@ -288,6 +291,7 @@ def load_notes():
         if title:
             sections.append((title, md("\n".join(buf))))
         n["sections"] = sections
+        n["raw"] = body
         n["comment_html"] = md(n.get("comment") or "")
         n["path"] = f"notes/{n['date']:%Y-%m-%d}/"
         for ind in n.get("indicators") or []:
@@ -312,6 +316,134 @@ def load_indicators(iid):
         (name, [(date.fromisoformat(r["date"]), float(r[name])) for r in rows if r[name] not in ("", None)])
         for name in names
     ]
+
+
+def load_scorecard():
+    """추정 채점표(data/scorecard.csv). 엑셀 통합 문서(채점표.xlsx)가 계산한 값을 옮긴 것이다. 여기서는 읽기만 한다."""
+    path = ROOT / "data" / "scorecard.csv"
+    if not path.exists():
+        return None
+    with open(path, encoding="utf-8") as f:
+        raw = list(csv.reader(f))
+    head, rows, labels, values = raw[0], [], [], []
+
+    def num(v):
+        return float(v) if v not in ("", None) else None
+    for r in raw[1:]:
+        if not r or not any(r):
+            continue
+        if r[0] == "summary":
+            labels = [x for x in r[1:] if x]
+            continue
+        if r[0] == "value":
+            values = r[1:1 + len(labels)]
+            continue
+        x = dict(zip(head, r))
+        for k in ("mine", "consensus", "actual", "err_mine", "err_cons", "gap_pp"):
+            x[k] = num(x.get(k))
+        x["round"] = int(float(x["round"]))
+        x["scored"] = x["actual"] is not None
+        x["published"] = date.fromisoformat(x["published"])
+        x["actual_date"] = date.fromisoformat(x["actual_date"]) if x.get("actual_date") else None
+        x["vs_cons"] = (x["mine"] / x["consensus"] - 1) if x["consensus"] else None   # 발행 때 내 추정이 컨센서스와 얼마나 달랐나
+        rows.append(x)
+    summary = {k: (float(v) if v not in ("", None) else None) for k, v in zip(labels, values)}
+    rows.sort(key=lambda x: (not x["scored"], x["actual_date"] or date.max, x["published"]))
+    return {"rows": rows, "summary": summary, "scored": [x for x in rows if x["scored"]], "pending": [x for x in rows if not x["scored"]]}
+
+
+def load_ledger():
+    """의견 장부(data/ledger.csv): 의견·목표주가가 사이트에 올라간 때마다 한 줄. 지난 줄은 고치지 않는다."""
+    path = ROOT / "data" / "ledger.csv"
+    if not path.exists():
+        return {}
+    with open(path, encoding="utf-8") as f:
+        rows = list(csv.DictReader(f))
+    by = {}
+    for r in sorted(rows, key=lambda r: r["at"]):
+        day = date.fromisoformat(r["at"][:10])
+        by.setdefault(r["company"], {})[day] = (r["rating"], int(r["target"]), r["report_id"])   # 같은 날은 그날 마지막 의견
+    out = {}
+    for cid, days in by.items():
+        states = []
+        for day in sorted(days):
+            rating, target, rid = days[day]
+            if states and states[-1]["rating"] == rating and states[-1]["target"] == target:
+                continue
+            states.append({"date": day, "rating": rating, "target": target, "report_id": rid})
+        out[cid] = states
+    return out
+
+
+def ledger_view(states, series, bench, asof):
+    """기업 하나의 의견·목표주가 변경 이력. 증권사 보고서 끝의 표와 같은 꼴: 일자 · 의견 · 목표주가 · 괴리율(평균, 최고·최저).
+    괴리율 = 그 의견이 살아 있던 동안의 주가 ÷ 목표주가 − 1."""
+    rows = []
+    for k, s in enumerate(states):
+        end = states[k + 1]["date"] if k + 1 < len(states) else asof
+        win = series.between(s["date"], end)
+        closes = list(win.closes[:-1] if k + 1 < len(states) and len(win.closes) > 1 else win.closes)
+        if k == 0:
+            change = "개시"
+        elif s["rating"] != states[k - 1]["rating"]:
+            change = "의견 변경"
+        else:
+            change = "목표주가 상향" if s["target"] > states[k - 1]["target"] else "목표주가 하향"
+        then = series.close_at(s["date"])
+        extreme = (min(closes) if s["rating"] == "매도" else max(closes)) if closes else None
+        rows.append({
+            **s, "change": change, "end": end, "live": k + 1 == len(states),
+            "close": then, "after": M.simple_return(then, series.close_at(asof)),
+            "bench_after": M.period_return(bench, s["date"], asof),
+            "gap_avg": (sum(closes) / len(closes) / s["target"] - 1) if closes else None,
+            "gap_ext": (extreme / s["target"] - 1) if extreme else None,
+            "ext_label": "최저" if s["rating"] == "매도" else "최고",
+        })
+    return rows
+
+
+def disclosures_view(cid, series, bench, asof, score_rows):
+    """주요 공시(data/disclosures/<id>.json, tools/update_disclosures.py가 OpenDART에서 받음)와 공시 전후 주가 반응.
+    반응 = 공시일 앞 거래일 종가 → 공시일 다음 거래일 종가(장중·장 마감 뒤 공시를 모두 덮는다). 같은 기간 KOSPI와의 차이도 적는다."""
+    path = ROOT / "data" / "disclosures" / f"{cid}.json"
+    if not path.exists():
+        return None
+    d = json.loads(path.read_text(encoding="utf-8"))
+    from datetime import timedelta
+    scored = {x["actual_date"]: x for x in score_rows if x.get("scored")}
+    rows = []
+    for it in d["items"]:
+        day = date.fromisoformat(it["date"])
+        pre = series.at(day - timedelta(days=1))
+        post_i = next((i for i, x in enumerate(series.dates) if x > day), None)
+        r = b = None
+        if pre and post_i is not None and series.dates[post_i] <= asof:
+            post_day = series.dates[post_i]
+            r = M.simple_return(pre[1], series.closes[post_i])
+            b = M.simple_return(bench.close_at(pre[0]), bench.close_at(post_day))
+        rows.append({**it, "day": day, "ret": r, "bench": b, "excess": M.excess(r, b),
+                     "url": f"https://dart.fss.or.kr/dsaf001/main.do?rcpNo={it['rcept_no']}",
+                     "score": scored.get(day) if it["kind"] == "실적" else None})
+    return {"asof": d.get("asof"), "rows": rows}
+
+
+def link_first(html, name, href):
+    """HTML에서 태그 밖·링크 밖에 처음 나오는 name 하나를 링크로 바꾼다. 바꿨으면 (새 html, True)."""
+    import re
+    parts = re.split(r"(<[^>]+>)", str(html))
+    in_a = False
+    for k, p in enumerate(parts):
+        if p.startswith("<"):
+            low = p.lower()
+            if low.startswith("<a ") or low == "<a>":
+                in_a = True
+            elif low.startswith("</a"):
+                in_a = False
+            continue
+        if not in_a and name in p:
+            parts[k] = p.replace(name, f'<a class="lnk" href="{href}">{name}</a>', 1)
+            return Markup("".join(parts)), True
+    return html, False
 
 
 def load_backtest(sid):
@@ -529,7 +661,7 @@ def build_strategy(s, prices, bench_map, asof, comp_by_id):
     }
 
 
-def build_company(c, reports, prices, bench_map, asof):
+def build_company(c, reports, prices, bench_map, asof, states=None):
     series = prices.get(c["id"])
     if series is None:
         raise ValueError(f"{c['id']}: data/prices/{c['id']}.csv가 없다")
@@ -538,6 +670,9 @@ def build_company(c, reports, prices, bench_map, asof):
     if not reps:
         raise ValueError(f"{c['id']}: 리포트가 없다")
     first, latest = reps[0], reps[-1]
+    # 의견 장부가 있으면 커버리지 개시일·목표주가 선은 장부에서 읽는다(내린 판의 의견도 들어 있다)
+    if states:
+        first = {"date": states[0]["date"]}
 
     last = series.close_at(asof)
     base = series.close_at(first["date"])
@@ -555,7 +690,18 @@ def build_company(c, reports, prices, bench_map, asof):
         rows.append({**r, "close": then, "after": M.simple_return(then, last)})
 
     targets, markers = [], []
-    for i, r in enumerate(reps):
+    if states:
+        for i, x in enumerate(states):
+            targets.append((x["date"], x["target"]))
+            if i == 0:
+                markers.append((x["date"], "개시"))
+            elif x["rating"] != states[i - 1]["rating"]:
+                markers.append((x["date"], f"{x['rating']}, TP {x['target']:,.0f}"))
+            else:
+                markers.append((x["date"], f"TP {x['target']:,.0f}"))
+        if len(states) > 1:
+            change = {"prev": states[-2], "cur": states[-1]}
+    for i, r in enumerate(reps if not states else []):
         changed = i == 0 or r["target"] != reps[i - 1]["target"] or r["rating"] != reps[i - 1]["rating"]
         if not changed:
             continue
@@ -566,8 +712,11 @@ def build_company(c, reports, prices, bench_map, asof):
             markers.append((r["date"], f"{r['rating']}, TP {r['target']:,.0f}"))
         else:
             markers.append((r["date"], f"TP {r['target']:,.0f}"))
-    window = series.between(first["date"], asof)
-    bwin = bench.between(first["date"], asof)
+    # 그림은 기준가를 잡은 날(개시일 또는 그 직전 거래일)부터 그린다. 휴장일에 개시해도 개시 목표주가가 선에 남는다
+    s0 = series.at(first["date"])
+    b0_ = bench.at(first["date"])
+    window = series.between(s0[0] if s0 else first["date"], asof)
+    bwin = bench.between(b0_[0] if b0_ else first["date"], asof)
     if not len(window):
         # 첫 리포트를 그날 장이 끝나기 전(또는 휴장일)에 올리면 시세가 아직 발행일에 닿지 않는다.
         # 직전 종가 한 점에서 시작하고, 그날 종가가 들어오면 발행일부터 다시 그려진다.
@@ -638,6 +787,8 @@ def build_company(c, reports, prices, bench_map, asof):
         "est": est,
         "valuation": md(c.get("valuation") or ""),
         "risks": md(c.get("risks") or ""),
+        "history": ledger_view(states, series, bench, asof) if states else [],
+        "series_bench": (series, bench),
     }
 
 
@@ -739,15 +890,31 @@ def main():
     industries_raw = load_yaml("industries.yaml")
     ind_by_id = {i["id"]: i for i in industries_raw}
 
+    ledger = load_ledger()
+    score = load_scorecard()
+    if score and score["scored"]:
+        sc = score["scored"]
+        # 오차 값은 채점표.xlsx가 계산한 것. 그림은 엑셀이 그린다
+        score["chart"] = xl_bar("scorecard-errors", [x["name"] for x in sc], [
+            {"name": "내 추정 오차", "color": ACCENT, "values": [x["err_mine"] * 100 for x in sc]},
+            {"name": "컨센서스 오차", "color": GREY, "values": [x["err_cons"] * 100 for x in sc]},
+        ], "pct", asof=max(x["actual_date"] for x in sc).isoformat(), w=460, h=250)
     companies = []
     for c in load_yaml("companies.yaml"):
         for iid in c.get("industries", []):
             if iid not in ind_by_id:
                 raise ValueError(f"{c['id']}: 없는 산업 {iid}")
-        built = build_company(c, reports, prices, bench_map, asof)
+        built = build_company(c, reports, prices, bench_map, asof, ledger.get(c["id"]))
+        built["score"] = [x for x in (score or {}).get("rows", []) if x["company"] == c["id"]]
+        built["disc"] = disclosures_view(c["id"], *built.pop("series_bench"), asof, built["score"])
         built["industry_objs"] = [ind_by_id[i] for i in c.get("industries", [])]
         companies.append(built)
     comp_by_id = {c["id"]: c for c in companies}
+    for k, c in enumerate(companies):     # 기업 화면 아래 둘러보기
+        c["peers"] = [o for o in companies if o is not c and set(o.get("industries", [])) & set(c.get("industries", []))]
+        c["prev_c"] = companies[k - 1] if k > 0 else companies[-1]
+        c["next_c"] = companies[k + 1] if k + 1 < len(companies) else companies[0]
+        c["others"] = True
 
     industries = []
     for i in industries_raw:
@@ -783,7 +950,11 @@ def main():
         if r.get("company"):
             c = comp_by_id[r["company"]]
             mine = next(x for x in c["reports"] if x["id"] == r["id"])
-            row.update(subject=c["name"], subject_path=c["path"], close=mine["close"], after=mine["after"])
+            row.update(subject=c["name"], subject_path=c["path"], close=mine["close"], after=mine["after"],
+                       upside_now=M.upside(r["target"], c["last"]), recheck=c.get("recheck"))
+            past = [h for h in c["history"] if h["date"] <= r["date"]]
+            if len(past) >= 2:
+                row["prev_target"], row["prev_rating"] = past[-2]["target"], past[-2]["rating"]
         else:
             i = ind_by_id[r["industry"]]
             row.update(subject=i["name"], subject_path=f"industries/{i['id']}/", close=None, after=None)
@@ -813,6 +984,7 @@ def main():
             for h in s["holdings"] if h["asset"] == c["id"]
         ]
 
+    base = os.environ.get("SITE_BASE_URL", site.get("base_url") or "").rstrip("/")
     notes = load_notes()
     for n in notes:
         for cid in n.get("companies") or []:
@@ -821,16 +993,54 @@ def main():
         for iid in n.get("industries") or []:
             if iid not in ind_by_id:
                 raise ValueError(f"마켓노트 {n['date']}: 없는 산업 {iid}")
-        n["company_objs"] = [comp_by_id[c] for c in n.get("companies") or []]
-        n["industry_objs"] = [ind_by_id[i] for i in n.get("industries") or []]
+        # 본문에 기업 이름이 나오면 그 기업을 관련 종목으로 잇고, 처음 나온 곳을 기업 화면 링크로 바꾼다
+        named = list(n.get("companies") or [])
+        for c in companies:
+            if c["name"] in n["raw"] and c["id"] not in named:
+                named.append(c["id"])
+        for cid in named:
+            c = comp_by_id[cid]
+            for k, (title, html) in enumerate(n["sections"]):
+                html2, done = link_first(html, c["name"], f"{base}/{c['path']}")
+                if done:
+                    n["sections"][k] = (title, html2)
+                    break
+        n["companies"] = named
+        n["company_objs"] = [comp_by_id[c] for c in named]
+        inds = list(n.get("industries") or [])
+        for c in n["company_objs"]:
+            for iid in c.get("industries", []):
+                if iid not in inds:
+                    inds.append(iid)
+        n["industries"] = inds
+        n["industry_objs"] = [ind_by_id[i] for i in inds]
+    # 확인 포인트 기록: 그날 적은 "오늘 확인할 포인트"와, 다음 노트가 "지난 글의 확인 포인트"에 적은 결과를 잇는다
+    for k, n in enumerate(notes):   # notes는 최신순
+        pt = next((str(x) for x in n.get("summary") or [] if str(x).startswith("오늘 확인할 포인트")), "")
+        n["point"] = pt.split(":", 1)[1].strip() if ":" in pt else pt
+        n["followup"] = notes[k - 1] if k > 0 and notes[k - 1].get("review") else None
+    # 주간 묶음: 한 주(월~금)의 노트를 모아 그날의 한 줄과 "반드시 알아야 할 것"을 잇는다(새로 쓰지 않고 이미 쓴 문장을 모은다)
+    weeks = {}
+    for n in notes:
+        monday = n["date"] - __import__("datetime").timedelta(days=n["date"].weekday())
+        must = next((str(x) for x in n.get("summary") or [] if str(x).startswith("오늘 반드시 알아야 할 것")), "")
+        n["must"] = must.split(":", 1)[1].strip() if ":" in must else must
+        weeks.setdefault(monday, []).append(n)
+    weekly = [{"monday": d, "friday": d + __import__("datetime").timedelta(days=4), "notes": sorted(v, key=lambda n: n["date"])}
+              for d, v in sorted(weeks.items(), reverse=True)]
+    next_note_day = notes[0]["date"] + __import__("datetime").timedelta(days=1) if notes else None
+    while next_note_day and next_note_day.weekday() >= 5:
+        next_note_day += __import__("datetime").timedelta(days=1)
     for c in companies:
         c["notes"] = [n for n in notes if c["id"] in (n.get("companies") or [])]
     for i in industries:
         i["notes"] = [n for n in notes if i["id"] in (n.get("industries") or [])]
     featured = [r for r in all_reports if r.get("featured")]
+    if site.get("featured_ids"):
+        by_id = {r["id"]: r for r in all_reports}
+        featured = [by_id[i] for i in site["featured_ids"] if i in by_id]
 
-    # 내 컴퓨터 미리보기(serve.py)는 SITE_BASE_URL을 빈 값으로 넘겨 주소 앞머리를 뗀다
-    base = os.environ.get("SITE_BASE_URL", site.get("base_url") or "").rstrip("/")
+    # 내 컴퓨터 미리보기(serve.py)는 SITE_BASE_URL을 빈 값으로 넘겨 주소 앞머리를 뗀다(base는 위에서 정했다)
     env = Environment(
         loader=FileSystemLoader(ROOT / "templates"),
         autoescape=select_autoescape(["html"]),
@@ -843,8 +1053,10 @@ def main():
         asof=asof,
         url=lambda p="": f"{base}/{p}",
         built=datetime.now(),
-        categories=CATEGORIES,
+        categories=CATEGORIES,   # 아래에서 빈 구분을 뺀 목록으로 바꾼다
         charts=load_chart_manifest(),
+        site_url=(site.get("site_url") or "").rstrip("/"),
+        score_all=score,
     )
 
     if DIST.exists():
@@ -853,10 +1065,14 @@ def main():
     shutil.copytree(ROOT / "static", DIST / "static")
 
     count = 0
+    written = []
 
     def write(path, template, **ctx):
         nonlocal count
         target = DIST / path / "index.html" if not path.endswith(".html") else DIST / path
+        if not path.endswith(".html"):
+            written.append((path, ctx.get("lastmod")))
+        ctx.setdefault("page_path", path)
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_text(env.get_template(template).render(**ctx), encoding="utf-8")
         count += 1
@@ -873,37 +1089,72 @@ def main():
         }
 
     books = load_books()
+    # 홈의 최근 리포트: 같은 날 같은 기업의 정식 보고서와 기업 브리프는 한 줄로(브리프는 옆 링크)
+    home_reports, seen = [], {}
+    for r in all_reports:
+        key = (r.get("company") or r.get("industry"), r["date"])
+        if key in seen and r["kind"] == "브리프":
+            seen[key]["brief_path"] = r["path"]
+            continue
+        if key in seen and seen[key]["kind"] == "브리프":
+            row = dict(r, brief_path=seen[key]["path"])
+            home_reports[home_reports.index(seen[key])] = row
+            seen[key] = row
+            continue
+        row = dict(r)
+        seen[key] = row
+        home_reports.append(row)
     write("", "home.html", nav="home", title="홈",
-          companies=companies, reports=all_reports[:12], summary=summary, n_reports=len(all_reports),
+          companies=companies, reports=home_reports[:10], summary=summary, n_reports=len(all_reports),
           strategies=strategies, featured=featured[:3], notes=notes[:5],
-          B=books)
-    write("research", "research.html", nav="research", sub="companies", title="커버리지 성적표",
+          B=books, score=score, n_notes=len(notes), first_note=notes[-1]["date"] if notes else None)
+    # 의견 장부: 모든 기업의 의견·목표주가 변경을 한 표에(최근 것부터)
+    ledger_rows = sorted(
+        ({**h, "company": c} for c in companies for h in c["history"]),
+        key=lambda x: (x["date"], x["company"]["name"]), reverse=True)
+    write("research/ledger", "ledger.html", nav="research", sub="ledger", title="의견 장부",
+          rows=ledger_rows, description="낸 의견과 목표주가를 바뀐 때마다 한 줄씩 남긴 장부")
+    if score:
+        write("research/scorecard", "scorecard.html", nav="research", sub="scorecard", title="추정 채점표",
+              score=score, comp_by_id=comp_by_id, description="리포트에 적은 실적 추정을 실제 발표, 그때의 컨센서스와 나란히 채점한 표")
+    write("research", "research.html", nav="research", sub="companies", title="커버리지 성적표", description="커버 기업의 투자의견·목표주가와 의견 이후 수익률을 벤치마크와 함께 기록한 성적표",
           companies=companies, summary=summary)
-    write("research/industries", "industries.html", nav="research", sub="industries", title="산업",
+    write("research/industries", "industries.html", nav="research", sub="industries", title="산업", description="커버하는 산업의 의견, 핵심 논점, 시장 점유율과 지표",
           industries=industries)
-    write("research/reports", "reports.html", nav="research", sub="reports", title="리포트 목록",
+    write("research/reports", "reports.html", nav="research", sub="reports", title="리포트 목록", description="기업·산업 리포트 전체 목록과 발행 뒤 수익률",
           reports=all_reports)
 
     for c in companies:
-        write(c["path"], "company.html", nav="research", sub="companies", title=c["name"], c=c)
+        write(c["path"], "company.html", nav="research", sub="companies", title=c["name"], c=c, lastmod=c["updated"],
+              description=f"{c['name']} 커버리지: 투자의견 {c['rating']}, 목표주가 {c['target']:,.0f}원. 실적 추정, 의견 변경 이력, 추정 채점.")
     for i in industries:
-        write(i["path"], "industry.html", nav="research", sub="industries", title=i["name"], i=i)
+        write(i["path"], "industry.html", nav="research", sub="industries", title=i["name"], i=i,
+              description=f"{i['name']} 산업: 산업 의견, 핵심 논점, 시장 점유율, 핵심 지표, 커버 기업")
 
     for r in all_reports:
         key = "company" if r.get("company") else "industry"
         siblings = [x for x in all_reports if x.get(key) == r[key]]  # 최신순
         idx = siblings.index(r)
-        write(r["path"], "report.html", nav="research", sub="reports", title=r["title"], r=r,
+        nxt = next((x for x in (score or {}).get("pending", []) if x["company"] == r.get("company")), None) if r.get("company") else None
+        write(r["path"], "report.html", nav="research", sub="reports", title=r["title"], r=r, lastmod=r["date"],
+              description=(r.get("summary") or r["title"]), next_check=nxt,
               newer=siblings[idx - 1] if idx > 0 else None,
               older=siblings[idx + 1] if idx + 1 < len(siblings) else None)
 
-    for name, title in (("methodology", "방법론"), ("about", "About")):
-        body = md((ROOT / "content" / "pages" / f"{name}.md").read_text(encoding="utf-8"))
+    for name, title in (("methodology", "방법론"), ("about", "About"), ("start", "처음 오셨다면"), ("glossary", "용어 사전")):
+        src = ROOT / "content" / "pages" / f"{name}.md"
+        if not src.exists():
+            continue
+        body = md(src.read_text(encoding="utf-8"))
         write(name, "page.html", nav=name, title=title, body=body,
-              featured=featured[:3] if name == "about" else [])
+              featured=featured[:3] if name in ("about", "start") else [], companies=companies, score=score)
 
+    used = {s["category"] for s in strategies} | {s["category"] for s in pending}
+    env.globals["categories"] = [c for c in CATEGORIES if c[0] in used]   # 전략이 없는 구분(멀티에셋 등)은 메뉴에서 감춘다
     for key, label, path in CATEGORIES:
         members = [s for s in strategies if s["category"] == key]
+        if key not in used:
+            continue
         bench_first = {}   # 벤치마크마다 선 하나: 그 벤치마크를 쓰는 전략 가운데 가장 먼저 시작한 전략의 개시일 = 0
         for s in members:
             if s["benchmark"] not in bench_first or s["started"] < bench_first[s["benchmark"]]["started"]:
@@ -919,15 +1170,19 @@ def main():
         write(path, "portfolios.html", nav="portfolios", sub=key, title=f"가상운용 · {label}",
               label=label, strategies=members, chart=chart, pending=[s for s in pending if s["category"] == key])
     for s in strategies + pending:
-        write(s["path"], "strategy.html", nav="portfolios", sub=s["category"], title=s["name"], s=s)
+        write(s["path"], "strategy.html", nav="portfolios", sub=s["category"], title=s["name"], s=s,
+              description=f"가상운용 전략 {s['name']}: {s.get('subtitle') or ''} 운용 규칙, 보유 종목, 매매 기록, 백테스트".replace("  ", " "))
 
     studies = load_studies(base)
-    write("studies", "studies.html", nav="studies", title="연구", studies=studies)
+    write("studies", "studies.html", nav="studies", title="연구", description="자료로 확인해 본 주제를 논문 꼴로 정리한 글", studies=studies)
     for x in studies:
-        write(x["path"], "study.html", nav="studies", title=x["title"], x=x)
-    write("notes", "notes.html", nav="notes", title="마켓노트", notes=notes)
+        write(x["path"], "study.html", nav="studies", title=x["title"], x=x, lastmod=x["date"],
+              description=x.get("summary") or x["title"])
+    write("notes/weekly", "weekly.html", nav="notes", title="마켓노트 주간 묶음", weekly=weekly,
+          description="한 주의 마켓노트를 그날의 한 줄과 꼭 알아야 할 것으로 묶은 것")
+    write("notes", "notes.html", nav="notes", title="마켓노트", weekly=weekly[:1], next_note=next_note_day, description="평일 아침 그날 온 소식만으로 정리한 경제·시장 노트와 확인 포인트 기록", notes=notes)
     for k, n in enumerate(notes):   # notes는 최신순
-        write(n["path"], "note.html", nav="notes", title=f"{n['date']:%Y.%m.%d} 마켓노트", n=n,
+        write(n["path"], "note.html", nav="notes", title=f"{n['date']:%Y.%m.%d} 마켓노트", n=n, lastmod=n["date"],
               description=n["headline"],
               newer=notes[k - 1] if k > 0 else None,
               older=notes[k + 1] if k + 1 < len(notes) else None)
@@ -935,8 +1190,67 @@ def main():
         write("books", "books.html", nav="books", title="책 검증", B=books,
               description="읽은 책의 주장을 실제 자료로 검사한 기록")
         for b in books["list"]:
-            write(b["path"], "book.html", nav="books", title=b["title"], b=b, B=books)
+            write(b["path"], "book.html", nav="books", title=b["title"], b=b, B=books,
+                  description=f"책 검증: {b['title']}{(' (' + b['author'] + ')') if b.get('author') else ''}의 주장을 한국·미국 자료로 검사한 결과")
     write("404.html", "soon.html", nav="", title="페이지를 찾을 수 없습니다", items=[])
+    # 사이트 검색 색인(검색 화면이 읽는다). 제목·요약·대상만 담는다
+    idx = []
+    for c in companies:
+        idx.append({"k": "기업", "t": c["name"], "u": c["path"], "x": f"{c['ticker']} {' '.join(i['name'] for i in c['industry_objs'])} {c['rating']} {' '.join(c.get('tags') or [])}"})
+    for i in industries:
+        idx.append({"k": "산업", "t": i["name"], "u": i["path"], "x": i.get("opinion") or ""})
+    for r in all_reports:
+        idx.append({"k": r["kind"], "t": r["title"], "u": r["path"], "d": f"{r['date']:%Y.%m.%d}", "x": f"{r['subject']} {r.get('summary') or ''}"})
+    for n in notes:
+        idx.append({"k": "마켓노트", "t": n["headline"], "u": n["path"], "d": f"{n['date']:%Y.%m.%d}",
+                    "x": " ".join(str(x) for x in n.get("summary") or []) + " " + " ".join(n.get("tags") or [])})
+    for x in studies:
+        idx.append({"k": "연구", "t": x["title"], "u": x["path"], "d": f"{x['date']:%Y.%m.%d}", "x": x.get("summary") or ""})
+    for b in (books or {}).get("list", []):
+        idx.append({"k": "책 검증", "t": b["title"], "u": b["path"], "x": b.get("author") or ""})
+    (DIST / "search.json").write_text(json.dumps(idx, ensure_ascii=False), encoding="utf-8")
+    write("search", "search.html", nav="search", title="검색", description="사이트 안 리포트·기업·마켓노트 찾기")
+
+    # 옛 주소(판 번호가 든 주소)로 들어와도 새 주소로 보낸다
+    for r in all_reports:
+        if r.get("old_path"):
+            t = DIST / r["old_path"] / "index.html"
+            t.parent.mkdir(parents=True, exist_ok=True)
+            new = f"{base}/{r['path']}"
+            t.write_text(f'<!doctype html><meta charset="utf-8"><title>이동</title><link rel="canonical" href="{new}">'
+                         f'<meta http-equiv="refresh" content="0; url={new}"><a href="{new}">새 주소로 이동</a>', encoding="utf-8")
+    # 내려받는 자료: 내가 만든 값만(채점표, 의견 장부). 시세 원자료는 올리지 않는다
+    (DIST / "data").mkdir(exist_ok=True)
+    if (ROOT / "data" / "scorecard.csv").exists():
+        shutil.copy(ROOT / "data" / "scorecard.csv", DIST / "data" / "scorecard.csv")
+    with open(DIST / "data" / "ledger.csv", "w", newline="", encoding="utf-8-sig") as fh:
+        w = csv.writer(fh)
+        w.writerow(["일자", "기업", "종목코드", "투자의견", "목표주가", "변경", "당시 종가", "괴리율 평균", "괴리율 최고·최저", "기준일", "이후 수익률"])
+        for x in sorted(((h, c) for c in companies for h in c["history"]), key=lambda t: (t[0]["date"], t[1]["name"])):
+            h, c = x
+            w.writerow([h["date"].isoformat(), c["name"], c["ticker"], h["rating"], h["target"], h["change"], f"{h['close']:.0f}",
+                        f"{h['gap_avg']:.4f}" if h["gap_avg"] is not None else "", f"{h['gap_ext']:.4f}" if h["gap_ext"] is not None else "",
+                        asof.isoformat(), f"{h['after']:.4f}" if h["after"] is not None else ""])
+
+    # 검색엔진용 지도와 새 글 알림(RSS)
+    site_url = (site.get("site_url") or "").rstrip("/")
+    if site_url:
+        locs = "".join(f"<url><loc>{site_url}{base}/{p}</loc>{f'<lastmod>{m:%Y-%m-%d}</lastmod>' if m else ''}</url>"
+                       for p, m in written)
+        (DIST / "sitemap.xml").write_text(f'<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">{locs}</urlset>', encoding="utf-8")
+        (DIST / "robots.txt").write_text(f"User-agent: *\nAllow: /\nSitemap: {site_url}{base}/sitemap.xml\n", encoding="utf-8")
+        from html import escape
+        from email.utils import format_datetime
+        from datetime import timezone, timedelta
+        kst = timezone(timedelta(hours=9))
+        items = [(r["date"], r["title"], r["path"], r.get("summary") or "") for r in all_reports] + \
+                [(n["date"], f"{n['date']:%Y.%m.%d} 마켓노트 · {n['headline']}", n["path"], n["headline"]) for n in notes]
+        items.sort(key=lambda x: x[0], reverse=True)
+        feed = "".join(f"<item><title>{escape(t)}</title><link>{site_url}{base}/{p}</link><guid>{site_url}{base}/{p}</guid>"
+                       f"<pubDate>{format_datetime(datetime(d.year, d.month, d.day, 8, 30, tzinfo=kst))}</pubDate><description>{escape(str(sm))}</description></item>"
+                       for d, t, p, sm in items[:40])
+        (DIST / "feed.xml").write_text(f'<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"><channel><title>{escape(site["name"])}</title>'
+                                       f'<link>{site_url}{base}/</link><description>{escape(site.get("tagline", ""))}</description>{feed}</channel></rss>', encoding="utf-8")
 
     print(f"기준일 {asof:%Y-%m-%d} · 화면 {count}개 · 기업 {len(companies)} · 산업 {len(industries)} · "
           f"리포트 {len(all_reports)} · 전략 {len(strategies)} · 노트 {len(notes)} · 책 {len(books['list']) if books else 0} → {DIST}")

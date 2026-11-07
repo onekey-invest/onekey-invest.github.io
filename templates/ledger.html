@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% import "_m.html" as m %}
+{% block main %}
+
+<div class="stock">
+  <div>
+    <div class="meta">리서치<i>|</i>{{ rows|length }}줄 · {{ asof|ymd }} 종가 기준</div>
+    <h1 class="rt-title">의견 장부</h1>
+    <p class="intro" style="margin:10px 0 0;max-width:720px">낸 투자의견과 목표주가를 바뀐 날마다 한 줄씩 남깁니다. 리포트를 새 판으로 바꿔 옛 글을 내려도 이 줄은 남습니다. 지난 줄은 고치지 않습니다.</p>
+  </div>
+</div>
+
+{{ m.history_table(rows, show_company=true) }}
+<div class="note"><a href="{{ url('data/ledger.csv') }}" download>의견 장부 CSV 내려받기</a></div>
+
+{{ m.h('읽는 법', '') }}
+<ul class="dash">
+  <li>일자: 그 의견이 사이트에 처음 올라간 날. 같은 날 여러 번 고쳤으면 그날 마지막 의견</li>
+  <li>괴리율: 그 의견이 유지된 동안의 주가 ÷ 목표주가 − 1. 평균은 기간 평균 주가, 최고·최저는 매수·중립이면 최고가, 매도면 최저가 기준(증권사 보고서의 표와 같은 꼴)</li>
+  <li>이후 수익률: 그 일자의 종가부터 기준일 종가까지. 배당 제외</li>
+  <li>투자의견 기준: 12개월 상승여력 +15% 이상 매수, −15% 아래 매도, 그 사이 중립</li>
+</ul>
+
+{% endblock %}

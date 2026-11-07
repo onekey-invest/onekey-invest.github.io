@@ -30,6 +30,20 @@
   </div>
 </div>
 
+<nav class="toc">
+  <a href="#sec-status">현황</a><a href="#sec-points">투자포인트</a>{% if c.est %}<a href="#sec-est">실적 추정</a>{% endif %}{% if c.score %}<a href="#sec-score">추정 채점</a>{% endif %}<a href="#reports">리포트</a>{% if c.disc and c.disc.rows %}<a href="#sec-disc">공시</a>{% endif %}{% if c.history %}<a href="#sec-hist">의견 이력</a>{% endif %}<a href="#sec-more">더 보기</a>
+</nav>
+{% set nxt = (c.score|rejectattr('scored')|list)[:1] %}
+{% set last_scored = (c.score|selectattr('scored')|list)[:1] %}
+{% if nxt or last_scored %}
+<div class="nextbox">
+  {% for x in last_scored %}<span class="lab">채점</span><span>{{ x.item }}: 내 추정 <b>{{ x.mine|num }}</b> · 컨센서스 {{ x.consensus|num }} · 실제 <b>{{ x.actual|num }}</b>억원</span>{{ m.verdict(x.verdict) }}{% endfor %}
+  {% for x in nxt %}<span class="lab">다음 채점</span><span>{{ x.item }} · {{ x.due }}</span><span>내 추정 <b>{{ x.mine|num }}</b>억원 · 컨센서스 {{ x.consensus|num }}억원</span>{% endfor %}
+  <a class="lnk" href="{{ url('research/scorecard/') }}">채점표 전체</a>
+</div>
+{% endif %}
+
+<div id="sec-status" class="anchor"></div>
 <div class="two">
   <div>
     {{ m.h('커버리지 현황', (asof|ymd) ~ ' 종가 기준', first=true) }}
@@ -59,6 +73,7 @@
   </div>
 </div>
 
+<div id="sec-points" class="anchor"></div>
 {{ m.h('투자포인트', (c.updated|ymd) ~ ' 리포트 기준') }}
 <ul class="dash">
   {% for p in c.points %}<li>{{ p }}</li>{% endfor %}
@@ -66,6 +81,7 @@
 </ul>
 
 {% if c.est %}
+<div id="sec-est" class="anchor"></div>
 {{ m.h('실적 추정', '단위: 억원, 원, 배, %') }}
 <div class="scroll">
 <table class="grid">
@@ -80,12 +96,64 @@
 <div class="note">A는 실적, E는 작성자 추정. PER·PBR은 기준일 종가({{ c.last|num }}원) 기준</div>
 {% endif %}
 
+{% if c.score %}
+<div id="sec-score" class="anchor"></div>
+{{ m.h('추정 채점', '단위: 억원 · 오차 = |추정 ÷ 실제 − 1|') }}
+{{ m.score_table(c.score, show_company=false) }}
+{% endif %}
+
 <div id="reports" class="anchor"></div>
 {{ m.h('리포트', '이후 수익률은 발행일 종가 대비') }}
 {{ m.report_table(c.reports, subject=false) }}
 
+{% if c.disc and c.disc.rows %}
+<div id="sec-disc" class="anchor"></div>
+{{ m.h('주요 공시와 주가 반응', '최근 1년 · OpenDART · 반응은 공시 앞 거래일 종가 → 다음 거래일 종가') }}
+{% macro disc_rows(rows) %}
+  {% for x in rows %}
+    <tr>
+      <td class="c">{{ x.day|ymd }}</td>
+      <td class="c"><span class="tag">{{ x.kind }}</span></td>
+      <td class="l"><a href="{{ x.url }}" rel="noopener">{{ x.name }}</a>
+        {% if x.score %}<br><small>채점: 내 추정 {{ x.score.mine|num }} · 컨센서스 {{ x.score.consensus|num }} · 실제 {{ x.score.actual|num }}억원</small> {{ m.verdict(x.score.verdict) }}{% endif %}</td>
+      <td>{{ m.ret(x.ret) }}</td>
+      <td>{{ m.ret(x.excess, 'pp') }}</td>
+    </tr>
+  {% endfor %}
+{% endmacro %}
+<div class="scroll">
+<table class="grid">
+  <thead><tr><th class="c">접수일</th><th class="c">종류</th><th class="l">공시</th><th>주가 반응</th><th>KOSPI 대비</th></tr></thead>
+  <tbody>{{ disc_rows(c.disc.rows[:10]) }}</tbody>
+</table>
+</div>
+{% if c.disc.rows|length > 10 %}
+<details class="fold" style="margin-top:0;border-top:0"><summary>그 전 공시 {{ c.disc.rows|length - 10 }}건</summary>
+<div class="scroll"><table class="grid"><tbody>{{ disc_rows(c.disc.rows[10:]) }}</tbody></table></div>
+</details>
+{% endif %}
+{% endif %}
+
+{% if c.history %}
+<div id="sec-hist" class="anchor"></div>
+{{ m.h('투자의견·목표주가 변경 이력', '괴리율 = 그 의견 동안의 주가 ÷ 목표주가 − 1') }}
+{{ m.history_table(c.history) }}
+<div class="note"><a href="{{ url('research/ledger/') }}">모든 기업의 의견 장부</a></div>
+{% endif %}
+
+<div id="sec-more" class="anchor"></div>
 <details class="fold"><summary>밸류에이션 상세</summary><div class="prose">{% if c.valuation %}{{ c.valuation }}{% else %}<p>아직 작성하지 않았습니다.</p>{% endif %}</div></details>
 <details class="fold"><summary>리스크 및 회고</summary><div class="prose">{% if c.risks %}{{ c.risks }}{% else %}<p>아직 작성하지 않았습니다.</p>{% endif %}</div></details>
 <details class="fold"><summary>관련 마켓노트 ({{ c.notes|length }})</summary><div class="prose">{{ m.note_list(c.notes) }}</div></details>
+
+{% if c.peers or c.others %}
+{{ m.h('둘러보기', '') }}
+<div class="browse">
+  {% for i in c.industry_objs %}<a href="{{ url(i.path) }}"><span>산업</span><b>{{ i.name }}</b></a>{% endfor %}
+  {% for o in c.peers %}<a href="{{ url(o.path) }}"><span>같은 산업</span><b>{{ o.name }}</b><small>{{ o.rating }} · {{ o.target|num }}</small></a>{% endfor %}
+  {% if c.prev_c %}<a href="{{ url(c.prev_c.path) }}"><span>이전 기업</span><b>{{ c.prev_c.name }}</b></a>{% endif %}
+  {% if c.next_c %}<a href="{{ url(c.next_c.path) }}"><span>다음 기업</span><b>{{ c.next_c.name }}</b></a>{% endif %}
+</div>
+{% endif %}
 
 {% endblock %}

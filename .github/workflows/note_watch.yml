@@ -1,0 +1,27 @@
+# 평일 아침 9시 30분(한국 시간)에 그날의 마켓노트가 저장소에 있는지 본다.
+# 없으면 이 실행이 실패하고, 깃허브가 저장소 주인에게 실패 메일을 보낸다.
+# 마켓노트는 평일이면 공휴일에도 낸다(ops/extra_rules.md 5절). 토·일은 보지 않는다.
+name: 마켓노트 확인
+
+on:
+  schedule:
+    - cron: "30 0 * * 1-5"   # 평일 09:30 (한국 시간)
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: 오늘 노트가 있는가
+        run: |
+          today=$(TZ=Asia/Seoul date +%F)
+          if [ -f "content/notes/${today}.md" ]; then
+            echo "있음: content/notes/${today}.md"
+          else
+            echo "::error::오늘(${today}) 마켓노트가 없다. 클라우드 루틴 'Morning Market 매일 발행'의 실행 기록을 본다"
+            exit 1
+          fi

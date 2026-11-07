@@ -17,6 +17,9 @@
     <ul class="dash">
       {% for x in n.summary or [] %}<li>{{ x }}</li>{% endfor %}
     </ul>
+    {% if n.point and n.followup %}
+    <div class="nextbox" style="margin-top:14px"><span class="lab">다음 날 확인</span><span>{{ n.followup.review }}</span><a class="lnk" href="{{ url(n.followup.path) }}">{{ n.followup.date|ymd }} 노트</a></div>
+    {% endif %}
   </div>
   <div>
     {% if n.comment %}

@@ -1,0 +1,468 @@
+{
+ "asof": "2026-11-07",
+ "source": "OpenDART 공시목록",
+ "items": [
+  {
+   "date": "2026-11-02",
+   "name": "영업(잠정)실적(공정공시)",
+   "kind": "실적",
+   "rcept_no": "20261102800493",
+   "corrected": false
+  },
+  {
+   "date": "2026-10-30",
+   "name": "기업설명회(IR)개최(안내공시)",
+   "kind": "IR",
+   "rcept_no": "20261030801258",
+   "corrected": false
+  },
+  {
+   "date": "2026-10-30",
+   "name": "연결재무제표기준영업(잠정)실적(공정공시)",
+   "kind": "실적",
+   "rcept_no": "20261030800558",
+   "corrected": false
+  },
+  {
+   "date": "2026-10-30",
+   "name": "주요사항보고서(자기주식처분결정)",
+   "kind": "주주환원",
+   "rcept_no": "20261030000550",
+   "corrected": false
+  },
+  {
+   "date": "2026-10-14",
+   "name": "기업설명회(IR)개최(안내공시)",
+   "kind": "IR",
+   "rcept_no": "20261014800271",
+   "corrected": false
+  },
+  {
+   "date": "2026-10-01",
+   "name": "영업(잠정)실적(공정공시)",
+   "kind": "실적",
+   "rcept_no": "20261001800325",
+   "corrected": false
+  },
+  {
+   "date": "2026-09-30",
+   "name": "기업설명회(IR)개최(안내공시)",
+   "kind": "IR",
+   "rcept_no": "20260930800330",
+   "corrected": false
+  },
+  {
+   "date": "2026-09-16",
+   "name": "[기재정정]반기보고서 (2026.06)",
+   "kind": "정기",
+   "rcept_no": "20260916000427",
+   "corrected": true
+  },
+  {
+   "date": "2026-09-14",
+   "name": "기업설명회(IR)개최(안내공시)",
+   "kind": "IR",
+   "rcept_no": "20260914800202",
+   "corrected": false
+  },
+  {
+   "date": "2026-09-02",
+   "name": "기업설명회(IR)개최(안내공시)",
+   "kind": "IR",
+   "rcept_no": "20260902800231",
+   "corrected": false
+  },
+  {
+   "date": "2026-09-01",
+   "name": "영업(잠정)실적(공정공시)",
+   "kind": "실적",
+   "rcept_no": "20260901800418",
+   "corrected": false
+  },
+  {
+   "date": "2026-08-31",
+   "name": "기업설명회(IR)개최(안내공시)",
+   "kind": "IR",
+   "rcept_no": "20260831800286",
+   "corrected": false
+  },
+  {
+   "date": "2026-08-24",
+   "name": "기업설명회(IR)개최(안내공시)",
+   "kind": "IR",
+   "rcept_no": "20260824800400",
+   "corrected": false
+  },
+  {
+   "date": "2026-08-21",
+   "name": "기업설명회(IR)개최(안내공시)",
+   "kind": "IR",
+   "rcept_no": "20260821800002",
+   "corrected": false
+  },
+  {
+   "date": "2026-08-18",
+   "name": "기업설명회(IR)개최(안내공시)",
+   "kind": "IR",
+   "rcept_no": "20260818800199",
+   "corrected": false
+  },
+  {
+   "date": "2026-08-14",
+   "name": "반기보고서 (2026.06)",
+   "kind": "정기",
+   "rcept_no": "20260814003932",
+   "corrected": false
+  },
+  {
+   "date": "2026-08-10",
+   "name": "기업설명회(IR)개최(안내공시)",
+   "kind": "IR",
+   "rcept_no": "20260810800225",
+   "corrected": false
+  },
+  {
+   "date": "2026-08-03",
+   "name": "영업(잠정)실적(공정공시)",
+   "kind": "실적",
+   "rcept_no": "20260803800582",
+   "corrected": false
+  },
+  {
+   "date": "2026-07-30",
+   "name": "기업설명회(IR)개최(안내공시)",
+   "kind": "IR",
+   "rcept_no": "20260730800156",
+   "corrected": false
+  },
+  {
+   "date": "2026-07-24",
+   "name": "기업설명회(IR)개최(안내공시)",
+   "kind": "IR",
+   "rcept_no": "20260724800674",
+   "corrected": false
+  },
+  {
+   "date": "2026-07-24",
+   "name": "연결재무제표기준영업(잠정)실적(공정공시)",
+   "kind": "실적",
+   "rcept_no": "20260724800340",
+   "corrected": false
+  },
+  {
+   "date": "2026-07-16",
+   "name": "기업설명회(IR)개최(안내공시)",
+   "kind": "IR",
+   "rcept_no": "20260716800514",
+   "corrected": false
+  },
+  {
+   "date": "2026-07-09",
+   "name": "최대주주등소유주식변동신고서",
+   "kind": "자본·지배구조",
+   "rcept_no": "20260709800425",
+   "corrected": false
+  },
+  {
+   "date": "2026-07-01",
+   "name": "영업(잠정)실적(공정공시)",
+   "kind": "실적",
+   "rcept_no": "20260701800569",
+   "corrected": false
+  },
+  {
+   "date": "2026-06-18",
+   "name": "기업설명회(IR)개최(안내공시)",
+   "kind": "IR",
+   "rcept_no": "20260618800848",
+   "corrected": false
+  },
+  {
+   "date": "2026-06-15",
+   "name": "기업설명회(IR)개최(안내공시)",
+   "kind": "IR",
+   "rcept_no": "20260615800862",
+   "corrected": false
+  },
+  {
+   "date": "2026-06-02",
+   "name": "기업설명회(IR)개최(안내공시)",
+   "kind": "IR",
+   "rcept_no": "20260602800432",
+   "corrected": false
+  },
+  {
+   "date": "2026-06-01",
+   "name": "영업(잠정)실적(공정공시)",
+   "kind": "실적",
+   "rcept_no": "20260601801132",
+   "corrected": false
+  },
+  {
+   "date": "2026-05-21",
+   "name": "[기재정정]타법인주식및출자증권취득결정",
+   "kind": "자본·지배구조",
+   "rcept_no": "20260521800560",
+   "corrected": true
+  },
+  {
+   "date": "2026-05-19",
+   "name": "기업설명회(IR)개최(안내공시)",
+   "kind": "IR",
+   "rcept_no": "20260519800275",
+   "corrected": false
+  },
+  {
+   "date": "2026-05-19",
+   "name": "기업설명회(IR)개최(안내공시)",
+   "kind": "IR",
+   "rcept_no": "20260519800271",
+   "corrected": false
+  },
+  {
+   "date": "2026-05-18",
+   "name": "기업설명회(IR)개최(안내공시)",
+   "kind": "IR",
+   "rcept_no": "20260518800630",
+   "corrected": false
+  },
+  {
+   "date": "2026-05-15",
+   "name": "분기보고서 (2026.03)",
+   "kind": "정기",
+   "rcept_no": "20260515002675",
+   "corrected": false
+  },
+  {
+   "date": "2026-05-14",
+   "name": "기업설명회(IR)개최(안내공시)",
+   "kind": "IR",
+   "rcept_no": "20260514800893",
+   "corrected": false
+  },
+  {
+   "date": "2026-05-11",
+   "name": "최대주주등소유주식변동신고서",
+   "kind": "자본·지배구조",
+   "rcept_no": "20260511800521",
+   "corrected": false
+  },
+  {
+   "date": "2026-05-07",
+   "name": "기업설명회(IR)개최(안내공시)",
+   "kind": "IR",
+   "rcept_no": "20260507800198",
+   "corrected": false
+  },
+  {
+   "date": "2026-05-07",
+   "name": "기업설명회(IR)개최(안내공시)",
+   "kind": "IR",
+   "rcept_no": "20260507800194",
+   "corrected": false
+  },
+  {
+   "date": "2026-05-04",
+   "name": "영업(잠정)실적(공정공시)",
+   "kind": "실적",
+   "rcept_no": "20260504800536",
+   "corrected": false
+  },
+  {
+   "date": "2026-04-24",
+   "name": "기업설명회(IR)개최(안내공시)",
+   "kind": "IR",
+   "rcept_no": "20260424800733",
+   "corrected": false
+  },
+  {
+   "date": "2026-04-24",
+   "name": "타법인주식및출자증권취득결정",
+   "kind": "자본·지배구조",
+   "rcept_no": "20260424800640",
+   "corrected": false
+  },
+  {
+   "date": "2026-04-24",
+   "name": "연결재무제표기준영업(잠정)실적(공정공시)",
+   "kind": "실적",
+   "rcept_no": "20260424800317",
+   "corrected": false
+  },
+  {
+   "date": "2026-04-21",
+   "name": "기업설명회(IR)개최(안내공시)",
+   "kind": "IR",
+   "rcept_no": "20260421800161",
+   "corrected": false
+  },
+  {
+   "date": "2026-04-07",
+   "name": "최대주주등소유주식변동신고서",
+   "kind": "자본·지배구조",
+   "rcept_no": "20260407800590",
+   "corrected": false
+  },
+  {
+   "date": "2026-04-02",
+   "name": "자기주식처분결과보고서",
+   "kind": "주주환원",
+   "rcept_no": "20260402002272",
+   "corrected": false
+  },
+  {
+   "date": "2026-04-01",
+   "name": "영업(잠정)실적(공정공시)",
+   "kind": "실적",
+   "rcept_no": "20260401801435",
+   "corrected": false
+  },
+  {
+   "date": "2026-03-20",
+   "name": "주요사항보고서(자기주식처분결정)",
+   "kind": "주주환원",
+   "rcept_no": "20260320001182",
+   "corrected": false
+  },
+  {
+   "date": "2026-03-12",
+   "name": "사업보고서 (2025.12)",
+   "kind": "정기",
+   "rcept_no": "20260312001224",
+   "corrected": false
+  },
+  {
+   "date": "2026-03-10",
+   "name": "기업설명회(IR)개최(안내공시)",
+   "kind": "IR",
+   "rcept_no": "20260310800897",
+   "corrected": false
+  },
+  {
+   "date": "2026-03-05",
+   "name": "기업설명회(IR)개최(안내공시)",
+   "kind": "IR",
+   "rcept_no": "20260305800672",
+   "corrected": false
+  },
+  {
+   "date": "2026-03-03",
+   "name": "영업(잠정)실적(공정공시)",
+   "kind": "실적",
+   "rcept_no": "20260303800922",
+   "corrected": false
+  },
+  {
+   "date": "2026-02-13",
+   "name": "기업설명회(IR)개최(안내공시)",
+   "kind": "IR",
+   "rcept_no": "20260213800240",
+   "corrected": false
+  },
+  {
+   "date": "2026-02-06",
+   "name": "기업설명회(IR)개최(안내공시)",
+   "kind": "IR",
+   "rcept_no": "20260206800166",
+   "corrected": false
+  },
+  {
+   "date": "2026-02-02",
+   "name": "영업(잠정)실적(공정공시)",
+   "kind": "실적",
+   "rcept_no": "20260202801312",
+   "corrected": false
+  },
+  {
+   "date": "2026-01-29",
+   "name": "기업설명회(IR)개최(안내공시)",
+   "kind": "IR",
+   "rcept_no": "20260129800132",
+   "corrected": false
+  },
+  {
+   "date": "2026-01-28",
+   "name": "매출액또는손익구조30%(대규모법인은15%)이상변경",
+   "kind": "실적",
+   "rcept_no": "20260128800452",
+   "corrected": false
+  },
+  {
+   "date": "2026-01-28",
+   "name": "현금ㆍ현물배당결정",
+   "kind": "주주환원",
+   "rcept_no": "20260128800342",
+   "corrected": false
+  },
+  {
+   "date": "2026-01-28",
+   "name": "현금ㆍ현물배당을위한주주명부폐쇄(기준일)결정",
+   "kind": "주주환원",
+   "rcept_no": "20260128800336",
+   "corrected": false
+  },
+  {
+   "date": "2026-01-28",
+   "name": "연결재무제표기준영업(잠정)실적(공정공시)",
+   "kind": "실적",
+   "rcept_no": "20260128800295",
+   "corrected": false
+  },
+  {
+   "date": "2026-01-15",
+   "name": "기업설명회(IR)개최(안내공시)",
+   "kind": "IR",
+   "rcept_no": "20260115800317",
+   "corrected": false
+  },
+  {
+   "date": "2026-01-05",
+   "name": "영업(잠정)실적(공정공시)",
+   "kind": "실적",
+   "rcept_no": "20260105800230",
+   "corrected": false
+  },
+  {
+   "date": "2025-12-01",
+   "name": "영업(잠정)실적(공정공시)",
+   "kind": "실적",
+   "rcept_no": "20251201800591",
+   "corrected": false
+  },
+  {
+   "date": "2025-12-01",
+   "name": "자기주식처분결과보고서",
+   "kind": "주주환원",
+   "rcept_no": "20251201000543",
+   "corrected": false
+  },
+  {
+   "date": "2025-11-26",
+   "name": "기업설명회(IR)개최(안내공시)",
+   "kind": "IR",
+   "rcept_no": "20251126800407",
+   "corrected": false
+  },
+  {
+   "date": "2025-11-17",
+   "name": "기업설명회(IR)개최(안내공시)",
+   "kind": "IR",
+   "rcept_no": "20251117800008",
+   "corrected": false
+  },
+  {
+   "date": "2025-11-17",
+   "name": "기업설명회(IR)개최(안내공시)",
+   "kind": "IR",
+   "rcept_no": "20251117800006",
+   "corrected": false
+  },
+  {
+   "date": "2025-11-14",
+   "name": "분기보고서 (2025.09)",
+   "kind": "정기",
+   "rcept_no": "20251114002676",
+   "corrected": false
+  }
+ ]
+}

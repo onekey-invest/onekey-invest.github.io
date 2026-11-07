@@ -162,7 +162,7 @@
       <td class="c">{{ r.date|ymd }}</td>
       <td class="c">{{ kind(r.kind) }}</td>
       {% if subject %}<td class="l"><a href="{{ url(r.subject_path) }}">{{ r.subject }}</a></td>{% endif %}
-      <td class="l"><a href="{{ url(r.path) }}"><b>{{ r.title }}</b></a>{% if r.pdf %} <a class="pdf" href="{{ url('static/reports/' ~ r.pdf) }}">PDF</a>{% endif %}{% if r.docx %} <a class="pdf" href="{{ url('static/reports/' ~ r.docx) }}">Word</a>{% endif %}</td>
+      <td class="l"><a href="{{ url(r.path) }}"><b>{{ r.title }}</b></a>{% if r.brief_path %} <a class="pdf" href="{{ url(r.brief_path) }}">브리프</a>{% endif %}{% if r.pdf %} <a class="pdf" href="{{ url('static/reports/' ~ r.pdf) }}">PDF</a>{% endif %}{% if r.docx %} <a class="pdf" href="{{ url('static/reports/' ~ r.docx) }}">Word</a>{% endif %}</td>
       <td class="c">{% if r.rating %}{{ rating(r.rating) }}{% else %}–{% endif %}</td>
       <td>{{ r.target|num if r.target else '–' }}</td>
       <td>{{ r.close|num }}</td>
@@ -170,6 +170,71 @@
     </tr>
   {% else %}
     <tr><td class="c" colspan="{{ 8 if subject else 7 }}">아직 리포트가 없습니다.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% endmacro %}
+
+{# 추정 채점: 판정 글자 #}
+{% macro verdict(v) %}
+<span class="verdict {% if v == '컨센서스보다 가까움' %}win{% elif v == '비슷' %}even{% elif v == '채점 전' %}wait{% else %}loss{% endif %}">{{ v }}</span>
+{%- endmacro %}
+
+{# 추정 채점 표. 억원 단위. 오차 = |추정 ÷ 실제 − 1| (채점표.xlsx가 계산) #}
+{% macro score_table(rows, comp=none, show_company=true) %}
+<div class="scroll">
+<table class="grid">
+  <thead><tr>
+    {% if show_company %}<th class="l">기업</th>{% endif %}<th class="l">항목</th><th class="c">리포트 발행</th>
+    <th>내 추정</th><th>컨센서스<br><small>발행 때</small></th><th>실제</th><th class="l">오차 <small>내 추정 / 컨센서스</small></th><th class="c">판정</th><th class="c">방향</th>
+  </tr></thead>
+  <tbody>
+  {% for x in rows %}
+    <tr>
+      {% if show_company %}<td class="l">{% if comp and comp.get(x.company) %}<a href="{{ url(comp[x.company].path) }}"><b>{{ x.name }}</b></a>{% else %}<b>{{ x.name }}</b>{% endif %}</td>{% endif %}
+      <td class="l">{{ x.item }} <small>{{ x.round }}회차</small></td>
+      <td class="c">{{ x.published|ymd }}</td>
+      <td><b>{{ x.mine|num }}</b></td>
+      <td>{{ x.consensus|num }}</td>
+      <td>{% if x.scored %}<b>{{ x.actual|num }}</b><br><small>{{ x.actual_date|ymd }} 발표</small>{% else %}<small>{{ x.due }}</small>{% endif %}</td>
+      <td class="l">{% if x.scored %}
+        <div><i class="errbar m" style="width:{{ '%.0f'|format([x.err_mine * 160, 2]|max) }}px"></i>{{ '%.1f'|format(x.err_mine * 100) }}%</div>
+        <div><i class="errbar c" style="width:{{ '%.0f'|format([x.err_cons * 160, 2]|max) }}px"></i>{{ '%.1f'|format(x.err_cons * 100) }}%</div>
+      {% else %}<small>발행 때 컨센서스와 {{ x.vs_cons|pct }}</small>{% endif %}</td>
+      <td class="c">{{ verdict(x.verdict) }}</td>
+      <td class="c">{{ x.direction or '–' }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% endmacro %}
+
+{# 의견·목표주가 변경 이력(증권사 보고서 끝의 표와 같은 꼴) #}
+{% macro history_table(rows, show_company=false) %}
+<div class="scroll">
+<table class="grid">
+  <thead><tr>
+    <th class="c">일자</th>{% if show_company %}<th class="l">기업</th>{% endif %}<th class="c">투자의견</th><th>목표주가</th><th class="l">변경</th>
+    <th>당시 종가</th><th>괴리율 <small>평균</small></th><th>괴리율 <small>최고·최저</small></th><th>이후 수익률</th>{% if show_company %}<th>KOSPI 같은 기간</th>{% endif %}
+  </tr></thead>
+  <tbody>
+  {% for h in rows %}
+    <tr>
+      <td class="c">{{ h.date|ymd }}</td>
+      {% if show_company %}<td class="l"><a href="{{ url(h.company.path) }}"><b>{{ h.company.name }}</b></a></td>{% endif %}
+      <td class="c">{{ rating(h.rating) }}</td>
+      <td><b>{{ h.target|num }}</b></td>
+      <td class="l">{{ h.change }}{% if h.live %} <span class="tag on">현재</span>{% endif %}</td>
+      <td>{{ h.close|num }}</td>
+      <td>{{ h.gap_avg|pct }}</td>
+      <td>{{ h.gap_ext|pct }} <small>{{ h.ext_label }}</small></td>
+      <td>{{ ret(h.after) }}</td>
+      {% if show_company %}<td>{{ ret(h.bench_after) }}</td>{% endif %}
+    </tr>
+  {% else %}
+    <tr><td class="c" colspan="10">기록이 없습니다.</td></tr>
   {% endfor %}
   </tbody>
 </table>

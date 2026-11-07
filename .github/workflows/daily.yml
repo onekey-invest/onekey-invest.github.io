@@ -58,18 +58,30 @@ jobs:
         continue-on-error: true
         run: python tools/kr_x_book.py
 
+      # 주요 공시(OpenDART). 인증키는 저장소 Secrets의 OPENDART_API_KEY. 못 받아도 계속 간다(어제 목록이 남는다)
+      - name: 공시 갱신
+        if: github.event_name != 'push'
+        continue-on-error: true
+        env:
+          OPENDART_API_KEY: ${{ secrets.OPENDART_API_KEY }}
+        run: python tools/update_disclosures.py
+
       - name: 계산 검증
         run: python -m unittest discover tests
 
       - name: 사이트 만들기
         run: python build.py
 
+      # 깨진 링크·권유처럼 읽히는 말·내부 이름이 있으면 여기서 멈춘다(그날은 배포하지 않는다)
+      - name: 올리기 전 점검
+        run: python tools/check_site.py
+
       - name: 바뀐 시세 저장
         if: github.event_name != 'push'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/prices data/rates data/trades data/strategy_books/bu-us.json data/strategy_books/kr-x1.json data/strategy_books/kr-x2.json
+          git add data/prices data/rates data/trades data/disclosures data/strategy_books/bu-us.json data/strategy_books/kr-x1.json data/strategy_books/kr-x2.json
           git diff --cached --quiet || git commit -m "시세 갱신 $(date -u +%F)"
           git push
 

@@ -11,8 +11,8 @@
       <tr><th>작성</th><td>{{ site.author }}</td></tr>
       <tr><th>커버 종목 / 리포트</th><td>{{ summary.n }}종목 / {{ n_reports }}건</td></tr>
       <tr><th>투자의견 분포</th><td>{% for k, v in summary.ratings.items() %}{{ k }} {{ v }}{% if not loop.last %} · {% endif %}{% endfor %}</td></tr>
-      <tr><th>벤치마크 상회</th><td>{{ summary.n_beat }} / {{ summary.n }} 종목</td></tr>
-      <tr><th>최근 게시</th><td>{% if reports %}{{ reports[0].date|ymd }}{% else %}–{% endif %}</td></tr>
+      {% if score %}<tr><th>추정 채점</th><td><a class="lnk" href="{{ url('research/scorecard/') }}">{{ score.summary['채점한 추정']|int }}건 채점</a> <small>컨센서스보다 가까움 {{ score.summary['컨센서스보다 가까움']|int }} · 비슷 {{ score.summary['비슷']|int }} · 채점 전 {{ score.summary['채점 전']|int }}</small></td></tr>{% endif %}
+      <tr><th>마켓노트</th><td><a class="lnk" href="{{ url('notes/') }}">{{ n_notes }}편</a> <small>최근 {% if notes %}{{ notes[0].date|ymd }}{% endif %}</small></td></tr>
     </table>
   </div>
   <div>
@@ -32,6 +32,35 @@
     </div>
     <div class="note"><a href="{{ url('research/') }}">성적표 전체 보기</a></div>
   </div>
+</div>
+
+<div class="doors">
+  <a class="door" href="{{ url('start/') }}"><span>처음 오셨다면</span><b>이 사이트를 3분 안에</b><p>무엇이 있고, 어떤 순서로 보면 되는지 한 장에 정리했습니다.</p></a>
+  <a class="door" href="{{ url('research/') }}"><span>기업 하나를 보러 왔다면</span><b>커버리지 {{ summary.n }}종목</b><p>의견·목표주가, 실적 추정, 바뀐 이력과 채점을 기업마다 한 화면에.</p></a>
+  <a class="door" href="{{ url('start/') }}#recruit"><span>채용 담당자라면</span><b>대표 작업 셋과 작성자</b><p>무엇을 풀었고, 어떻게 했고, 맞았는지. 작성자 소개와 연락처.</p></a>
+</div>
+
+{{ m.h('대표 작업', '문제 · 방법 · 결과') }}
+<div class="works">
+  {% for w in site.works or [] %}
+  <div class="work">
+    <h3>{{ w.title }}</h3>
+    <dl>
+      <dt>문제</dt><dd>{{ w.problem }}</dd>
+      <dt>방법</dt><dd>{{ w.method }}</dd>
+      <dt>결과</dt><dd>
+        {% if w.kind == 'score' and score %}
+          {% set x = (score.rows|selectattr('company', 'equalto', w.company)|list)[0] %}
+          {% if x.scored %}실제 <b>{{ x.actual|num }}억원</b>. 내 추정 {{ x.mine|num }}억원(오차 {{ '%.1f'|format(x.err_mine * 100) }}%), 컨센서스 {{ x.consensus|num }}억원(오차 {{ '%.1f'|format(x.err_cons * 100) }}%). {{ m.verdict(x.verdict) }}
+          {% else %}{{ x.due }}에 채점합니다.{% endif %}
+        {% elif w.kind == 'books' and B %}주장 <b>{{ B.total.claims + B.total.macro + B.total.market }}가지</b>를 검사. 종목을 고르는 주장 {{ B.total.claims }}가지 가운데 한국에서 {{ B.total.kr[0] }}가지, 미국에서 {{ B.total.us[0] }}가지가 지지됐습니다.
+        {% elif w.kind == 'notes' %}<b>{{ n_notes }}편</b>. {{ first_note|ymd }}부터 평일 아침마다 올립니다.
+        {% endif %}
+      </dd>
+    </dl>
+    <a class="more" href="{{ url(w.link) }}">자세히 보기</a>
+  </div>
+  {% endfor %}
 </div>
 
 {% if featured %}
@@ -65,7 +94,6 @@
 {% if B %}
 {{ m.h('책 검증', '검사 ' ~ B.asof) }}
 <p class="intro">읽은 책 {{ B.total.books }}권의 주장 {{ B.total.claims + B.total.macro + B.total.market }}가지를 한국과 미국 자료로 직접 검사했습니다. 종목을 고르는 주장 {{ B.total.claims }}가지 가운데 한국에서 {{ B.total.kr[0] }}가지, 미국에서 {{ B.total.us[0] }}가지가 지지됐습니다.</p>
-{# 대표로 맞은 주장 하나와 기각된 주장 하나(한국 결과가 있는 것) #}
 {% set right = B.tops['한국에서만 지지'][:1] %}
 {% set wrong = (B.tops['기각']|selectattr('kr')|list)[:1] %}
 <div class="scroll wide">

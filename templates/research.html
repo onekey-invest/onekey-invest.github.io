@@ -11,6 +11,8 @@
       <tr><th>의견 이후 수익률 (단순 평균)</th><td>{{ m.ret(summary.avg_ret) }}</td></tr>
       <tr><th>초과수익 (단순 평균)</th><td>{{ m.ret(summary.avg_excess, 'pp') }}</td></tr>
       <tr><th>벤치마크 상회</th><td>{{ summary.n_beat }} / {{ summary.n }} 종목</td></tr>
+      {% if score_all %}<tr><th>추정 채점</th><td><a class="lnk" href="{{ url('research/scorecard/') }}">{{ score_all.summary['채점한 추정']|int }}건</a> <small>컨센서스보다 가까움 {{ score_all.summary['컨센서스보다 가까움']|int }} · 비슷 {{ score_all.summary['비슷']|int }} · 채점 전 {{ score_all.summary['채점 전']|int }}</small></td></tr>{% endif %}
+      <tr><th>의견 변경 기록</th><td><a class="lnk" href="{{ url('research/ledger/') }}">의견 장부</a></td></tr>
     </table>
   </div>
   <div>

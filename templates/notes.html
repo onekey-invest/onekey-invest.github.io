@@ -34,6 +34,16 @@
   </div>
 </div>
 
+<div class="nextbox" style="margin-top:22px"><span class="lab">올리는 시각</span><span>평일 아침 8시 35분 전후. 그날 0시~8시 30분에 온 소식만 씁니다</span>{% if next_note %}<span>다음 노트 <b>{{ next_note|ymd }}</b></span>{% endif %}<a class="lnk" href="{{ url('notes/weekly/') }}">주간 묶음</a>{% if site_url %}<a class="lnk" href="{{ url('feed.xml') }}">RSS</a>{% endif %}</div>
+
+{% for w in weekly %}
+{{ m.h('이번 주 한눈에', w.monday|ymd ~ ' ~ ' ~ w.friday|ymd) }}
+<ul class="dash">
+  {% for n in w.notes %}<li><a href="{{ url(n.path) }}"><b>{{ n.date|ymd }}</b> {{ n.headline }}</a></li>{% endfor %}
+</ul>
+<div class="note"><a href="{{ url('notes/weekly/') }}">지난 주간 묶음</a></div>
+{% endfor %}
+
 {{ m.h('노트 목록', notes|length ~ '건') }}
 {{ m.filter('notes-table', '날짜, 내용, 태그 검색', none) }}
 <div class="scroll">
@@ -51,6 +61,35 @@
   </tbody>
 </table>
 </div>
+{% set pairs = notes|selectattr('point')|selectattr('followup')|list %}
+{% if pairs %}
+{{ m.h('확인 포인트 기록', pairs|length ~ '건 · 그날 적은 것과 다음 노트에서 본 결과') }}
+<details class="fold" open><summary>최근 10건</summary>
+<div class="scroll">
+<table class="grid">
+  <thead><tr><th class="c" style="width:110px">적은 날</th><th class="l">그날 확인할 포인트</th><th class="l">다음 노트에서 본 결과</th></tr></thead>
+  <tbody>
+  {% for x in pairs[:10] %}
+    <tr><td class="c"><a href="{{ url(x.path) }}">{{ x.date|ymd }}</a></td><td class="l">{{ x.point }}</td><td class="l">{{ x.followup.review }} <small><a href="{{ url(x.followup.path) }}">{{ x.followup.date|ymd }}</a></small></td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+</details>
+{% if pairs|length > 10 %}
+<details class="fold"><summary>그 전 {{ pairs|length - 10 }}건</summary>
+<div class="scroll">
+<table class="grid">
+  <tbody>
+  {% for x in pairs[10:] %}
+    <tr><td class="c" style="width:110px"><a href="{{ url(x.path) }}">{{ x.date|ymd }}</a></td><td class="l">{{ x.point }}</td><td class="l">{{ x.followup.review }} <small><a href="{{ url(x.followup.path) }}">{{ x.followup.date|ymd }}</a></small></td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+</details>
+{% endif %}
+{% endif %}
 {% else %}
 {{ m.h('마켓노트', '', first=true) }}
 <p class="intro">아직 노트가 없습니다. <code>content/notes/</code>에 날짜별 파일을 넣으면 이 자리에 나옵니다.</p>

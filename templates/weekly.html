@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% import "_m.html" as m %}
+{% block main %}
+
+<div class="stock">
+  <div>
+    <div class="meta">마켓노트<i>|</i>{{ weekly|length }}주</div>
+    <h1 class="rt-title">주간 묶음</h1>
+    <p class="intro" style="margin:10px 0 0;max-width:720px">한 주의 마켓노트를 날짜순으로 모았습니다. 날마다 그날의 한 줄과, 노트 맨 위에 적은 "오늘 반드시 알아야 할 것"을 그대로 옮겼습니다.</p>
+  </div>
+</div>
+
+{% for w in weekly %}
+<details class="fold"{% if loop.first %} open{% endif %}><summary>{{ w.monday|ymd }} ~ {{ w.friday|ymd }} <small>{{ w.notes|length }}편</small></summary>
+<div class="prose">
+  {% for n in w.notes %}
+  <h3><a href="{{ url(n.path) }}">{{ n.date|ymd }} · {{ n.headline }}</a></h3>
+  {% if n.must %}<p>{{ n.must }}</p>{% endif %}
+  {% endfor %}
+</div>
+</details>
+{% endfor %}
+
+{% endblock %}

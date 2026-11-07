@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% import "_m.html" as m %}
+{% block main %}
+
+{{ m.h('사이트 검색', '리포트 · 기업 · 산업 · 마켓노트 · 연구 · 책 검증', first=true) }}
+<div class="filter"><label>찾을 말 <input id="q" type="search" placeholder="기업 이름, 종목코드, 낱말" autofocus></label><span class="count" id="n"></span></div>
+<div class="scroll">
+<table class="grid"><thead><tr><th class="c" style="width:90px">구분</th><th class="l">제목</th><th class="c" style="width:110px">날짜</th></tr></thead>
+<tbody id="out"><tr><td class="c" colspan="3">찾을 말을 넣으세요.</td></tr></tbody></table>
+</div>
+<script>
+(function(){
+  var base = "{{ url('') }}", data = [], q = document.getElementById('q'), out = document.getElementById('out'), n = document.getElementById('n');
+  function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+  function run(){
+    var words = q.value.trim().toLowerCase().split(/\s+/).filter(Boolean);
+    if(!words.length){out.innerHTML='<tr><td class="c" colspan="3">찾을 말을 넣으세요.</td></tr>';n.textContent='';return}
+    var hits = data.filter(function(e){var t=(e.t+' '+(e.x||'')+' '+e.k).toLowerCase();return words.every(function(w){return t.indexOf(w)>=0})});
+    n.textContent = hits.length + '건';
+    out.innerHTML = hits.slice(0,80).map(function(e){return '<tr><td class="c"><span class="tag">'+esc(e.k)+'</span></td><td class="l"><a href="'+base+e.u+'"><b>'+esc(e.t)+'</b></a></td><td class="c">'+(e.d||'')+'</td></tr>'}).join('') || '<tr><td class="c" colspan="3">찾은 것이 없습니다.</td></tr>';
+  }
+  fetch(base + 'search.json').then(function(r){return r.json()}).then(function(d){data=d; var p=new URLSearchParams(location.search).get('q'); if(p){q.value=p} run()});
+  q.addEventListener('input', run);
+})();
+</script>
+
+{% endblock %}

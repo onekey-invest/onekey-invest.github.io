@@ -11,7 +11,9 @@
   <div class="strip">
     <div><span>투자의견</span><b>{{ m.rating(r.rating) }}</b></div>
     <div><span>목표주가</span><b>{{ r.target|num }}</b></div>
+    {% if r.prev_target %}<div><span>직전 목표주가</span><b>{{ r.prev_target|num }}</b><span>{{ r.prev_rating }}</span></div>{% endif %}
     <div><span>발행일 종가</span><b>{{ r.close|num }}</b></div>
+    <div><span>상승여력</span><b class="{{ r.upside_now|sign }}">{{ r.upside_now|pct }}</b><span>{{ asof|ymd }} 종가</span></div>
     <div><span>이후 수익률</span><b class="{{ r.after|sign }}">{{ r.after|pct }}</b></div>
   </div>
   {% endif %}
@@ -21,6 +23,13 @@
   <div class="prose">
     {% if r.summary %}<p class="lead-box">{{ r.summary }}</p>{% endif %}
     {{ r.body }}
+    <div class="disclose">
+      <h3>작성과 고지</h3>
+      <p>작성 {{ site.author }}. 개인이 공부 목적으로 쓴 리포트이며 어느 금융회사의 의견도 아닙니다. 대가를 받고 쓰지 않았고, 투자 권유가 아닙니다.</p>
+      {% if r.rating %}<p>투자의견 기준(12개월): 상승여력 +15% 이상 매수, −15% 아래 매도, 그 사이 중립. 목표주가는 작성자의 실적 추정에 목표 배수를 곱해 구합니다(<a href="{{ url('methodology/') }}">방법론</a>).</p>
+      <p>이 리포트의 추정은 실제 실적이 나오면 <a href="{{ url('research/scorecard/') }}">추정 채점표</a>에서 그때의 컨센서스와 함께 채점하고, 의견을 바꾸면 <a href="{{ url('research/ledger/') }}">의견 장부</a>에 남깁니다.</p>{% endif %}
+      <p>자료: 회사 공시(DART)·IR 자료, 통계청·관세청 등 공공 통계, 일별 종가. 컨센서스는 견주는 데에만 썼습니다.</p>
+    </div>
   </div>
   <aside>
     {{ m.h('리포트 정보', '', first=true) }}
@@ -32,8 +41,13 @@
       <tr><th>발행일 종가</th><td>{{ r.close|num }}원</td></tr>
       <tr><th>이후 수익률</th><td>{{ m.ret(r.after) }} <small>({{ asof|ymd }})</small></td></tr>
       {% endif %}
+      {% if next_check %}<tr><th>다음 확인</th><td>{{ next_check.item }}<br><small>{{ next_check.due }} · 내 추정 {{ next_check.mine|num }}억원</small></td></tr>{% endif %}
       <tr><th>원문</th><td>{% if r.pdf %}<a class="pdf" href="{{ url('static/reports/' ~ r.pdf) }}">PDF 내려받기</a>{% else %}PDF 없음{% endif %}{% if r.docx %} · <a class="pdf" href="{{ url('static/reports/' ~ r.docx) }}">Word 내려받기</a>{% endif %}</td></tr>
     </table>
+    {% if r.recheck and not newer %}
+    {{ m.h('의견을 바꿀 조건', '') }}
+    <p class="prose tight" style="font-size:13.5px">{{ r.recheck }}</p>
+    {% endif %}
     {% if newer or older %}
     {{ m.h('같은 대상의 리포트', '') }}
     <ul class="dash">

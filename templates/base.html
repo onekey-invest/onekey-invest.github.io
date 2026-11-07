@@ -7,7 +7,14 @@
 <meta name="description" content="{{ description or site.tagline }}">
 <meta property="og:title" content="{{ title }} | {{ site.name }}">
 <meta property="og:description" content="{{ description or site.tagline }}">
-<meta property="og:type" content="website">
+<meta property="og:type" content="{{ 'article' if lastmod else 'website' }}">
+<meta property="og:site_name" content="{{ site.name }}">
+<meta property="og:locale" content="ko_KR">
+<meta name="twitter:card" content="summary">
+{% if site_url %}<link rel="canonical" href="{{ site_url }}{{ url(page_path if page_path is defined and not page_path.endswith('.html') else '') }}">
+<meta property="og:url" content="{{ site_url }}{{ url(page_path if page_path is defined and not page_path.endswith('.html') else '') }}">
+<link rel="alternate" type="application/rss+xml" title="{{ site.name }} 새 글" href="{{ url('feed.xml') }}">{% endif %}
+<meta name="author" content="{{ site.author }}">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='6' y='5' width='10' height='18' rx='2' fill='%230f766e'/%3E%3Crect x='14' y='11' width='10' height='16' rx='2' fill='%231f2a44'/%3E%3C/svg%3E">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
 <link rel="stylesheet" href="{{ url('static/style.css') }}">
@@ -28,6 +35,7 @@
     <a href="{{ url('studies/') }}"{% if nav == 'studies' %} class="on"{% endif %}>연구</a>
   </nav>
   <div class="r">
+    <a href="{{ url('search/') }}"{% if nav == 'search' %} class="on"{% endif %}>검색</a>
     <a href="{{ url('methodology/') }}"{% if nav == 'methodology' %} class="on"{% endif %}>방법론</a>
     <a href="{{ url('about/') }}"{% if nav == 'about' %} class="on"{% endif %}>About</a>
     {% for l in site.links or [] %}<a href="{{ l.url }}" rel="noopener">{{ l.label }}</a>{% endfor %}
@@ -39,6 +47,8 @@
   <a href="{{ url('research/') }}"{% if sub == 'companies' %} class="on"{% endif %}>기업</a>
   <a href="{{ url('research/industries/') }}"{% if sub == 'industries' %} class="on"{% endif %}>산업</a>
   <a href="{{ url('research/reports/') }}"{% if sub == 'reports' %} class="on"{% endif %}>리포트 목록</a>
+  {% if score_all %}<a href="{{ url('research/scorecard/') }}"{% if sub == 'scorecard' %} class="on"{% endif %}>추정 채점표</a>{% endif %}
+  <a href="{{ url('research/ledger/') }}"{% if sub == 'ledger' %} class="on"{% endif %}>의견 장부</a>
 </div></div>
 {% elif nav == 'portfolios' %}
 <div class="sub"><div class="w">
@@ -53,9 +63,19 @@
 </main>
 
 <footer class="foot"><div class="w">
+  <div class="footlinks">
+    <a href="{{ url('start/') }}">처음 오셨다면</a>
+    {% if score_all %}<a href="{{ url('research/scorecard/') }}">추정 채점표</a>{% endif %}
+    <a href="{{ url('research/ledger/') }}">의견 장부</a>
+    <a href="{{ url('glossary/') }}">용어 사전</a>
+    <a href="{{ url('methodology/') }}">방법론</a>
+    {% if site_url %}<a href="{{ url('feed.xml') }}">RSS</a>{% endif %}
+  </div>
   <b>{{ site.name }}</b> · 작성 {{ site.author }}{% if site.email %} · {{ site.email }}{% endif %}<br>
-  개인 학습 목적으로 작성한 자료이며 투자 권유가 아닙니다. 수익률은 일별 종가 기준이고 배당은 포함하지 않습니다.
-  계산 방식은 <a href="{{ url('methodology/') }}">방법론</a>에 적었습니다. 시세 기준일 {{ asof|ymd }}.
+  개인 학습 목적으로 작성한 공부 자료이며 투자 권유가 아닙니다. 유료 서비스·개별 종목 상담·매매 신호 알림을 하지 않습니다.<br>
+  숫자가 틀린 곳을 찾으시면 {% if site.email %}{{ site.email }}{% else %}LinkedIn 메시지{% endif %}로 알려 주세요. 고친 곳은 그 화면에 고친 날을 적습니다.<br>
+  수익률은 일별 종가 기준이고 배당은 포함하지 않습니다. 계산 방식은 <a href="{{ url('methodology/') }}">방법론</a>에 적었습니다.
+  시세 기준일 {{ asof|ymd }}{% if lastmod %} · 이 글 {{ lastmod|ymd }}{% endif %} · 화면 갱신 {{ built|ymd }}.
 </div></footer>
 <script src="{{ url('static/app.js') }}" defer></script>
 </body>
