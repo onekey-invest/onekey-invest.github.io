@@ -25,6 +25,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 200    # 사이트 점검이 최근 7일에 올라온 것을 보려면 기록이 있어야 한다
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
