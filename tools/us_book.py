@@ -79,6 +79,22 @@ def fetch_closes(symbols, start, end):
     return P.sort_index().ffill()
 
 
+def apply_fallback(P, books_dir):
+    """야후에서 못 받는 종목(인수·상장폐지·이름 변경)은 운용 쪽이 넘긴 Alpaca 종가 FALLBACK_<달>.csv(date, ticker, close)로 채운다.
+    파일에 든 종목은 야후 값을 버리고 그 파일 값만 쓴다(출처를 섞으면 이음매에서 가짜 수익률이 생긴다). 운용 총괄 제안, 2026-11-07."""
+    import glob
+    files = sorted(glob.glob(str(Path(books_dir) / "FALLBACK_*.csv")))
+    if not files:
+        return P, []
+    fb = pd.concat([pd.read_csv(f, parse_dates=["date"]) for f in files])
+    fb = fb.drop_duplicates(["date", "ticker"], keep="last").pivot(index="date", columns="ticker", values="close")
+    fb.index = pd.to_datetime(fb.index).normalize()
+    P = P.copy()
+    for t in fb.columns:
+        P[t] = fb[t].dropna().reindex(P.index.union(fb.index)).ffill().reindex(P.index)
+    return P.sort_index().ffill(), list(fb.columns)
+
+
 def evaluate(P, days, books, pan):
     """그 달 장부가 없으면 앞 달 장부로 이어 가지 않고, 그 전 거래일(마지막 정상일)에서 멈춘다(운용 쪽 조건, 2026-11-07)."""
     v, vals, cur, w, wv, short, last_day, used = 1.0, [], None, None, None, 0.0, None, []
@@ -123,6 +139,9 @@ def main(argv=None):
     syms = sorted(set().union(*[set(b["종목"]) for b in books.values()]))
     P = fetch_closes(syms, START - pd.Timedelta(days=5), max(kend, sp.index.max()))
     print(f"종목 {len(syms)}개 중 종가를 받은 것 {P.shape[1]}개, {P.index.min().date()} ~ {P.index.max().date()}")
+    P, fb = apply_fallback(P, a.books)
+    if fb:
+        print(f"야후 대신 운용 쪽 종가(FALLBACK)로 채운 종목 {len(fb)}개: {', '.join(fb[:10])}")
     days = [d for d in sp.index if START <= d <= min(P.index.max(), kend)]
     assert days and days[0] == START, days[:2]
     fxd = fx.reindex(fx.index.union(days)).ffill().reindex(days)
