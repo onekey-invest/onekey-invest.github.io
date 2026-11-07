@@ -11,7 +11,7 @@
   <tbody>
   {% for x in studies %}
     <tr>
-      <td class="c">{{ x.date|ymd }}</td>
+      <td class="c">{{ x.period or (x.date|ymd) }}</td>
       <td class="l"><a href="{{ url(x.path) }}"><b>{{ x.title }}</b></a></td>
       <td class="l">{{ x.summary }}</td>
       <td class="l">{% for t in x.tags or [] %}<span class="tag">{{ t }}</span> {% endfor %}</td>

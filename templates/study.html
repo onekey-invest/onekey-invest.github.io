@@ -4,7 +4,7 @@
 
 <div class="stock">
   <div>
-    <div class="meta"><span class="tag on">연구</span> {{ x.date|ymd }}<i>|</i>작성 {{ site.author }}{% for t in x.tags or [] %}<i>|</i>{{ t }}{% endfor %}</div>
+    <div class="meta"><span class="tag on">연구</span> 연구한 날 {{ x.period or (x.date|ymd) }}<i>|</i>작성 {{ site.author }}{% for t in x.tags or [] %}<i>|</i>{{ t }}{% endfor %}</div>
     <h1 class="rt-title">{{ x.title }}</h1>
   </div>
 </div>
