@@ -1,3 +1,6 @@
 # 실제 종가를 받을 때만 필요하다 (tools/update_prices.py)
 pykrx>=1.2
 yfinance>=1.0
+
+# 채점표 원본 엑셀의 입력 칸을 적을 때(tools/score_actuals.py)
+openpyxl>=3.1

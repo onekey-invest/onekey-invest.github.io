@@ -9,15 +9,11 @@
  "stock_share": 1.0,
  "top": [
   [
-   "NVDA",
-   3.0
-  ],
-  [
    "AAPL",
    3.0
   ],
   [
-   "AMZN",
+   "NVDA",
    3.0
   ],
   [
@@ -26,6 +22,10 @@
   ],
   [
    "GOOGL",
+   3.0
+  ],
+  [
+   "AMZN",
    3.0
   ],
   [
@@ -99,7 +99,7 @@
    1.9
   ]
  ],
- "usd_ret": -0.023685,
+ "usd_ret": -0.023576,
  "sp_usd_ret": -0.037774,
  "fx0": 1356.84,
  "fx1": 1356.34,
@@ -140,8 +140,8 @@
     true
    ]
   ],
-  "krw_unhedged_ret": -0.024044,
-  "krw_ret": -0.023977
+  "krw_unhedged_ret": -0.023936,
+  "krw_ret": -0.023868
  },
  "short_examples": [],
  "long_examples": []
