@@ -99,7 +99,7 @@
    1.9
   ]
  ],
- "usd_ret": -0.023576,
+ "usd_ret": -0.023478,
  "sp_usd_ret": -0.037774,
  "fx0": 1356.84,
  "fx1": 1356.34,
@@ -140,8 +140,8 @@
     true
    ]
   ],
-  "krw_unhedged_ret": -0.023936,
-  "krw_ret": -0.023868
+  "krw_unhedged_ret": -0.023838,
+  "krw_ret": -0.02377
  },
  "short_examples": [],
  "long_examples": []
