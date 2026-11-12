@@ -1,5 +1,5 @@
 {
- "asof": "2026-11-10",
+ "asof": "2026-11-11",
  "book_month": "2026-11",
  "price_note": "평가 종가: 야후 수정종가(배당 반영), 백테스트·장부 선정: Alpaca",
  "sha": "e320882481927302",
@@ -99,10 +99,10 @@
    1.9
   ]
  ],
- "usd_ret": 0.001179,
- "sp_usd_ret": -0.018981,
+ "usd_ret": 0.012812,
+ "sp_usd_ret": -0.00614,
  "fx0": 1356.84,
- "fx1": 1343.84,
+ "fx1": 1341.91,
  "layers": {
   "상황": false,
   "추세": false
@@ -140,8 +140,8 @@
     true
    ]
   ],
-  "krw_unhedged_ret": -0.008413,
-  "krw_ret": -0.004332
+  "krw_unhedged_ret": 0.001667,
+  "krw_ret": 0.006395
  },
  "short_examples": [],
  "long_examples": []
