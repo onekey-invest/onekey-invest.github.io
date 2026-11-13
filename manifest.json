@@ -1,0 +1,488 @@
+{
+ "scorecard-errors": {
+  "asof": "2026-11-10",
+  "w": 645,
+  "h": 333,
+  "file": "scorecard-errors.png"
+ },
+ "company-orion": {
+  "asof": "2026-11-12",
+  "w": 702,
+  "h": 360,
+  "file": "company-orion.png"
+ },
+ "spark-company-orion": {
+  "asof": "2026-11-12",
+  "w": 168,
+  "h": 45,
+  "file": "spark-company-orion.png"
+ },
+ "company-samyang": {
+  "asof": "2026-11-12",
+  "w": 702,
+  "h": 360,
+  "file": "company-samyang.png"
+ },
+ "spark-company-samyang": {
+  "asof": "2026-11-12",
+  "w": 168,
+  "h": 45,
+  "file": "spark-company-samyang.png"
+ },
+ "company-paradise": {
+  "asof": "2026-11-12",
+  "w": 702,
+  "h": 360,
+  "file": "company-paradise.png"
+ },
+ "spark-company-paradise": {
+  "asof": "2026-11-12",
+  "w": 172,
+  "h": 45,
+  "file": "spark-company-paradise.png"
+ },
+ "company-nh": {
+  "asof": "2026-11-12",
+  "w": 702,
+  "h": 360,
+  "file": "company-nh.png"
+ },
+ "spark-company-nh": {
+  "asof": "2026-11-12",
+  "w": 168,
+  "h": 45,
+  "file": "spark-company-nh.png"
+ },
+ "company-hmm": {
+  "asof": "2026-11-12",
+  "w": 702,
+  "h": 360,
+  "file": "company-hmm.png"
+ },
+ "spark-company-hmm": {
+  "asof": "2026-11-12",
+  "w": 172,
+  "h": 45,
+  "file": "spark-company-hmm.png"
+ },
+ "company-samsung": {
+  "asof": "2026-11-12",
+  "w": 702,
+  "h": 360,
+  "file": "company-samsung.png"
+ },
+ "spark-company-samsung": {
+  "asof": "2026-11-12",
+  "w": 168,
+  "h": 45,
+  "file": "spark-company-samsung.png"
+ },
+ "company-bgf": {
+  "asof": "2026-11-12",
+  "w": 702,
+  "h": 360,
+  "file": "company-bgf.png"
+ },
+ "spark-company-bgf": {
+  "asof": "2026-11-12",
+  "w": 168,
+  "h": 45,
+  "file": "spark-company-bgf.png"
+ },
+ "company-shi": {
+  "asof": "2026-11-12",
+  "w": 702,
+  "h": 360,
+  "file": "company-shi.png"
+ },
+ "spark-company-shi": {
+  "asof": "2026-11-12",
+  "w": 168,
+  "h": 45,
+  "file": "spark-company-shi.png"
+ },
+ "company-kia": {
+  "asof": "2026-11-12",
+  "w": 702,
+  "h": 360,
+  "file": "company-kia.png"
+ },
+ "spark-company-kia": {
+  "asof": "2026-11-12",
+  "w": 168,
+  "h": 45,
+  "file": "spark-company-kia.png"
+ },
+ "industry-food-indicators": {
+  "asof": "2026-10-01",
+  "w": 591,
+  "h": 307,
+  "file": "industry-food-indicators.png"
+ },
+ "industry-food-market": {
+  "asof": "",
+  "w": 605,
+  "h": 440,
+  "file": "industry-food-market.png"
+ },
+ "industry-casino-indicators": {
+  "asof": "2026-10-01",
+  "w": 591,
+  "h": 307,
+  "file": "industry-casino-indicators.png"
+ },
+ "industry-casino-market": {
+  "asof": "",
+  "w": 605,
+  "h": 440,
+  "file": "industry-casino-market.png"
+ },
+ "industry-shipbuilding-indicators": {
+  "asof": "2026-06-01",
+  "w": 591,
+  "h": 307,
+  "file": "industry-shipbuilding-indicators.png"
+ },
+ "industry-shipbuilding-market": {
+  "asof": "",
+  "w": 605,
+  "h": 440,
+  "file": "industry-shipbuilding-market.png"
+ },
+ "industry-securities-indicators": {
+  "asof": "2026-09-01",
+  "w": 591,
+  "h": 307,
+  "file": "industry-securities-indicators.png"
+ },
+ "industry-securities-market": {
+  "asof": "",
+  "w": 605,
+  "h": 440,
+  "file": "industry-securities-market.png"
+ },
+ "industry-auto-indicators": {
+  "asof": "2026-09-01",
+  "w": 591,
+  "h": 307,
+  "file": "industry-auto-indicators.png"
+ },
+ "industry-auto-market": {
+  "asof": "",
+  "w": 605,
+  "h": 440,
+  "file": "industry-auto-market.png"
+ },
+ "strategy-etf-ga": {
+  "asof": "2026-11-12",
+  "w": 702,
+  "h": 360,
+  "file": "strategy-etf-ga.png"
+ },
+ "spark-strategy-etf-ga": {
+  "asof": "2026-11-12",
+  "w": 168,
+  "h": 45,
+  "file": "spark-strategy-etf-ga.png"
+ },
+ "backtest-etf-ga": {
+  "asof": "2026-09-17",
+  "w": 702,
+  "h": 360,
+  "file": "backtest-etf-ga.png"
+ },
+ "backtest-dd-etf-ga": {
+  "asof": "2026-09-17",
+  "w": 702,
+  "h": 360,
+  "file": "backtest-dd-etf-ga.png"
+ },
+ "strategy-etf-na": {
+  "asof": "2026-11-12",
+  "w": 702,
+  "h": 360,
+  "file": "strategy-etf-na.png"
+ },
+ "spark-strategy-etf-na": {
+  "asof": "2026-11-12",
+  "w": 168,
+  "h": 45,
+  "file": "spark-strategy-etf-na.png"
+ },
+ "backtest-etf-na": {
+  "asof": "2026-09-17",
+  "w": 702,
+  "h": 360,
+  "file": "backtest-etf-na.png"
+ },
+ "backtest-dd-etf-na": {
+  "asof": "2026-09-17",
+  "w": 702,
+  "h": 360,
+  "file": "backtest-dd-etf-na.png"
+ },
+ "strategy-us-t12": {
+  "asof": "2026-11-12",
+  "w": 702,
+  "h": 360,
+  "file": "strategy-us-t12.png"
+ },
+ "spark-strategy-us-t12": {
+  "asof": "2026-11-12",
+  "w": 172,
+  "h": 45,
+  "file": "spark-strategy-us-t12.png"
+ },
+ "backtest-us-t12": {
+  "asof": "2026-07-31",
+  "w": 702,
+  "h": 360,
+  "file": "backtest-us-t12.png"
+ },
+ "backtest-dd-us-t12": {
+  "asof": "2026-07-31",
+  "w": 702,
+  "h": 360,
+  "file": "backtest-dd-us-t12.png"
+ },
+ "strategy-us-t12d": {
+  "asof": "2026-11-12",
+  "w": 702,
+  "h": 360,
+  "file": "strategy-us-t12d.png"
+ },
+ "spark-strategy-us-t12d": {
+  "asof": "2026-11-12",
+  "w": 168,
+  "h": 45,
+  "file": "spark-strategy-us-t12d.png"
+ },
+ "backtest-us-t12d": {
+  "asof": "2026-07-31",
+  "w": 702,
+  "h": 360,
+  "file": "backtest-us-t12d.png"
+ },
+ "backtest-dd-us-t12d": {
+  "asof": "2026-07-31",
+  "w": 702,
+  "h": 360,
+  "file": "backtest-dd-us-t12d.png"
+ },
+ "strategy-us-t16": {
+  "asof": "2026-11-12",
+  "w": 702,
+  "h": 360,
+  "file": "strategy-us-t16.png"
+ },
+ "spark-strategy-us-t16": {
+  "asof": "2026-11-12",
+  "w": 172,
+  "h": 45,
+  "file": "spark-strategy-us-t16.png"
+ },
+ "backtest-us-t16": {
+  "asof": "2026-07-31",
+  "w": 702,
+  "h": 360,
+  "file": "backtest-us-t16.png"
+ },
+ "backtest-dd-us-t16": {
+  "asof": "2026-07-31",
+  "w": 702,
+  "h": 360,
+  "file": "backtest-dd-us-t16.png"
+ },
+ "strategy-us-t16d": {
+  "asof": "2026-11-12",
+  "w": 702,
+  "h": 360,
+  "file": "strategy-us-t16d.png"
+ },
+ "spark-strategy-us-t16d": {
+  "asof": "2026-11-12",
+  "w": 168,
+  "h": 45,
+  "file": "spark-strategy-us-t16d.png"
+ },
+ "backtest-us-t16d": {
+  "asof": "2026-07-31",
+  "w": 702,
+  "h": 360,
+  "file": "backtest-us-t16d.png"
+ },
+ "backtest-dd-us-t16d": {
+  "asof": "2026-07-31",
+  "w": 702,
+  "h": 360,
+  "file": "backtest-dd-us-t16d.png"
+ },
+ "strategy-bu-us": {
+  "asof": "2026-11-12",
+  "w": 702,
+  "h": 360,
+  "file": "strategy-bu-us.png"
+ },
+ "spark-strategy-bu-us": {
+  "asof": "2026-11-12",
+  "w": 168,
+  "h": 45,
+  "file": "spark-strategy-bu-us.png"
+ },
+ "backtest-bu-us": {
+  "asof": "2026-06-30",
+  "w": 702,
+  "h": 360,
+  "file": "backtest-bu-us.png"
+ },
+ "backtest-dd-bu-us": {
+  "asof": "2026-06-30",
+  "w": 702,
+  "h": 360,
+  "file": "backtest-dd-bu-us.png"
+ },
+ "strategy-kr-x1": {
+  "asof": "2026-11-12",
+  "w": 702,
+  "h": 360,
+  "file": "strategy-kr-x1.png"
+ },
+ "spark-strategy-kr-x1": {
+  "asof": "2026-11-12",
+  "w": 168,
+  "h": 45,
+  "file": "spark-strategy-kr-x1.png"
+ },
+ "backtest-kr-x1": {
+  "asof": "2026-06-30",
+  "w": 702,
+  "h": 360,
+  "file": "backtest-kr-x1.png"
+ },
+ "backtest-dd-kr-x1": {
+  "asof": "2026-06-30",
+  "w": 702,
+  "h": 360,
+  "file": "backtest-dd-kr-x1.png"
+ },
+ "strategy-kr-x2": {
+  "asof": "2026-11-12",
+  "w": 702,
+  "h": 360,
+  "file": "strategy-kr-x2.png"
+ },
+ "spark-strategy-kr-x2": {
+  "asof": "2026-11-12",
+  "w": 168,
+  "h": 45,
+  "file": "spark-strategy-kr-x2.png"
+ },
+ "backtest-kr-x2": {
+  "asof": "2026-06-30",
+  "w": 702,
+  "h": 360,
+  "file": "backtest-kr-x2.png"
+ },
+ "backtest-dd-kr-x2": {
+  "asof": "2026-06-30",
+  "w": 702,
+  "h": 360,
+  "file": "backtest-dd-kr-x2.png"
+ },
+ "portfolios-domestic": {
+  "asof": "2026-11-12",
+  "w": 591,
+  "h": 307,
+  "file": "portfolios-domestic.png"
+ },
+ "portfolios-overseas": {
+  "asof": "2026-11-12",
+  "w": 633,
+  "h": 307,
+  "file": "portfolios-overseas.png"
+ },
+ "portfolios-etf": {
+  "asof": "2026-11-12",
+  "w": 591,
+  "h": 307,
+  "file": "portfolios-etf.png"
+ },
+ "study-text-fund": {
+  "asof": "2026-07-31",
+  "w": 733,
+  "h": 373,
+  "file": "study-text-fund.png"
+ },
+ "study-text-when": {
+  "asof": "2026-07-31",
+  "w": 786,
+  "h": 373,
+  "file": "study-text-when.png"
+ },
+ "study-text-down": {
+  "asof": "2026-07-31",
+  "w": 733,
+  "h": 373,
+  "file": "study-text-down.png"
+ },
+ "study-fx-steps-us": {
+  "asof": "2026-07-31",
+  "w": 733,
+  "h": 373,
+  "file": "study-fx-steps-us.png"
+ },
+ "study-fx-steps-kr": {
+  "asof": "2026-07-31",
+  "w": 733,
+  "h": 373,
+  "file": "study-fx-steps-kr.png"
+ },
+ "study-fx-hedge-yearly": {
+  "asof": "2026-08-31",
+  "w": 901,
+  "h": 333,
+  "file": "study-fx-hedge-yearly.png"
+ },
+ "study-kr-count": {
+  "asof": "2026-09-30",
+  "w": 729,
+  "h": 347,
+  "file": "study-kr-count.png"
+ },
+ "study-kr-r5": {
+  "asof": "2026-09-30",
+  "w": 733,
+  "h": 373,
+  "file": "study-kr-r5.png"
+ },
+ "study-kr-vol20": {
+  "asof": "2026-09-30",
+  "w": 733,
+  "h": 373,
+  "file": "study-kr-vol20.png"
+ },
+ "study-macro-oos": {
+  "asof": "2026-07-31",
+  "w": 786,
+  "h": 373,
+  "file": "study-macro-oos.png"
+ },
+ "study-macro-badgood": {
+  "asof": "2026-07-31",
+  "w": 675,
+  "h": 347,
+  "file": "study-macro-badgood.png"
+ },
+ "study-macro-after": {
+  "asof": "2026-07-31",
+  "w": 786,
+  "h": 373,
+  "file": "study-macro-after.png"
+ },
+ "home-strategies": {
+  "asof": "2026-11-12",
+  "w": 1011,
+  "h": 427,
+  "file": "home-strategies.png"
+ }
+}
